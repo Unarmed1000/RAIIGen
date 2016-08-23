@@ -67,6 +67,10 @@ namespace MB
       std::string MoveConstructorInvalidateMember;
       std::string MoveConstructorClaimMember;
       std::string HandleClassName;
+      std::string CreateVoidConstructorHeader;
+      std::string CreateVoidConstructorSource;
+      std::string ResetVoidMemberHeader;
+      std::string ResetVoidMemberSource;
     };
 
 
@@ -727,17 +731,20 @@ namespace MB
     }
 
 
-    std::string GenerateExtraCreate(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetFunction, const FullAnalysis& fullAnalysis, const bool allowAbsorb)
+    std::string GenerateExtraCreate(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetFunction, 
+                                    const std::string& snippetVoidFunction, const FullAnalysis& fullAnalysis, const bool allowAbsorb)
     {
       if (!allowAbsorb && fullAnalysis.AbsorbedFunctions && fullAnalysis.AbsorbedFunctions->size() > 0)
         throw NotSupportedException("Absorbed functions can not contain absorbed functions");
+
+      const std::string& activeSnippet = (fullAnalysis.Result.MethodArguments.size() > 0 ? snippetFunction : snippetVoidFunction);
 
       std::string createMethodParameters = GenerateParameterList(fullAnalysis.Result.MethodArguments);
       std::string createMethodParameterNames = GenerateParameterNameList(fullAnalysis.Result.MethodArguments);
       const std::string createFunctionArguments = GenerateExpandedParameterNameList(fullAnalysis.Result.CreateArguments);
       const std::string resetParamValidation = GenerateForAllMembers(fullAnalysis.Result.AdditionalMemberVariables, snippets.ResetParamValidation, config.TypeDefaultValues);
 
-      std::string content(snippetFunction);
+      std::string content(activeSnippet);
       StringUtil::Replace(content, "##CLASS_NAME##", fullAnalysis.Result.ClassName);
       StringUtil::Replace(content, "##CREATE_METHOD_PARAMETERS##", createMethodParameters);
       StringUtil::Replace(content, "##CREATE_METHOD_PARAMETER_NAMES##", createMethodParameterNames);
@@ -748,17 +755,18 @@ namespace MB
     }
 
 
-    GeneratedMethodCode GenerateExtraCreates(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetHeader, const std::string& snippetSource, const FullAnalysis& fullAnalysis)
+    GeneratedMethodCode GenerateExtraCreates(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetHeader, const std::string& snippetSource, 
+                                             const std::string& snippetVoidHeader, const std::string& snippetVoidSource, const FullAnalysis& fullAnalysis)
     {
-      std::string resultHeader = GenerateExtraCreate(config, snippets, snippetHeader, fullAnalysis, true);
-      std::string resultSource = GenerateExtraCreate(config, snippets, snippetSource, fullAnalysis, true);
+      std::string resultHeader = GenerateExtraCreate(config, snippets, snippetHeader, snippetVoidHeader, fullAnalysis, true);
+      std::string resultSource = GenerateExtraCreate(config, snippets, snippetSource, snippetVoidSource, fullAnalysis, true);
 
       if (fullAnalysis.AbsorbedFunctions && fullAnalysis.AbsorbedFunctions->size() > 0)
       {
         for (auto itr = fullAnalysis.AbsorbedFunctions->begin(); itr != fullAnalysis.AbsorbedFunctions->end(); ++itr)
         {
-          resultHeader += END_OF_LINE + END_OF_LINE + GenerateExtraCreate(config, snippets, snippetHeader, *itr, false);
-          resultSource += END_OF_LINE + END_OF_LINE + GenerateExtraCreate(config, snippets, snippetSource, *itr, false);
+          resultHeader += END_OF_LINE + END_OF_LINE + GenerateExtraCreate(config, snippets, snippetHeader, snippetVoidHeader, *itr, false);
+          resultSource += END_OF_LINE + END_OF_LINE + GenerateExtraCreate(config, snippets, snippetSource, snippetVoidSource, *itr, false);
         }
       }
       return GeneratedMethodCode(resultHeader, resultSource);
@@ -844,8 +852,8 @@ namespace MB
 
       const std::string destroyFunctionArguments = GenerateExpandedParameterNameList(fullAnalysis.Result.DestroyArguments);
 
-      auto classExtraConstructors = GenerateExtraCreates(config, snippets, snippets.CreateConstructorHeader, snippets.CreateConstructorSource, fullAnalysis);
-      auto classExtraResetMethods = GenerateExtraCreates(config, snippets, snippets.ResetMemberHeader, snippets.ResetMemberSource, fullAnalysis);
+      auto classExtraConstructors = GenerateExtraCreates(config, snippets, snippets.CreateConstructorHeader, snippets.CreateConstructorSource, snippets.CreateVoidConstructorHeader, snippets.CreateVoidConstructorSource, fullAnalysis);
+      auto classExtraResetMethods = GenerateExtraCreates(config, snippets, snippets.ResetMemberHeader, snippets.ResetMemberSource, snippets.ResetVoidMemberHeader, snippets.ResetVoidMemberSource, fullAnalysis);
 
       StringUtil::Replace(content, "##CLASS_EXTRA_CONSTRUCTORS_HEADER##", classExtraConstructors.Header);
       StringUtil::Replace(content, "##CLASS_EXTRA_CONSTRUCTORS_SOURCE##", classExtraConstructors.Source);
@@ -883,6 +891,32 @@ namespace MB
       return content;
     }
 
+
+    bool IsResetModeRequired(const FullAnalysis& fullAnalysis)
+    {
+      if (fullAnalysis.AbsorbedFunctions)
+      {
+        for (auto itr = fullAnalysis.AbsorbedFunctions->begin(); itr != fullAnalysis.AbsorbedFunctions->end(); ++itr)
+        {
+          if (IsResetModeRequired(*itr))
+            return true;
+        }
+      }
+
+      if (fullAnalysis.Result.MethodArguments.size() <= 0)
+        return true;
+      return false;
+    }
+
+    bool IsResetModeRequired(const std::deque<FullAnalysis>& fullAnalysis)
+    {
+      for (auto itr = fullAnalysis.begin(); itr != fullAnalysis.end(); ++itr)
+      {
+        if (IsResetModeRequired(*itr))
+          return true;
+      }
+      return false;
+    }
   }
 
 
@@ -893,6 +927,9 @@ namespace MB
   SimpleGenerator::SimpleGenerator(const Capture& capture, const SimpleGeneratorConfig& config, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
     : Generator(capture, config)
   {
+    const auto pathResetModeHeader = IO::Path::Combine(templateRoot, "TemplateResetMode_header.hpp");
+    const auto resetModeHeaderTemplate = IO::File::ReadAllText(pathResetModeHeader);
+
     const auto pathHeader = IO::Path::Combine(templateRoot, "Template_header.hpp");
     const auto pathHeaderSnippetMemberVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_MemberVariable.txt");
     const auto pathHeaderSnippetMemberVariableGet = IO::Path::Combine(templateRoot, "TemplateSnippet_MemberVariableGet.txt");
@@ -915,6 +952,10 @@ namespace MB
     const auto pathSnippetMoveConstructorInvalidateMember = IO::Path::Combine(templateRoot, "TemplateSnippet_MoveConstructorInvalidateMember.txt");
     const auto pathSnippetMoveConstructorClaimMember = IO::Path::Combine(templateRoot, "TemplateSnippet_MoveConstructorClaimMember.txt");
     const auto pathSnippetHandleClassName = IO::Path::Combine(templateRoot, "TemplateSnippet_HandleClassName.txt");
+    const auto pathSnippetCreateVoidConstructorHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateVoidConstructorHeader.txt");
+    const auto pathSnippetCreateVoidConstructorSource = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateVoidConstructorSource.txt");
+    const auto pathSnippetResetVoidMemberHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetVoidMemberHeader.txt");
+    const auto pathSnippetResetVoidMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetVoidMemberSource.txt");
 
     const auto sourceTemplate = IO::File::ReadAllText(pathSource);
     Snippets snippets;
@@ -932,10 +973,15 @@ namespace MB
     snippets.MoveConstructorInvalidateMember = IO::File::ReadAllText(pathSnippetMoveConstructorInvalidateMember);
     snippets.MoveConstructorClaimMember = IO::File::ReadAllText(pathSnippetMoveConstructorClaimMember);
     snippets.HandleClassName = IO::File::ReadAllText(pathSnippetHandleClassName);
+    snippets.CreateVoidConstructorHeader = IO::File::ReadAllText(pathSnippetCreateVoidConstructorHeader);
+    snippets.CreateVoidConstructorSource = IO::File::ReadAllText(pathSnippetCreateVoidConstructorSource);
+    snippets.ResetVoidMemberHeader = IO::File::ReadAllText(pathSnippetResetVoidMemberHeader);
+    snippets.ResetVoidMemberSource = IO::File::ReadAllText(pathSnippetResetVoidMemberSource);
 
     std::unordered_set<std::string> typesWithoutDefaultValues;
 
     auto fullAnalysis = Analyze(config, m_functionAnalysis, typesWithoutDefaultValues);
+
 
     const bool generateSourceFile = sourceTemplate.size() > 0;
     for (auto itr = fullAnalysis.begin(); itr != fullAnalysis.end(); ++itr)
@@ -953,21 +999,28 @@ namespace MB
       }
     }
 
-      const auto copyRoot = IO::Path::Combine(templateRoot, "copy");
-      IO::PathDeque files;
-      if (IO::Directory::TryGetFiles(files, copyRoot, IO::SearchOptions::TopDirectoryOnly))
+    const auto copyRoot = IO::Path::Combine(templateRoot, "copy");
+    IO::PathDeque files;
+    if (IO::Directory::TryGetFiles(files, copyRoot, IO::SearchOptions::TopDirectoryOnly))
+    {
+      if (files.size() > 0)
       {
-        if (files.size() > 0)
+        for (auto itr = files.begin(); itr != files.end(); ++itr)
         {
-          for (auto itr = files.begin(); itr != files.end(); ++itr)
-          {
-            auto srcContent = IO::File::ReadAllText(**itr);
-            auto dstFileName = IO::Path::Combine(dstPath, IO::Path::GetFileName(**itr));
-            WriteAllTextIfChanged(dstFileName, srcContent);
-          }
+          auto srcContent = IO::File::ReadAllText(**itr);
+          auto dstFileName = IO::Path::Combine(dstPath, IO::Path::GetFileName(**itr));
+          WriteAllTextIfChanged(dstFileName, srcContent);
         }
       }
+    }
 
+    if (resetModeHeaderTemplate.size() > 0 && IsResetModeRequired(fullAnalysis))
+    {
+      std::string content(resetModeHeaderTemplate);
+      StringUtil::Replace(content, "##AG_TOOL_STATEMENT##", config.ToolStatement);
+      auto dstFileName = IO::Path::Combine(dstPath, "ResetMode.hpp");
+      WriteAllTextIfChanged(dstFileName, content);
+    }
 
 
     for (auto itr = m_functionAnalysis.MissingDestroy.begin(); itr != m_functionAnalysis.MissingDestroy.end(); ++itr)

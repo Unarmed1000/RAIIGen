@@ -1,0 +1,2 @@
+    //! @brief Destroys any owned resources and then creates the requested one
+    void Reset(const ResetMode resetMode);

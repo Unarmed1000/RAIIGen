@@ -1,3 +1,4 @@
+    //! @brief Destroys any owned resources and then creates the requested one
     void Reset(##CREATE_METHOD_PARAMETERS##)
     {
       // We do the check here to be user friendly, if it becomes a performance issue switch it to a assert.##RESET_PARAMETER_VALIDATION##
