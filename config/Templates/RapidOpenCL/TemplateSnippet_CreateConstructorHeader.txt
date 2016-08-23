@@ -1,0 +1,6 @@
+      //! @brief Create the requested resource
+    ##CLASS_NAME##(##CREATE_METHOD_PARAMETERS##)
+      : ##CLASS_NAME##()
+    {
+      Reset(##CREATE_METHOD_PARAMETER_NAMES##);
+    }
