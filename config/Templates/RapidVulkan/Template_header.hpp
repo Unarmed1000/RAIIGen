@@ -24,9 +24,9 @@
 
 // ##AG_TOOL_STATEMENT##
 
-#include <cassert>
-#include <RapidVulkan/VulkanCheck.hpp>
+#include <RapidVulkan/Util.hpp>
 #include <vulkan/vulkan.h>
+#include <cassert>
 
 namespace RapidVulkan
 {

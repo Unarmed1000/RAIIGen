@@ -26,8 +26,8 @@
 
 #include <RapidOpenCL/RapidValues.hpp>
 #include <RapidOpenCL/RapidCheck.hpp>
-#include <cassert>
 #include <CL/cl.h>
+#include <cassert>
 
 namespace RapidOpenCL
 {

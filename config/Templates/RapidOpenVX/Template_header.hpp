@@ -26,8 +26,8 @@
 
 #include <RapidOpenVX/Values.hpp>
 #include <RapidOpenVX/Util.hpp>
-#include <cassert>
 #include <VX/vx.h>
+#include <cassert>
 
 namespace RapidOpenVX
 {
