@@ -27,7 +27,10 @@
 #include <RAIIGen/Capture.hpp>
 #include <RAIIGen/StringHelper.hpp>
 #include <FslBase/Exceptions.hpp>
+#include <FslBase/IO/Directory.hpp>
 #include <FslBase/IO/File.hpp>
+#include <FslBase/IO/Path.hpp>
+#include <FslBase/IO/PathDeque.hpp>
 #include <FslBase/String/StringUtil.hpp>
 #include <algorithm>
 #include <array>
@@ -949,6 +952,22 @@ namespace MB
         WriteAllTextIfChanged(fileName, sourceContent);
       }
     }
+
+      const auto copyRoot = IO::Path::Combine(templateRoot, "copy");
+      IO::PathDeque files;
+      if (IO::Directory::TryGetFiles(files, copyRoot, IO::SearchOptions::TopDirectoryOnly))
+      {
+        if (files.size() > 0)
+        {
+          for (auto itr = files.begin(); itr != files.end(); ++itr)
+          {
+            auto srcContent = IO::File::ReadAllText(**itr);
+            auto dstFileName = IO::Path::Combine(dstPath, IO::Path::GetFileName(**itr));
+            WriteAllTextIfChanged(dstFileName, srcContent);
+          }
+        }
+      }
+
 
 
     for (auto itr = m_functionAnalysis.MissingDestroy.begin(); itr != m_functionAnalysis.MissingDestroy.end(); ++itr)

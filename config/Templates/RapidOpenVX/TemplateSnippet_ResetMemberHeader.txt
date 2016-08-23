@@ -8,7 +8,7 @@
 
       // Since we want to ensure that the resource is left untouched on error we use a local variable as a intermediary
       const ##RESOURCE_TYPE## ##RESOURCE_INTERMEDIARY_NAME## = ##CREATE_FUNCTION##(##CREATE_FUNCTION_ARGUMENTS##);
-      RAPIDOPENVX_CHECK2(##RESOURCE_INTERMEDIARY_NAME##, "##CREATE_FUNCTION##");
+      Util::Check(##RESOURCE_INTERMEDIARY_NAME##, "##CREATE_FUNCTION##", __FILE__, __NAME__);
 
       // Everything is ready, so assign the members##RESET_SET_MEMBERS##
     }

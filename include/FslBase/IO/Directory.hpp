@@ -58,6 +58,8 @@ namespace Fsl
 
       //! @brief Get the files under the path directory
       static void GetFiles(PathDeque& rResult, const Path& path, const SearchOptions::Enum searchOptions);
+
+      static bool TryGetFiles(PathDeque& rResult, const Path& path, const SearchOptions::Enum searchOptions);
     };
   }
 }

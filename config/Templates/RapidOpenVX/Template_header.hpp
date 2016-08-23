@@ -24,8 +24,8 @@
 
 // ##AG_TOOL_STATEMENT##
 
-#include <RapidOpenVX/RapidValues.hpp>
-#include <RapidOpenVX/RapidCheck.hpp>
+#include <RapidOpenVX/Values.hpp>
+#include <RapidOpenVX/Util.hpp>
 #include <cassert>
 #include <VX/vx.h>
 

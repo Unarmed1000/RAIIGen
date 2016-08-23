@@ -83,5 +83,19 @@ namespace Fsl
       return PlatformFileSystem::GetFiles(rResult, path, searchOptions);
     }
 
+
+    bool Directory::TryGetFiles(PathDeque& rResult, const Path& path, const SearchOptions::Enum searchOptions)
+    {
+      try
+      {
+        GetFiles(rResult, path, searchOptions);
+        return true;
+      }
+      catch (const std::exception&)
+      {
+        return false;
+      }
+    }
+
   }
 }
