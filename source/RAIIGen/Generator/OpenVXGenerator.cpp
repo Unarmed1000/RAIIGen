@@ -80,6 +80,11 @@ namespace MB
     };
 
 
+    const std::vector<FunctionParameterTypeOverride> g_functionParameterTypeOverride
+    {
+    };
+
+
     const std::unordered_map<std::string, std::string> g_typeDefaultValues =
     {
       { "vx_array", "##HANDLE_CLASS_NAME##::INVALID_ARRAY" },
@@ -111,6 +116,6 @@ namespace MB
     std::deque<std::string> filters;
     filters.push_back(CREATE_FUNCTION);
     filters.push_back(DESTROY_FUNCTION);
-    return CaptureConfig(TYPE_NAME_PREFIX, filters, g_functionParameterNameOverride, false);
+    return CaptureConfig(TYPE_NAME_PREFIX, filters, g_functionParameterNameOverride, g_functionParameterTypeOverride, false);
   }
 }

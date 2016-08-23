@@ -113,13 +113,43 @@ namespace MB
       FunctionParameterNameOverride("clCreateImage3D", 6, "size", "imageRowPitch"),
       FunctionParameterNameOverride("clCreateImage3D", 7, "size", "imageSlicePitch"),
       FunctionParameterNameOverride("clCreateImage3D", 8, "pVoid", "pHost"),
+      // clCreateContextFromType
+      FunctionParameterNameOverride("clCreateContextFromType", 2, "pVoid(constChar*,ConstVoid*,SizeT,Void*)", "pfnNotify"),
+      FunctionParameterNameOverride("clCreateContextFromType", 3, "pVoid", "pUserData"),
+      // clCreateContext
+      FunctionParameterNameOverride("clCreateContext", 1, "uint", "numDevices"),
+      FunctionParameterNameOverride("clCreateContext", 3, "pVoid(constChar*,ConstVoid*,SizeT,Void*)", "pfnNotify"),
+      FunctionParameterNameOverride("clCreateContext", 4, "pVoid", "pUserData"),
+     
+      // clCreateKernel
+      FunctionParameterNameOverride("clCreateKernel", 1, "pChar", "pszKernelName"),
+
+
       // clCreatePipe
       FunctionParameterNameOverride("clCreatePipe", 2, "uint", "pipePacketSize"),
       FunctionParameterNameOverride("clCreatePipe", 3, "uint", "pipeMaxPackets"),
+      // clCreateProgramWithSource
+      FunctionParameterNameOverride("clCreateProgramWithSource", 1, "uint", "count"),
+      FunctionParameterNameOverride("clCreateProgramWithSource", 2, "pChar", "ppStrings"),
+      FunctionParameterNameOverride("clCreateProgramWithSource", 3, "pSize", "pLengths"),
       // clCreateProgramWithBinary
+      FunctionParameterNameOverride("clCreateProgramWithBinary", 1, "uint", "numDevices"),
+      FunctionParameterNameOverride("clCreateProgramWithBinary", 3, "pSize", "lengths"),
+      FunctionParameterNameOverride("clCreateProgramWithBinary", 4, "pUnsignedChar", "ppBinaries"),
       FunctionParameterNameOverride("clCreateProgramWithBinary", 5, "pInt", "pBinaryStatus"),
       // clCreateSampler
       FunctionParameterNameOverride("clCreateSampler", 1, "bool", "normalizedCoords"),
+    };
+
+
+    // This crap is necessary because I have been unable to get the 'exact written code' from clang and
+    // because OpenCL decided not to use a typedef for its function pointers
+    const std::vector<FunctionParameterTypeOverride> g_functionParameterTypeOverride
+    {
+      // clCreateContextFromType
+      FunctionParameterTypeOverride("clCreateContextFromType", 2, "void (*)(const char *, const void *, size_t, void *) __attribute__((stdcall))", "void (CL_CALLBACK *)(const char *, const void *, size_t, void *)"),
+      // clCreateContext
+      FunctionParameterTypeOverride("clCreateContext", 3, "void (*)(const char *, const void *, size_t, void *) __attribute__((stdcall))", "void (CL_CALLBACK *)(const char *, const void *, size_t, void *)"),
     };
 
 
@@ -169,6 +199,6 @@ namespace MB
     std::deque<std::string> filters;
     filters.push_back(CREATE_FUNCTION);
     filters.push_back(DESTROY_FUNCTION);
-    return CaptureConfig(TYPE_NAME_PREFIX, filters, g_functionParameterNameOverride, true);
+    return CaptureConfig(TYPE_NAME_PREFIX, filters, g_functionParameterNameOverride, g_functionParameterTypeOverride, true);
   }
 }

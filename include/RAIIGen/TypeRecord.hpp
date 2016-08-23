@@ -34,6 +34,7 @@ namespace MB
     bool IsPointer;
     //bool IsPointerPointer;
     bool IsStruct;
+    bool IsFunctionPointer;
 
     TypeRecord()
       : FullTypeString()
@@ -42,6 +43,7 @@ namespace MB
       , IsPointer(false)
       //, IsPointerPointer(false)
       , IsStruct(false)
+      , IsFunctionPointer(false)
     {
     }
 
@@ -58,7 +60,8 @@ namespace MB
         Name == rhs.Name &&
         IsConstQualified == rhs.IsConstQualified &&
         IsPointer == rhs.IsPointer &&
-        IsStruct == rhs.IsStruct;
+        IsStruct == rhs.IsStruct &&
+        IsFunctionPointer == rhs.IsFunctionPointer;
     }
 
     bool operator!=(const TypeRecord &rhs) const

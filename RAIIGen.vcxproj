@@ -97,6 +97,7 @@
     <ClInclude Include="include\RAIIGen\CaseUtil.hpp" />
     <ClInclude Include="include\RAIIGen\FunctionErrors.hpp" />
     <ClInclude Include="include\RAIIGen\FunctionParameterNameOverride.hpp" />
+    <ClInclude Include="include\RAIIGen\FunctionParameterTypeOverride.hpp" />
     <ClInclude Include="include\RAIIGen\FunctionRecord.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\ClassFunctionAbsorb.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\FunctionAnalysis.hpp" />

@@ -77,6 +77,14 @@ namespace MB
       return result;
     }
 
+    std::string GetTypeKindSpelling(CXTypeKind typeKind)
+    {
+      CXString name = clang_getTypeKindSpelling(typeKind);
+      std::string result = clang_getCString(name);
+      clang_disposeString(name);
+      return result;
+    }
+
 
     struct TypeInfo
     {
@@ -111,7 +119,7 @@ namespace MB
         throw std::runtime_error("GetTypeName() failed to get type name for CXType_Invalid");
       case CXType_Unexposed:
         std::cout << "WARNING: CXType_Unexposed not properly supported\n";
-        return TypeInfo("**CXType_Unexposed**", type, originalType);
+        return TypeInfo(GetTypeSpelling(type), type, originalType);
       case CXType_Void:
         return TypeInfo("void", type, originalType);
       case CXType_Bool:
@@ -191,7 +199,8 @@ namespace MB
       case CXType_FunctionNoProto:
         throw std::runtime_error("GetTypeName() failed to get type name for CXType_FunctionNoProto");
       case CXType_FunctionProto:
-        throw std::runtime_error("GetTypeName() failed to get type name for CXType_FunctionProto");
+        std::cout << "WARNING: CXType_FunctionProto not properly supported\n";
+        return TypeInfo("**CXType_FunctionProto**", type, originalType);
       case CXType_ConstantArray:
         std::cout << "WARNING: CXType_ConstantArray not properly supported\n";
         return TypeInfo("**CXType_ConstantArray**", type, originalType);
@@ -234,6 +243,11 @@ namespace MB
       const auto canonicalType = clang_getCanonicalType(typeInfo.Type);
       if (canonicalType.kind == CXType_Record)
         typeRecord.IsStruct = true;
+
+      if (typeInfo.Type.kind == CXType_Unexposed && canonicalType.kind == CXType_FunctionProto )
+      {
+        typeRecord.IsFunctionPointer = true;
+      }
 
 
       if (type.kind == CXType_Pointer)
@@ -286,7 +300,7 @@ namespace MB
     }
 
 
-    ParameterRecord GetParameter(const CXCursor cursor, const std::string& typeNamePrefix)
+    ParameterRecord GetParameter(const CXCursor cursor, const std::string& typeNamePrefix, const std::vector<FunctionParameterTypeOverride>& functionParameterTypeOverrides)
     {
       ParameterRecord param;
       param.Name = GetCursorSpelling(cursor);
@@ -322,6 +336,20 @@ namespace MB
       }
     }
 
+    void HandleParamTypeOverride(ParameterRecord& rParam, const std::vector<FunctionParameterTypeOverride>& functionParameterTypeOverrides, const std::string& currentfunctionName, const unsigned int parameterIndex)
+    {
+      for (auto itr = functionParameterTypeOverrides.begin(); itr != functionParameterTypeOverrides.end(); ++itr)
+      {
+        if (itr->FunctionName == currentfunctionName && itr->ParameterIndex == parameterIndex)
+        {
+          if (itr->ParameterOldType != rParam.Type.FullTypeString)
+            throw UsageErrorException(std::string("The argument type '" + rParam.Type.FullTypeString + "' does not match the expected '" + itr->ParameterOldType + "' name"));
+
+          rParam.Type.FullTypeString = itr->ParameterNewType;
+        }
+      }
+    }
+
 
     FunctionRecord GetFunction(const CaptureConfig& config, const CXCursor& cursor, const CXCursorKind cursorKind, const std::size_t currentLevel, FunctionErrors& rFuncErrors)
     {
@@ -343,8 +371,9 @@ namespace MB
         {
           const CXCursor argCursor = clang_Cursor_getArgument(cursor, i);
 
-          auto param = GetParameter(argCursor, config.TypeNamePrefix);
+          auto param = GetParameter(argCursor, config.TypeNamePrefix, config.FunctionParameterTypeOverrides);
           HandleParamNameOverride(param, config.FunctionParameterNameOverrides, currentFunction.Name, i);
+          HandleParamTypeOverride(param, config.FunctionParameterTypeOverrides, currentFunction.Name, i);
 
           if (uniqueArgumentNames.find(param.Name) == uniqueArgumentNames.end())
           {

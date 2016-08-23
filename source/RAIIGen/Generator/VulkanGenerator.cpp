@@ -95,6 +95,10 @@ namespace MB
     };
 
 
+    const std::vector<FunctionParameterTypeOverride> g_functionParameterTypeOverride
+    {
+    };
+
     const std::unordered_map<std::string, std::string> g_typeDefaultValues =
     {
       { "VkBuffer", DEFAULT_VALUE },
@@ -140,6 +144,6 @@ namespace MB
     //filters.push_back(DESTROY_FUNCTION);
     //filters.push_back(ALLOCATE_FUNCTION);
     //filters.push_back(FREE_FUNCTION);
-    return CaptureConfig(TYPE_NAME_PREFIX, filters, g_functionParameterNameOverride, true);
+    return CaptureConfig(TYPE_NAME_PREFIX, filters, g_functionParameterNameOverride, g_functionParameterTypeOverride, true);
   }
 }

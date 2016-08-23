@@ -1,5 +1,5 @@
-#ifndef MB_CAPTURECONFIG_HPP
-#define MB_CAPTURECONFIG_HPP
+#ifndef MB_FUNCTIONPARAMETERTYPEOVERRIDE_HPP
+#define MB_FUNCTIONPARAMETERTYPEOVERRIDE_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,43 +22,33 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <deque>
 #include <string>
-#include <vector>
-#include <RAIIGen/FunctionParameterNameOverride.hpp>
-#include <RAIIGen/FunctionParameterTypeOverride.hpp>
 
 namespace MB
 {
-  struct CaptureConfig
+  struct FunctionParameterTypeOverride
   {
-    const std::string TypeNamePrefix;
-    const std::deque<std::string> Filters;
-    const std::vector<FunctionParameterNameOverride> FunctionParameterNameOverrides;
-    const std::vector<FunctionParameterTypeOverride> FunctionParameterTypeOverrides;
-    bool OnlyScanMainHeaderFile;
+    std::string FunctionName;
+    std::size_t ParameterIndex;
+    std::string ParameterOldType;
+    std::string ParameterNewType;
 
-    CaptureConfig()
-      : TypeNamePrefix()
-      , Filters()
-      , FunctionParameterNameOverrides()
-      , FunctionParameterTypeOverrides()
-      , OnlyScanMainHeaderFile(false)
+    FunctionParameterTypeOverride()
+      : FunctionName()
+      , ParameterIndex(0)
+      , ParameterOldType()
+      , ParameterNewType()
     {
     }
 
-    CaptureConfig(const std::string& typeNamePrefix, const std::deque<std::string>& filters, 
-                  const std::vector<FunctionParameterNameOverride>& functionParameterNameOverrides, 
-                  const std::vector<FunctionParameterTypeOverride>& functionParameterTypeOverrides,
-                  const bool onlyScanMainHeaderFile)
-      : TypeNamePrefix(typeNamePrefix)
-      , Filters(filters)
-      , FunctionParameterNameOverrides(functionParameterNameOverrides)
-      , FunctionParameterTypeOverrides(functionParameterTypeOverrides)
-      , OnlyScanMainHeaderFile(onlyScanMainHeaderFile)
+    FunctionParameterTypeOverride(const std::string& functionName, const std::size_t parameterIndex,
+                                  const std::string& parameterOldType, const std::string& parameterNewType)
+      : FunctionName(functionName)
+      , ParameterIndex(parameterIndex)
+      , ParameterOldType(parameterOldType)
+      , ParameterNewType(parameterNewType)
     {
     }
   };
 }
-
 #endif
