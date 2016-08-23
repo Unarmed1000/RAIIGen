@@ -1,5 +1,5 @@
-#ifndef RAPIDVULKAN_VULKANUTIL_HPP
-#define RAPIDVULKAN_VULKANUTIL_HPP
+#ifndef RAPIDOPENCL_EXCEPTIONS_HPP
+#define RAPIDOPENCL_EXCEPTIONS_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,77 +22,80 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RapidVulkan/Exceptions.hpp>
-#include <cassert>
+#include <stdexcept>
 #include <string>
-#include <vulkan/vulkan.h>
+#include <CL/cl.h>
 
-namespace RapidVulkan
+namespace RapidOpenCL
 {
-  class Util
+  class OpenCLException : public std::runtime_error
   {
+    std::string m_fileName;
+    int m_lineNumber;
   public:
-    static inline void Check(const VkResult result)
+    explicit OpenCLException()
+      : std::runtime_error()
+      , m_fileName()
+      , m_lineNumber(0)    
     {
-      if (status != VK_SUCCESS)
-        throw VulkanErrorException(result);
     }
-    
-    static inline void Check(const VkResult result, const char*const pszMessage)
+  
+    explicit OpenCLException(const std::string& whatArg)
+      : std::runtime_error(whatArg)
+      , m_fileName()
+      , m_lineNumber(0)    
     {
-      if (result != VK_SUCCESS)
-      {
-        assert(pszMessage != nullptr);
-        throw VulkanErrorException(message, result);
-      }
-    }
-    
-    static inline void Check(const VkResult result, const std::string& message)
-    {
-      if (result != VK_SUCCESS)
-      {
-        throw VulkanErrorException(message, result);
-      }
     }
 
-    static inline void Check(const VkResult result, const char*const pszMessage, const char*const pszFileName, const int lineNumber)
+    explicit OpenCLException(const std::string& whatArg, const std::string& fileName, const int lineNumber)
+      : std::runtime_error(whatArg)
+      , m_fileName(fileName)
+      , m_lineNumber(lineNumber)    
     {
-      if (result != VK_SUCCESS)
-      {
-        assert(pszMessage != nullptr);
-        assert(pszFileName != nullptr);
-        throw VulkanErrorException(pszMessage, result, pszFileName, lineNumber);
-      }
-    }
-    
-    static inline void Check(const VkResult result, const char*const pszMessage, const std::string& fileName, const int lineNumber)
-    {
-      if (result != VK_SUCCESS)
-      {
-        assert(pszMessage != nullptr);
-        throw VulkanErrorException(pszMessage, result, fileName, lineNumber);
-      }
     }
 
     
-    static inline void Check(const VkResult result, const std::string& message, const char*const pszFileName, const int lineNumber)
-    {
-      if (result != VK_SUCCESS)
-      {
-        assert(pszFileName != nullptr);
-        throw VulkanErrorException(message, result, pszFileName, lineNumber);
-      }
-    }
-    
-    static inline void Check(const VkResult result, const std::string& message, const std::string& fileName, const int lineNumber)
-    {
-      if (result != VK_SUCCESS)
-      {
-        throw VulkanErrorException(message, result, fileName, lineNumber);
-      }
+    std::string GetFileName() const 
+    { 
+      return m_fileName; 
     }
 
+    
+    int GetLineNumber() const 
+    { 
+      return m_lineNumber; 
+    }
   };
+  
+    
+  
+  class OpenCLErrorException : public OpenCLException
+  {
+    cl_int m_errorCode;
+  public:
+    explicit OpenCLErrorException()
+      : OpenCLException()
+      , m_errorCode(CL_SUCCESS)
+    {
+    }
+  
+    explicit OpenCLErrorException(const std::string& whatArg, const cl_int errorCode)
+      : OpenCLException(whatArg)
+      , m_errorCode(status)
+    {
+    }
+
+    explicit OpenCLErrorException(const std::string& whatArg, const cl_int errorCode, const std::string& fileName, const int lineNumber)
+      : OpenCLException(whatArg, fileName, lineNumber)
+      , m_errorCode(status)
+    {
+    }
+    
+    cl_int GetErrorCode() const
+    {
+      return m_status;
+    }
+  };  
 }
 
 #endif

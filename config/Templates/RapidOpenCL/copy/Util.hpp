@@ -1,5 +1,5 @@
-#ifndef RAPIDVULKAN_VULKANUTIL_HPP
-#define RAPIDVULKAN_VULKANUTIL_HPP
+#ifndef RAPIDOPENCL_UTIL_HPP
+#define RAPIDOPENCL_UTIL_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,76 +22,78 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RapidVulkan/Exceptions.hpp>
+#include <RapidOpenCL/Exceptions.hpp>
 #include <cassert>
 #include <string>
-#include <vulkan/vulkan.h>
+#include <CL/cl.h>
 
-namespace RapidVulkan
+namespace RapidOpenCL
 {
   class Util
   {
   public:
-    static inline void Check(const VkResult result)
+    static inline void Check(const cl_int errorCode)
     {
-      if (status != VK_SUCCESS)
-        throw VulkanErrorException(result);
-    }
-    
-    static inline void Check(const VkResult result, const char*const pszMessage)
-    {
-      if (result != VK_SUCCESS)
+      if (errorCode != CL_SUCCESS)
       {
-        assert(pszMessage != nullptr);
-        throw VulkanErrorException(message, result);
-      }
-    }
-    
-    static inline void Check(const VkResult result, const std::string& message)
-    {
-      if (result != VK_SUCCESS)
-      {
-        throw VulkanErrorException(message, result);
+        throw OpenCLErrorException(errorCode);
       }
     }
 
-    static inline void Check(const VkResult result, const char*const pszMessage, const char*const pszFileName, const int lineNumber)
+    static inline void Check(const cl_int errorCode, const char*const pszMessage)
     {
-      if (result != VK_SUCCESS)
+      if (errorCode != CL_SUCCESS)
+      {
+        assert(pszMessage != nullptr);
+        throw OpenCLErrorException(message, errorCode);
+      }
+    }
+
+    
+    static inline void Check(const cl_int errorCode, const std::string& message)
+    {
+      if (errorCode != CL_SUCCESS)
+      {
+        throw OpenCLErrorException(message, errorCode);
+      }
+    }
+
+    static inline void Check(const cl_int errorCode, const char*const pszMessage, const char*const pszFileName, const int lineNumber)
+    {
+      if (errorCode != CL_SUCCESS)
       {
         assert(pszMessage != nullptr);
         assert(pszFileName != nullptr);
-        throw VulkanErrorException(pszMessage, result, pszFileName, lineNumber);
+        throw OpenCLErrorException(message, pszMessage, pszFileName, lineNumber);
       }
     }
     
-    static inline void Check(const VkResult result, const char*const pszMessage, const std::string& fileName, const int lineNumber)
+    static inline void Check(const cl_int errorCode, const char*const pszMessage, const std::string& fileName, const int lineNumber)
     {
-      if (result != VK_SUCCESS)
+      if (errorCode != CL_SUCCESS)
       {
         assert(pszMessage != nullptr);
-        throw VulkanErrorException(pszMessage, result, fileName, lineNumber);
+        throw OpenCLErrorException(message, pszMessage, fileName, lineNumber);
       }
     }
 
     
-    static inline void Check(const VkResult result, const std::string& message, const char*const pszFileName, const int lineNumber)
+    static inline void Check(const cl_int errorCode, const std::string& message, const char*const pszFileName, const int lineNumber)
     {
-      if (result != VK_SUCCESS)
+      if (errorCode != CL_SUCCESS)
       {
         assert(pszFileName != nullptr);
-        throw VulkanErrorException(message, result, pszFileName, lineNumber);
+        throw OpenCLErrorException(message, errorCode, pszFileName, lineNumber);
       }
     }
     
-    static inline void Check(const VkResult result, const std::string& message, const std::string& fileName, const int lineNumber)
+    static inline void Check(const cl_int errorCode, const std::string& message, const std::string& fileName, const int lineNumber)
     {
-      if (result != VK_SUCCESS)
+      if (errorCode != CL_SUCCESS)
       {
-        throw VulkanErrorException(message, result, fileName, lineNumber);
+        throw OpenCLErrorException(message, errorCode, fileName, lineNumber);
       }
     }
-
   };
 }
 
