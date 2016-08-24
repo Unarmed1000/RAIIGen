@@ -318,6 +318,9 @@
     <ClInclude Include="include\RAIIGen\FunctionParameterTypeOverride.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\RAIIGen\ProgramInfo.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\RAIIGen\Capture.cpp">

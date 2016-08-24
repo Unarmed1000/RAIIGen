@@ -114,6 +114,7 @@
     <ClInclude Include="include\RAIIGen\Generator\VulkanGenerator.hpp" />
     <ClInclude Include="include\RAIIGen\ParameterRecord.hpp" />
     <ClInclude Include="include\RAIIGen\ParameterType.hpp" />
+    <ClInclude Include="include\RAIIGen\ProgramInfo.hpp" />
     <ClInclude Include="include\RAIIGen\StringHelper.hpp" />
     <ClInclude Include="include\RAIIGen\TypeRecord.hpp" />
     <ClInclude Include="source\FslBase\Math\Matrix3Fields.hpp" />

@@ -1022,6 +1022,18 @@ namespace MB
       WriteAllTextIfChanged(dstFileName, content);
     }
 
+    // Write 'Readme.txt'
+    {
+      std::string content("Auto-generated ##API_NAME## ##API_VERSION## C++11 RAII classes by ##PROGRAM_NAME## ##PROGRAM_VERSION## (https://github.com/Unarmed1000)" + END_OF_LINE);
+
+      StringUtil::Replace(content, "##API_NAME##", config.APIName);
+      StringUtil::Replace(content, "##API_VERSION##", config.APIVersion);
+      StringUtil::Replace(content, "##PROGRAM_NAME##", config.Program.Name);
+      StringUtil::Replace(content, "##PROGRAM_VERSION##", config.Program.Version);
+      auto dstFileName = IO::Path::Combine(dstPath, "Version.txt");
+      WriteAllTextIfChanged(dstFileName, content);
+    }
+
 
     for (auto itr = m_functionAnalysis.MissingDestroy.begin(); itr != m_functionAnalysis.MissingDestroy.end(); ++itr)
       std::cout << "WARNING: No match found for: " << *itr << "\n";

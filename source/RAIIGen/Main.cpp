@@ -29,6 +29,7 @@
 #include <FslBase/IO/Directory.hpp>
 #include <FslBase/IO/Path.hpp>
 #include <FslBase/String/StringUtil.hpp>
+#include <RAIIGen/ProgramInfo.hpp>
 #include <RAIIGen/Capture.hpp>
 #include <RAIIGen/Generator/BasicConfig.hpp>
 #include <RAIIGen/Generator/OpenCLGenerator.hpp>
@@ -39,7 +40,10 @@ namespace MB
 {
   namespace
   {
-    const std::string g_programName = "RAIIGen V0.2.6";
+    const std::string g_programName = "RAIIGen";
+    const std::string g_programVersion = "V0.2.7";
+
+
 
     using namespace Fsl;
 
@@ -205,7 +209,7 @@ namespace MB
 
 
     template<typename TGenerator>
-    void RunGenerator(const std::string& programName, const Config& config, const std::string& filename, const std::string& templateName, const std::string& baseApiName, const std::string& apiVersion)
+    void RunGenerator(const ProgramInfo& programInfo, const Config& config, const std::string& filename, const std::string& templateName, const std::string& baseApiName, const std::string& apiVersion)
     {
       const auto apiNameAndVersion = baseApiName + apiVersion;
       const auto templateNameAndVersion = templateName + apiVersion;
@@ -218,18 +222,18 @@ namespace MB
       std::cout << "*** Running " << apiNameAndVersion << " generator ***\n";
 
 
-      const auto toolStatement = std::string("Auto-generated ") + baseApiName + " " + apiVersion + " C++11 RAII classes based on " + programName + " (https://github.com/Unarmed1000)";
+      const auto toolStatement = std::string("Auto-generated ") + baseApiName + " " + apiVersion + " C++11 RAII classes by " + programInfo.Name + " (https://github.com/Unarmed1000)";
 
       auto namespaceName = apiNameAndVersion;
       StringUtil::Replace(namespaceName, ".", "_");
 
-      BasicConfig basicConfig(programName, toolStatement, namespaceName);
+      BasicConfig basicConfig(programInfo, toolStatement, namespaceName, baseApiName, apiVersion);
 
       Run<TGenerator>(basicConfig, srcFile, templatePath, dstPath, includePaths);
     }
 
 
-    void GenerateClasses(const std::string& programName, const IO::Path& currentWorkingDirectory)
+    void GenerateClasses(const ProgramInfo& programInfo, const IO::Path& currentWorkingDirectory)
     {
       const auto headerRoot = IO::Path::Combine(currentWorkingDirectory, "config/Headers");
       const auto templateRoot = IO::Path::Combine(currentWorkingDirectory, "config/Templates");
@@ -237,17 +241,17 @@ namespace MB
 
       Config config(headerRoot, templateRoot, outputRoot);
 
-      RunGenerator<MB::OpenCLGenerator>(programName, config, "CL/cl.h", "OpenCL", "OpenCL", "1.1");
-      RunGenerator<MB::OpenCLGenerator>(programName, config, "CL/cl.h", "OpenCL", "OpenCL", "1.2");
-      RunGenerator<MB::OpenCLGenerator>(programName, config, "CL/cl.h", "OpenCL", "OpenCL", "2.0");
-      RunGenerator<MB::OpenCLGenerator>(programName, config, "CL/cl.h", "OpenCL", "OpenCL", "2.1");
-      RunGenerator<MB::OpenVXGenerator>(programName, config, "VX/vx.h", "OpenVX", "OpenVX", "1.0.1");
-      RunGenerator<MB::OpenVXGenerator>(programName, config, "VX/vx.h", "OpenVX", "OpenVX", "1.1");
-      RunGenerator<MB::VulkanGenerator>(programName, config, "vulkan/vulkan.h", "Vulkan", "Vulkan", "1.0");
+      RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "1.1");
+      RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "1.2");
+      RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "2.0");
+      RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "2.1");
+      RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "OpenVX", "OpenVX", "1.0.1");
+      RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "OpenVX", "OpenVX", "1.1");
+      RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "Vulkan", "Vulkan", "1.0");
 
-      RunGenerator<MB::OpenCLGenerator>(programName, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "1.1");
-      RunGenerator<MB::OpenVXGenerator>(programName, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.0.1");
-      RunGenerator<MB::VulkanGenerator>(programName, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.0");
+      RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "1.1");
+      RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.0.1");
+      RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.0");
     }
   }
 }
@@ -258,13 +262,13 @@ int main(int argc, char** argv)
 {
   using namespace MB;
 
-  std::cout << g_programName << "\n";
+  std::cout << g_programName << " " << g_programVersion << "\n";
 
   const auto currentPath = IO::Directory::GetCurrentWorkingDirectory();
 
   try
   {
-    GenerateClasses(g_programName, currentPath);
+    GenerateClasses(ProgramInfo(g_programName, g_programVersion), currentPath);
   }
   catch (const std::exception& ex)
   {

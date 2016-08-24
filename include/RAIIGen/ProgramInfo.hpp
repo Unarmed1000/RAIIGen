@@ -1,5 +1,5 @@
-#ifndef MB_GENERATOR_BASICCONFIG_HPP
-#define MB_GENERATOR_BASICCONFIG_HPP
+#ifndef MB_PROGRAMINFO_HPP
+#define MB_PROGRAMINFO_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -23,33 +23,23 @@
 //***************************************************************************************************************************************************
 
 #include <string>
-#include <RAIIGen/ProgramInfo.hpp>
 
 namespace MB
 {
-  struct BasicConfig
+  struct ProgramInfo
   {
-    ProgramInfo Program;
-    std::string ToolStatement;
-    std::string NamespaceName;
-    std::string APIName;
-    std::string APIVersion;
+    std::string Name;
+    std::string Version;
 
-    BasicConfig()
-      : Program()
+    ProgramInfo()
     {
     }
 
-    BasicConfig(const ProgramInfo& programInfo, const std::string& toolStatement, const std::string& namespaceName, const std::string& apiName, const std::string& apiVersion)
-      : Program(programInfo)
-      , ToolStatement(toolStatement)
-      , NamespaceName(namespaceName)
-      , APIName(apiName)
-      , APIVersion(apiVersion)
+    ProgramInfo(const std::string& name, const std::string& version)
+      : Name(name)
+      , Version(version)
     {
     }
   };
-
 }
-
 #endif
