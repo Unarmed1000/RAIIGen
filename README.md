@@ -7,8 +7,11 @@ The main goal of this is to experiment and see whats possible, so nothing has be
 All forked versions of the code must include the original "##AG_TOOL_STATEMENT##" line in the generated code.
 This means that all generated code contains a line like this:
 
-// Auto-generated OpenCL 1.1 C++11 RAII classes based on RAIIGen V0.2.0 (https://github.com/Unarmed1000)
+// Auto-generated OpenCL 1.1 C++11 RAII classes by RAIIGen (https://github.com/Unarmed1000)
 
 The exact format depends on which API and tool version was used.
+
+All released auto generated files must include the corrosponding 'RAIIGenVersion.txt' file.
+All forked versions of the code must leave the original first line of 'RAIIGenVersion.txt' intact, but are free to add additional lines to the file.
 
 LICENSE: BSD 3-Clause License

@@ -1030,7 +1030,7 @@ namespace MB
       StringUtil::Replace(content, "##API_VERSION##", config.APIVersion);
       StringUtil::Replace(content, "##PROGRAM_NAME##", config.Program.Name);
       StringUtil::Replace(content, "##PROGRAM_VERSION##", config.Program.Version);
-      auto dstFileName = IO::Path::Combine(dstPath, "Version.txt");
+      auto dstFileName = IO::Path::Combine(dstPath, "RAIIGenVersion.txt");
       WriteAllTextIfChanged(dstFileName, content);
     }
 
