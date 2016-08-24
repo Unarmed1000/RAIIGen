@@ -30,14 +30,14 @@
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 ****************************************************************************************************************************************************/
-  
+
 // Based on RapidOpenVX https://github.com/Unarmed1000/RapidOpenVX with permission.
 
 #include <VX/vx.h>
 
 namespace Fsl
 {
-  namespace OpenVX  
+  namespace OpenVX
   {
   namespace Values
   {

@@ -30,7 +30,7 @@
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 ****************************************************************************************************************************************************/
-  
+
 // Based on RapidOpenCL https://github.com/Unarmed1000/RapidOpenCL with permission.
 
 #include <CL/cl.h>

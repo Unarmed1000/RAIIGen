@@ -30,7 +30,7 @@
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 ****************************************************************************************************************************************************/
-  
+
 // Based on RapidOpenCL https://github.com/Unarmed1000/RapidOpenCL with permission.
 
 #include <FslBase/Exceptions.hpp>
@@ -49,32 +49,32 @@ namespace Fsl
       explicit OpenCLException(const std::string& whatArg)
         : std::runtime_error(whatArg)
         , m_fileName()
-        , m_lineNumber(0)    
+        , m_lineNumber(0)
       {
       }
 
       explicit OpenCLException(const std::string& whatArg, const std::string& fileName, const int lineNumber)
         : std::runtime_error(whatArg)
         , m_fileName(fileName)
-        , m_lineNumber(lineNumber)    
+        , m_lineNumber(lineNumber)
       {
       }
 
-      
-      std::string GetFileName() const 
-      { 
-        return m_fileName; 
+
+      std::string GetFileName() const
+      {
+        return m_fileName;
       }
 
-      
-      int GetLineNumber() const 
-      { 
-        return m_lineNumber; 
+
+      int GetLineNumber() const
+      {
+        return m_lineNumber;
       }
     };
-    
-      
-    
+
+
+
     class OpenCLErrorException : public OpenCLException
     {
       cl_int m_errorCode;
@@ -90,12 +90,12 @@ namespace Fsl
         , m_errorCode(errorCode)
       {
       }
-      
+
       cl_int GetErrorCode() const
       {
         return m_errorCode;
       }
-    };  
+    };
   }
 }
 

@@ -71,18 +71,18 @@ namespace Fsl
     ##CLASS_NAME##::##CLASS_NAME##()##DEFAULT_CONSTRUCTOR_MEMBER_INITIALIZATION##
     {
     }
-    
+
 
     ##CLASS_NAME##::##CLASS_NAME##(##MEMBER_PARAMETERS##)
       : ##CLASS_NAME##()
     {
       Reset(##MEMBER_PARAMETER_NAMES##);
     }
-    
+
 
 ##CLASS_EXTRA_CONSTRUCTORS_SOURCE##
 
- 
+
     ##CLASS_NAME##::~##CLASS_NAME##()
     {
       Reset();
@@ -113,8 +113,8 @@ namespace Fsl
 
       ##RESET_SET_MEMBERS##
     }
-    
-    
+
+
 ##CLASS_EXTRA_RESET_METHODS_SOURCE##
   }
 }

@@ -1,5 +1,5 @@
-#ifndef FSLUTIL##NAMESPACE_NAME!##_STRINGHELPER_HPP
-#define FSLUTIL##NAMESPACE_NAME!##_STRINGHELPER_HPP
+#ifndef FSLUTIL##NAMESPACE_NAME!##_DEBUGSTRINGS_HPP
+#define FSLUTIL##NAMESPACE_NAME!##_DEBUGSTRINGS_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
@@ -53,4 +53,3 @@ namespace Fsl
 }
 
 #endif
-

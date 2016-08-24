@@ -43,7 +43,7 @@ namespace Fsl
       stream << message << " failed with error code " << Debug::ErrorCodeToString(errorCode) << " (" << errorCode <<")";
       return stream.str();
     }
-    
+
 
     std::string Util::ToNiceMessage(const std::string& message, const cl_int errorCode, const std::string& fileName, const int lineNumber)
     {
@@ -53,4 +53,3 @@ namespace Fsl
     }
   }
 }
-

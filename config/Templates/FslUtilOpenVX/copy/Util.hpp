@@ -30,7 +30,7 @@
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 ****************************************************************************************************************************************************/
-  
+
 // Based on RapidOpenVX https://github.com/Unarmed1000/RapidOpenVX with permission.
 
 #include <FslUtil##NAMESPACE_NAME##/Exceptions.hpp>
@@ -62,7 +62,7 @@ namespace Fsl
         }
       }
 
-      
+
       static inline void Check(const vx_status status, const std::string& message)
       {
         if (status != VX_SUCCESS)
@@ -80,7 +80,7 @@ namespace Fsl
           throw OpenVXStatusErrorException(ToNiceMessage(pszMessage, status, pszFileName, lineNumber), status, pszFileName, lineNumber);
         }
       }
-      
+
       static inline void Check(const vx_status status, const char*const pszMessage, const std::string& fileName, const int lineNumber)
       {
         if (status != VX_SUCCESS)
@@ -90,7 +90,7 @@ namespace Fsl
         }
       }
 
-      
+
       static inline void Check(const vx_status status, const std::string& message, const char*const pszFileName, const int lineNumber)
       {
         if (status != VX_SUCCESS)
@@ -99,7 +99,7 @@ namespace Fsl
           throw OpenVXStatusErrorException(ToNiceMessage(message, status, pszFileName, lineNumber), status, pszFileName, lineNumber);
         }
       }
-      
+
       static inline void Check(const vx_status status, const std::string& message, const std::string& fileName, const int lineNumber)
       {
         if (status != VX_SUCCESS)
@@ -116,18 +116,18 @@ namespace Fsl
           throw OpenVXCreateException("Unknown");
         }
       }
-    
+
       template<typename TReturnType>
       static inline void Check(const TReturnType* pResult, const char*const pszMessage)
       {
         if (pResult == nullptr)
         {
-          assert(pszMessage != nullptr);        
+          assert(pszMessage != nullptr);
           throw OpenVXCreateException(pszMessage);
         }
       }
 
-      
+
       template<typename TReturnType>
       static inline void Check(const TReturnType* pResult, const std::string& message)
       {
@@ -136,14 +136,14 @@ namespace Fsl
           throw OpenVXCreateException(message);
         }
       }
-      
+
       template<typename TReturnType>
       static inline void Check(const TReturnType* pResult, const char*const pszMessage, const char*const pszFileName, const int lineNumber)
       {
         if (pResult == nullptr)
         {
           assert(pszMessage != nullptr);
-          assert(pszFileName != nullptr);        
+          assert(pszFileName != nullptr);
           throw OpenVXCreateException(ToNiceMessage(pszMessage, pszFileName, lineNumber), pszFileName, lineNumber);
         }
       }
@@ -157,17 +157,17 @@ namespace Fsl
           throw OpenVXCreateException(ToNiceMessage(pszMessage, fileName, lineNumber), fileName, lineNumber);
         }
       }
-      
+
       template<typename TReturnType>
       static inline void Check(const TReturnType* pResult, const std::string& message, const char*const pszFileName, const int lineNumber)
       {
         if (pResult == nullptr)
         {
-          assert(pszFileName != nullptr);        
+          assert(pszFileName != nullptr);
           throw OpenVXCreateException(ToNiceMessage(message, pszFileName, lineNumber), pszFileName, lineNumber);
         }
       }
-      
+
       template<typename TReturnType>
       static inline void Check(const TReturnType* pResult, const std::string& message, const std::string& fileName, const int lineNumber)
       {

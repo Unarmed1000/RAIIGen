@@ -3,14 +3,14 @@
       void Reset(##CREATE_METHOD_PARAMETERS##)
       {
         // We do the check here to be user friendly, if it becomes a performance issue switch it to a assert.##RESET_PARAMETER_VALIDATION##
-    
+
         // Free any currently allocated resource
         if (IsValid())
           Reset();
-    
+
         // Since we want to ensure that the resource is left untouched on error we use a local variable as a intermediary
         const ##RESOURCE_TYPE## ##RESOURCE_INTERMEDIARY_NAME## = ##CREATE_FUNCTION##(##CREATE_FUNCTION_ARGUMENTS##);
         Util::Check(##RESOURCE_INTERMEDIARY_NAME##, "##CREATE_FUNCTION##", __FILE__, __LINE__);
-    
+
         // Everything is ready, so assign the members##RESET_SET_MEMBERS##
       }

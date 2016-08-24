@@ -30,7 +30,7 @@
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 ****************************************************************************************************************************************************/
-  
+
 // Based on RapidOpenVX https://github.com/Unarmed1000/RapidOpenVX with permission.
 
 #include <FslBase/Exceptions.hpp>
@@ -49,31 +49,31 @@ namespace Fsl
       explicit OpenVXException(const std::string& whatArg)
         : std::runtime_error(whatArg)
         , m_fileName()
-        , m_lineNumber(0)    
+        , m_lineNumber(0)
       {
       }
 
       explicit OpenVXException(const std::string& whatArg, const std::string& fileName, const int lineNumber)
         : std::runtime_error(whatArg)
         , m_fileName(fileName)
-        , m_lineNumber(lineNumber)    
+        , m_lineNumber(lineNumber)
       {
       }
 
-      
-      std::string GetFileName() const 
-      { 
-        return m_fileName; 
+
+      std::string GetFileName() const
+      {
+        return m_fileName;
       }
 
-      
-      int GetLineNumber() const 
-      { 
-        return m_lineNumber; 
+
+      int GetLineNumber() const
+      {
+        return m_lineNumber;
       }
     };
-    
-    
+
+
     class OpenVXCreateException : public OpenVXException
     {
     public:
@@ -87,8 +87,8 @@ namespace Fsl
       {
       }
     };
-    
-    
+
+
     class OpenVXStatusErrorException : public OpenVXException
     {
       vx_status m_status;
@@ -105,7 +105,7 @@ namespace Fsl
         , m_status(status)
       {
       }
-      
+
       vx_status GetStatus() const
       {
         return m_status;

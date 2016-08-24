@@ -52,7 +52,7 @@ namespace Fsl
     public:
       ##CLASS_NAME##(const ##CLASS_NAME##&) = delete;
       ##CLASS_NAME##& operator=(const ##CLASS_NAME##&) = delete;
-    
+
       //! @brief Move assignment operator
       ##CLASS_NAME##& operator=(##CLASS_NAME##&& other)
       {
@@ -68,7 +68,7 @@ namespace Fsl
         }
         return *this;
       }
-    
+
       //! @brief Move constructor
       ##CLASS_NAME##(##CLASS_NAME##&& other)##MOVE_CONSTRUCTOR_MEMBER_INITIALIZATION##
       {
@@ -86,9 +86,9 @@ namespace Fsl
       {
         Reset(##MEMBER_PARAMETER_NAMES##);
       }
-      
+
 ##CLASS_EXTRA_CONSTRUCTORS_HEADER##
-      
+
       ~##CLASS_NAME##()
       {
         Reset();
@@ -117,9 +117,9 @@ namespace Fsl
         if (IsValid())
           Reset();
 
-        ##RESET_SET_MEMBERS##
-      }    
-      
+##RESET_SET_MEMBERS##
+      }
+
 ##CLASS_EXTRA_RESET_METHODS_HEADER####CLASS_ADDITIONAL_GET_MEMBER_VARIABLE_METHODS##
 
       //! @brief Get the associated resource handle
@@ -134,7 +134,7 @@ namespace Fsl
         return ##RESOURCE_MEMBER_NAME## != ##DEFAULT_VALUE##;
       }
     };
-      
+
   }
 }
 

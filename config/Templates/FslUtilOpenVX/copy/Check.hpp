@@ -30,12 +30,12 @@
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 ****************************************************************************************************************************************************/
-  
+
 // Based on RapidOpenVX https://github.com/Unarmed1000/RapidOpenVX with permission.
 
 #include <FslUtil##NAMESPACE_NAME##/Util.hpp>
 
-// Define some ease of use macros for logging. 
+// Define some ease of use macros for logging.
 // Please beware that these are not pulled in by any of the RAII classes, so its 100% up to the user of the library to include it
 // if the functionality is desired.
 

@@ -37,7 +37,7 @@ namespace Fsl
 {
   namespace OpenVX
   {
-   
+
     std::string Util::ToNiceMessage(const std::string& message, const vx_status errorCode)
     {
       std::stringstream stream;
@@ -62,4 +62,3 @@ namespace Fsl
     }
   }
 }
-

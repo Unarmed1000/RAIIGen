@@ -30,7 +30,7 @@
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 ****************************************************************************************************************************************************/
-  
+
 // Based on RapidOpenCL https://github.com/Unarmed1000/RapidOpenCL with permission.
 
 #include <FslUtil##NAMESPACE_NAME##/Exceptions.hpp>
@@ -62,7 +62,7 @@ namespace Fsl
         }
       }
 
-      
+
       static inline void Check(const cl_int errorCode, const std::string& message)
       {
         if (errorCode != CL_SUCCESS)
@@ -80,7 +80,7 @@ namespace Fsl
           throw OpenCLErrorException(ToNiceMessage(pszMessage, errorCode, pszFileName, lineNumber), errorCode, pszFileName, lineNumber);
         }
       }
-      
+
       static inline void Check(const cl_int errorCode, const char*const pszMessage, const std::string& fileName, const int lineNumber)
       {
         if (errorCode != CL_SUCCESS)
@@ -90,7 +90,7 @@ namespace Fsl
         }
       }
 
-      
+
       static inline void Check(const cl_int errorCode, const std::string& message, const char*const pszFileName, const int lineNumber)
       {
         if (errorCode != CL_SUCCESS)
@@ -99,7 +99,7 @@ namespace Fsl
           throw OpenCLErrorException(ToNiceMessage(message, errorCode, pszFileName, lineNumber), errorCode, pszFileName, lineNumber);
         }
       }
-      
+
       static inline void Check(const cl_int errorCode, const std::string& message, const std::string& fileName, const int lineNumber)
       {
         if (errorCode != CL_SUCCESS)

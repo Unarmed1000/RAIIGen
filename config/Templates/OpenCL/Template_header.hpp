@@ -50,7 +50,7 @@ namespace Fsl
     public:
       ##CLASS_NAME##(const ##CLASS_NAME##&) = delete;
       ##CLASS_NAME##& operator=(const ##CLASS_NAME##&) = delete;
-    
+
       //! @brief Move assignment operator
       ##CLASS_NAME##& operator=(##CLASS_NAME##&& other);
       //! @brief Move constructor
@@ -61,9 +61,9 @@ namespace Fsl
 
       //! @brief Assume control of the ##CLASS_NAME## (this object becomes responsible for releasing it)
       explicit ##CLASS_NAME##(##MEMBER_PARAMETERS##);
-      
+
 ##CLASS_EXTRA_CONSTRUCTORS_HEADER##
-      
+
       ~##CLASS_NAME##();
 
       //! @brief returns the managed handle and releases the ownership.
@@ -74,7 +74,7 @@ namespace Fsl
 
       //! @brief Destroys any owned resources and assume control of the ##CLASS_NAME## (this object becomes responsible for releasing it)
       void Reset(##MEMBER_PARAMETERS##);
-      
+
 ##CLASS_EXTRA_RESET_METHODS_HEADER####CLASS_ADDITIONAL_GET_MEMBER_VARIABLE_METHODS##
 
       //! @brief Get the associated resource handle
