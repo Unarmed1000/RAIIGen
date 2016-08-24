@@ -1,5 +1,5 @@
-#ifndef FSLUTIL##NAMESPACE_NAME!##_RESETMODE_HPP
-#define FSLUTIL##NAMESPACE_NAME!##_RESETMODE_HPP
+#ifndef FSLUTIL##NAMESPACE_NAME!##_CHECK_HPP
+#define FSLUTIL##NAMESPACE_NAME!##_CHECK_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
@@ -30,23 +30,16 @@
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 ****************************************************************************************************************************************************/
+  
+// Based on RapidOpenVX https://github.com/Unarmed1000/RapidOpenVX with permission.
 
-// ##AG_TOOL_STATEMENT##
-// Auto generation template based on RapidOpenCL https://github.com/Unarmed1000/RapidOpenCL with permission.
+#include <FslUtil##NAMESPACE_NAME##/Util.hpp>
 
-namespace Fsl
-{
-  namespace OpenCL
-  {
-    enum class ResetMode
-    {
-      //! Destroys any allocated resource
-      Destroy,
-      //! Destroys any owned resources and then creates the requested one
-      Create
-    };
-  }
-}
+// Define some ease of use macros for logging. 
+// Please beware that these are not pulled in by any of the RAII classes, so its 100% up to the user of the library to include it
+// if the functionality is desired.
 
+#define FSLUTILOPENVX_CHECK(X)           Fsl::OpenVX::Util::Check((X), #X, __FILE__, __LINE__)
+#define FSLUTILOPENVX_CHECK2(X, mESSAGE) Fsl::OpenVX::Util::Check((X), (mESSAGE), __FILE__, __LINE__)
 
 #endif

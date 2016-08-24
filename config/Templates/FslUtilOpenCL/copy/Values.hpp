@@ -1,5 +1,5 @@
-#ifndef FSLUTILOPENCL_VALUES_HPP
-#define FSLUTILOPENCL_VALUES_HPP
+#ifndef FSLUTIL##NAMESPACE_NAME!##_VALUES_HPP
+#define FSLUTIL##NAMESPACE_NAME!##_VALUES_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.

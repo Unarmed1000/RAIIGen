@@ -36,7 +36,7 @@ namespace RapidOpenVX
     {
       if (status != VX_SUCCESS)
       {
-        throw OpenVXStatusErrorException(status);
+        throw OpenVXStatusErrorException("Unknown", status);
       }
     }
 
@@ -45,7 +45,7 @@ namespace RapidOpenVX
       if (status != VX_SUCCESS)
       {
         assert(pszMessage != nullptr);
-        throw OpenVXStatusErrorException(message, status);
+        throw OpenVXStatusErrorException(pszMessage, status);
       }
     }
 
@@ -64,7 +64,7 @@ namespace RapidOpenVX
       {
         assert(pszMessage != nullptr);
         assert(pszFileName != nullptr);
-        throw OpenVXStatusErrorException(message, pszMessage, pszFileName, lineNumber);
+        throw OpenVXStatusErrorException(pszMessage, status, pszFileName, lineNumber);
       }
     }
     
@@ -73,7 +73,7 @@ namespace RapidOpenVX
       if (status != VX_SUCCESS)
       {
         assert(pszMessage != nullptr);
-        throw OpenVXStatusErrorException(message, pszMessage, fileName, lineNumber);
+        throw OpenVXStatusErrorException(pszMessage, status, fileName, lineNumber);
       }
     }
 
@@ -100,7 +100,7 @@ namespace RapidOpenVX
     {
       if (pResult == nullptr)
       {
-        throw OpenVXCreateException();
+        throw OpenVXCreateException("Unknown");
       }
     }
   

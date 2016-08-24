@@ -1,5 +1,5 @@
-#ifndef FSLUTIL##NAMESPACE_NAME!##_RESETMODE_HPP
-#define FSLUTIL##NAMESPACE_NAME!##_RESETMODE_HPP
+#ifndef FSLUTIL##NAMESPACE_NAME!##_VALUES_HPP
+#define FSLUTIL##NAMESPACE_NAME!##_VALUES_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
@@ -30,23 +30,33 @@
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 ****************************************************************************************************************************************************/
+  
+// Based on RapidOpenVX https://github.com/Unarmed1000/RapidOpenVX with permission.
 
-// ##AG_TOOL_STATEMENT##
-// Auto generation template based on RapidOpenCL https://github.com/Unarmed1000/RapidOpenCL with permission.
+#include <VX/vx.h>
 
 namespace Fsl
 {
-  namespace OpenCL
+  namespace OpenVX  
   {
-    enum class ResetMode
-    {
-      //! Destroys any allocated resource
-      Destroy,
-      //! Destroys any owned resources and then creates the requested one
-      Create
-    };
+  namespace Values
+  {
+    static const vx_array INVALID_ARRAY = nullptr;
+    static const vx_context INVALID_CONTEXT = nullptr;
+    static const vx_convolution INVALID_CONVOLUTION = nullptr;
+    static const vx_delay INVALID_DELAY = nullptr;
+    static const vx_distribution INVALID_DISTRIBUTION = nullptr;
+    static const vx_graph INVALID_GRAPH = nullptr;
+    static const vx_image INVALID_IMAGE = nullptr;
+    static const vx_lut INVALID_LUT = nullptr;
+    static const vx_matrix INVALID_MATRIX = nullptr;
+    static const vx_object_array INVALID_OBJECT_ARRAY = nullptr;
+    static const vx_pyramid INVALID_PYRAMID = nullptr;
+    static const vx_remap INVALID_REMAP = nullptr;
+    static const vx_scalar INVALID_SCALAR = nullptr;
+    static const vx_threshold INVALID_THRESHOLD = nullptr;
+  };
   }
 }
-
 
 #endif

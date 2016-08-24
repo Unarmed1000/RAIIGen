@@ -41,7 +41,7 @@ namespace MB
   namespace
   {
     const std::string g_programName = "RAIIGen";
-    const std::string g_programVersion = "V0.2.8";
+    const std::string g_programVersion = "V0.2.9";
 
 
 
@@ -249,16 +249,18 @@ namespace MB
       //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "OpenVX", "OpenVX", "1.1");
       //RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "Vulkan", "Vulkan", "1.0");
 
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "1.1");
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "1.2");
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2.0");
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2.1");
-      //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.0.1");
-      //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.1");
-      //RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.0");
+      RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "1.1");
+      RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "1.2");
+      RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2.0");
+      RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2.1");
+      RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.0.1");
+      RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.1");
+      RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.0");
       
       RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.1");
       RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.2");
+      RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "FslUtilOpenVX", "OpenVX", "1.0.1");
+      RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "FslUtilOpenVX", "OpenVX", "1.1");
     }
   }
 }

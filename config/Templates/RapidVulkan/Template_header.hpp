@@ -24,7 +24,7 @@
 
 // ##AG_TOOL_STATEMENT##
 
-#include <RapidVulkan/Util.hpp>
+#include <RapidVulkan/Util.hpp>##ADDITIONAL_INCLUDES##
 #include <vulkan/vulkan.h>
 #include <cassert>
 

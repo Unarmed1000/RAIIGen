@@ -24,7 +24,7 @@
 
 // ##AG_TOOL_STATEMENT##
 
-#include <RapidOpenVX/Util.hpp>
+#include <RapidOpenVX/Util.hpp>##ADDITIONAL_INCLUDES##
 #include <VX/vx.h>
 #include <cassert>
 
@@ -66,7 +66,7 @@ namespace RapidOpenVX
     }
 
     //! @brief Assume control of the ##CLASS_NAME## (this object becomes responsible for releasing it)
-    explicit ##CLASS_NAME##(##MEMBER_PARAMETERS##);
+    explicit ##CLASS_NAME##(##MEMBER_PARAMETERS##)
       : ##CLASS_NAME##()
     {
       Reset(##MEMBER_PARAMETER_NAMES##);

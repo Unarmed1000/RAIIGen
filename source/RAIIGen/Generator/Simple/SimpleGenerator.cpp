@@ -72,6 +72,7 @@ namespace MB
       std::string ResetVoidMemberHeader;
       std::string ResetVoidMemberSource;
       std::string DefaultValueMod;
+      std::string IncludeResetMode;
     };
 
 
@@ -806,6 +807,40 @@ namespace MB
       return content;
     }
 
+    bool IsResetModeRequired(const FullAnalysis& fullAnalysis)
+    {
+      if (fullAnalysis.AbsorbedFunctions)
+      {
+        for (auto itr = fullAnalysis.AbsorbedFunctions->begin(); itr != fullAnalysis.AbsorbedFunctions->end(); ++itr)
+        {
+          if (IsResetModeRequired(*itr))
+            return true;
+        }
+      }
+
+      if (fullAnalysis.Result.MethodArguments.size() <= 0)
+        return true;
+      return false;
+    }
+
+    bool IsResetModeRequired(const std::deque<FullAnalysis>& fullAnalysis)
+    {
+      for (auto itr = fullAnalysis.begin(); itr != fullAnalysis.end(); ++itr)
+      {
+        if (IsResetModeRequired(*itr))
+          return true;
+      }
+      return false;
+    }
+
+
+    std::string GenerateAdditionalIncludes(const SimpleGeneratorConfig& config, const Snippets& snippets, const FullAnalysis& fullAnalysis)
+    {
+      if (!IsResetModeRequired(fullAnalysis))
+        return std::string();
+      return END_OF_LINE + snippets.IncludeResetMode;
+    }
+
 
     std::string GenerateContent(const SimpleGeneratorConfig& config, const FullAnalysis& fullAnalysis, const std::string& contentTemplate, const std::string*const pSnippetMemberVariable,
                                 const std::string*const pSnippetMemberVariableGet, const Snippets& snippets)
@@ -862,6 +897,9 @@ namespace MB
       auto classExtraConstructors = GenerateExtraCreates(config, snippets, snippets.CreateConstructorHeader, snippets.CreateConstructorSource, snippets.CreateVoidConstructorHeader, snippets.CreateVoidConstructorSource, fullAnalysis);
       auto classExtraResetMethods = GenerateExtraCreates(config, snippets, snippets.ResetMemberHeader, snippets.ResetMemberSource, snippets.ResetVoidMemberHeader, snippets.ResetVoidMemberSource, fullAnalysis);
 
+      const std::string additionalIncludes = GenerateAdditionalIncludes(config, snippets, fullAnalysis);
+
+      StringUtil::Replace(content, "##ADDITIONAL_INCLUDES##", additionalIncludes);
       StringUtil::Replace(content, "##CLASS_EXTRA_CONSTRUCTORS_HEADER##", classExtraConstructors.Header);
       StringUtil::Replace(content, "##CLASS_EXTRA_CONSTRUCTORS_SOURCE##", classExtraConstructors.Source);
       StringUtil::Replace(content, "##CLASS_EXTRA_RESET_METHODS_HEADER##", classExtraResetMethods.Header);
@@ -896,33 +934,6 @@ namespace MB
       StringUtil::Replace(content, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
       StringUtil::Replace(content, "##HANDLE_CLASS_NAME##", snippets.HandleClassName);
       return content;
-    }
-
-
-    bool IsResetModeRequired(const FullAnalysis& fullAnalysis)
-    {
-      if (fullAnalysis.AbsorbedFunctions)
-      {
-        for (auto itr = fullAnalysis.AbsorbedFunctions->begin(); itr != fullAnalysis.AbsorbedFunctions->end(); ++itr)
-        {
-          if (IsResetModeRequired(*itr))
-            return true;
-        }
-      }
-
-      if (fullAnalysis.Result.MethodArguments.size() <= 0)
-        return true;
-      return false;
-    }
-
-    bool IsResetModeRequired(const std::deque<FullAnalysis>& fullAnalysis)
-    {
-      for (auto itr = fullAnalysis.begin(); itr != fullAnalysis.end(); ++itr)
-      {
-        if (IsResetModeRequired(*itr))
-          return true;
-      }
-      return false;
     }
   }
 
@@ -964,7 +975,7 @@ namespace MB
     const auto pathSnippetResetVoidMemberHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetVoidMemberHeader.txt");
     const auto pathSnippetResetVoidMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetVoidMemberSource.txt");
     const auto pathSnippetDefaultValueMod = IO::Path::Combine(templateRoot, "TemplateSnippet_DefaultValueMod.txt");
-    
+    const auto pathSnippetIncludeResetMode = IO::Path::Combine(templateRoot, "TemplateSnippet_IncludeResetMode.txt");
 
     const auto sourceTemplate = IO::File::ReadAllText(pathSource);
     Snippets snippets;
@@ -987,6 +998,7 @@ namespace MB
     snippets.ResetVoidMemberHeader = IO::File::ReadAllText(pathSnippetResetVoidMemberHeader);
     snippets.ResetVoidMemberSource = IO::File::ReadAllText(pathSnippetResetVoidMemberSource);
     snippets.DefaultValueMod= IO::File::ReadAllText(pathSnippetDefaultValueMod);
+    snippets.IncludeResetMode = IO::File::ReadAllText(pathSnippetIncludeResetMode);
 
     std::unordered_set<std::string> typesWithoutDefaultValues;
 
@@ -1019,9 +1031,14 @@ namespace MB
         {
           auto content = IO::File::ReadAllText(**itr);
 
-          StringUtil::Replace(content, "##AG_TOOL_STATEMENT##", config.ToolStatement);
+
+          StringUtil::Replace(content, "##API_NAME##", config.APIName);
+          StringUtil::Replace(content, "##API_VERSION##", config.APIVersion);
+          StringUtil::Replace(content, "##PROGRAM_NAME##", config.Program.Name);
+          StringUtil::Replace(content, "##PROGRAM_VERSION##", config.Program.Version);
           StringUtil::Replace(content, "##NAMESPACE_NAME##", config.NamespaceName);
           StringUtil::Replace(content, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
+          StringUtil::Replace(content, "##AG_TOOL_STATEMENT##", config.ToolStatement);
 
           auto dstFileName = IO::Path::Combine(dstPath, IO::Path::GetFileName(**itr));
           WriteAllTextIfChanged(dstFileName, content);
@@ -1032,6 +1049,12 @@ namespace MB
     if (resetModeHeaderTemplate.size() > 0 && IsResetModeRequired(fullAnalysis))
     {
       std::string content(resetModeHeaderTemplate);
+      StringUtil::Replace(content, "##API_NAME##", config.APIName);
+      StringUtil::Replace(content, "##API_VERSION##", config.APIVersion);
+      StringUtil::Replace(content, "##PROGRAM_NAME##", config.Program.Name);
+      StringUtil::Replace(content, "##PROGRAM_VERSION##", config.Program.Version);
+      StringUtil::Replace(content, "##NAMESPACE_NAME##", config.NamespaceName);
+      StringUtil::Replace(content, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
       StringUtil::Replace(content, "##AG_TOOL_STATEMENT##", config.ToolStatement);
       auto dstFileName = IO::Path::Combine(dstPath, "ResetMode.hpp");
       WriteAllTextIfChanged(dstFileName, content);
@@ -1045,6 +1068,9 @@ namespace MB
       StringUtil::Replace(content, "##API_VERSION##", config.APIVersion);
       StringUtil::Replace(content, "##PROGRAM_NAME##", config.Program.Name);
       StringUtil::Replace(content, "##PROGRAM_VERSION##", config.Program.Version);
+      StringUtil::Replace(content, "##NAMESPACE_NAME##", config.NamespaceName);
+      StringUtil::Replace(content, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
+      StringUtil::Replace(content, "##AG_TOOL_STATEMENT##", config.ToolStatement);
       auto dstFileName = IO::Path::Combine(dstPath, "RAIIGenVersion.txt");
       WriteAllTextIfChanged(dstFileName, content);
     }

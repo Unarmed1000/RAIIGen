@@ -32,11 +32,11 @@
 ****************************************************************************************************************************************************/
 
 // ##AG_TOOL_STATEMENT##
-// Auto generation template based on RapidOpenCL https://github.com/Unarmed1000/RapidOpenCL with permission.
+// Auto generation template based on RapidOpenVX https://github.com/Unarmed1000/RapidOpenVX with permission.
 
 namespace Fsl
 {
-  namespace OpenCL
+  namespace OpenVX
   {
     enum class ResetMode
     {

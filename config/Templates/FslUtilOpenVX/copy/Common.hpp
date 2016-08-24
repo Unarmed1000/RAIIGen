@@ -1,5 +1,5 @@
-#ifndef FSLUTIL##NAMESPACE_NAME!##_RESETMODE_HPP
-#define FSLUTIL##NAMESPACE_NAME!##_RESETMODE_HPP
+#ifndef FSLUTIL##NAMESPACE_NAME!##_COMMON_HPP
+#define FSLUTIL##NAMESPACE_NAME!##_COMMON_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
@@ -31,22 +31,9 @@
 *
 ****************************************************************************************************************************************************/
 
-// ##AG_TOOL_STATEMENT##
-// Auto generation template based on RapidOpenCL https://github.com/Unarmed1000/RapidOpenCL with permission.
-
-namespace Fsl
-{
-  namespace OpenCL
-  {
-    enum class ResetMode
-    {
-      //! Destroys any allocated resource
-      Destroy,
-      //! Destroys any owned resources and then creates the requested one
-      Create
-    };
-  }
-}
-
+#ifndef FSL_FEATURE_##NAMESPACE_NAME!##
+#error ##API_NAME## ##API_VERSION## support has not been enabled (define FSL_FEATURE_##NAMESPACE_NAME!##) to enable it
+#endif
 
 #endif
+

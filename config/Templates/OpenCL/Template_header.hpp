@@ -35,7 +35,7 @@
 
 // Make sure Common.hpp is the first include file (to make the error message as helpful as possible when disabled)
 #include <FslUtil##NAMESPACE_NAME##/Common.hpp>
-#include <FslUtil##NAMESPACE_NAME##/CLValues.hpp>
+#include <FslUtil##NAMESPACE_NAME##/CLValues.hpp>##ADDITIONAL_INCLUDES##
 #include <FslBase/Attributes.hpp>
 #include <CL/cl.h>
 

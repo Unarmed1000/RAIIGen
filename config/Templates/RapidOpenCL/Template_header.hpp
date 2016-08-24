@@ -25,7 +25,7 @@
 // ##AG_TOOL_STATEMENT##
 
 #include <RapidOpenCL/CustomTypes.hpp>
-#include <RapidOpenCL/Util.hpp>
+#include <RapidOpenCL/Util.hpp>##ADDITIONAL_INCLUDES##
 #include <CL/cl.h>
 #include <cassert>
 

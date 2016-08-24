@@ -1,0 +1,6 @@
+      //! @brief Create the requested resource
+      ##CLASS_NAME##(const ResetMode resetMode)
+        : ##CLASS_NAME##()
+      {
+        Reset(resetMode);
+      }

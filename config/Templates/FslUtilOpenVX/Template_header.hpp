@@ -1,5 +1,5 @@
-#ifndef FSLGRAPHICS##NAMESPACE_NAME!##_##CLASS_NAME!##_HPP
-#define FSLGRAPHICS##NAMESPACE_NAME!##_##CLASS_NAME!##_HPP
+#ifndef FSLUTIL##NAMESPACE_NAME!##_##CLASS_NAME!##_HPP
+#define FSLUTIL##NAMESPACE_NAME!##_##CLASS_NAME!##_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
@@ -32,14 +32,17 @@
 ****************************************************************************************************************************************************/
 
 // ##AG_TOOL_STATEMENT##
+// Auto generation template based on RapidOpenVX https://github.com/Unarmed1000/RapidOpenVX with permission.
 
-// Make sure Common.hpp is the first include file (to make the error message as helpful as possible when disabled)
-#include <FslGraphics##NAMESPACE_NAME##/Common.hpp>##ADDITIONAL_INCLUDES##
-#include <vulkan/vulkan.h>
+#include <FslUtil##NAMESPACE_NAME##/Common.hpp>
+#include <FslUtil##NAMESPACE_NAME##/Util.hpp>##ADDITIONAL_INCLUDES##
+#include <FslBase/Attributes.hpp>
+#include <VX/vx.h>
+#include <cassert>
 
 namespace Fsl
 {
-  namespace ##NAMESPACE_NAME##
+  namespace OpenVX
   {
     // This object is movable so it can be thought of as behaving in the same was as a unique_ptr and is compatible with std containers
     class ##CLASS_NAME##
@@ -50,28 +53,71 @@ namespace Fsl
       ##CLASS_NAME##& operator=(const ##CLASS_NAME##&) = delete;
     
       //! @brief Move assignment operator
-      ##CLASS_NAME##& operator=(##CLASS_NAME##&& other);
+      ##CLASS_NAME##& operator=(##CLASS_NAME##&& other)
+      {
+        if (this != &other)
+        {
+          // Free existing resources then transfer the content of other to this one and fill other with default values
+          if (IsValid())
+            Reset();
+
+          // Claim ownership here##MOVE_ASSIGNMENT_CLAIM_MEMBERS##
+
+          // Remove the data from other##MOVE_ASSIGNMENT_INVALIDATE_MEMBERS##
+        }
+        return *this;
+      }
+      
       //! @brief Move constructor
-      ##CLASS_NAME##(##CLASS_NAME##&& other);
+      ##CLASS_NAME##(##CLASS_NAME##&& other)##MOVE_CONSTRUCTOR_MEMBER_INITIALIZATION##
+      {
+        // Remove the data from other##MOVE_CONSTRUCTOR_INVALIDATE_MEMBERS##
+      }
 
       //! @brief Create a 'invalid' instance (use Reset to populate it)
-      ##CLASS_NAME##();
+      ##CLASS_NAME##()##DEFAULT_CONSTRUCTOR_MEMBER_INITIALIZATION##
+      {
+      }
 
       //! @brief Assume control of the ##CLASS_NAME## (this object becomes responsible for releasing it)
-      explicit ##CLASS_NAME##(##MEMBER_PARAMETERS##);
+      explicit ##CLASS_NAME##(##MEMBER_PARAMETERS##)
+        : ##CLASS_NAME##()
+      {
+        Reset(##MEMBER_PARAMETER_NAMES##);
+      }
       
 ##CLASS_EXTRA_CONSTRUCTORS_HEADER##
       
-      ~##CLASS_NAME##();
+      ~##CLASS_NAME##()
+      {
+        Reset();
+      }
 
       //! @brief returns the managed handle and releases the ownership.
-      ##RESOURCE_TYPE## Release() FSL_FUNC_POSTFIX_WARN_UNUSED_RESULT;
+      ##RESOURCE_TYPE## Release() FSL_FUNC_POSTFIX_WARN_UNUSED_RESULT
+      {
+        const auto resource = ##RESOURCE_MEMBER_NAME##;##RESET_INVALIDATE_MEMBERS##
+        return resource;
+      }
 
       //! @brief Destroys any owned resources and resets the object to its default state.
-      void Reset();
+      void Reset()
+      {
+        if (! IsValid())
+          return;
+##RESET_MEMBER_ASSERTIONS##
+
+        ##DESTROY_FUNCTION##(##DESTROY_FUNCTION_ARGUMENTS##);##RESET_INVALIDATE_MEMBERS##
+      }
 
       //! @brief Destroys any owned resources and assume control of the ##CLASS_NAME## (this object becomes responsible for releasing it)
-      void Reset(##MEMBER_PARAMETERS##);
+      void Reset(##MEMBER_PARAMETERS##)
+      {
+        if (IsValid())
+          Reset();
+
+        ##RESET_SET_MEMBERS##
+      }
       
 ##CLASS_EXTRA_RESET_METHODS_HEADER####CLASS_ADDITIONAL_GET_MEMBER_VARIABLE_METHODS##
 
@@ -87,6 +133,7 @@ namespace Fsl
         return ##RESOURCE_MEMBER_NAME## != ##DEFAULT_VALUE##;
       }
     };
+
   }
 }
 

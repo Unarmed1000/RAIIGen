@@ -69,7 +69,7 @@ namespace RapidOpenVX
     {
     }
 
-    explicit RapidOpenVXCreateException(const std::string& whatArg, const std::string& fileName, const int lineNumber)
+    explicit OpenVXCreateException(const std::string& whatArg, const std::string& fileName, const int lineNumber)
       : OpenVXException(whatArg, fileName, lineNumber)
     {
     }

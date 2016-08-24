@@ -34,8 +34,9 @@
 // ##AG_TOOL_STATEMENT##
 // Auto generation template based on RapidOpenCL https://github.com/Unarmed1000/RapidOpenCL with permission.
 
+#include <FslUtil##NAMESPACE_NAME##/Common.hpp>
 #include <FslUtil##NAMESPACE_NAME##/CustomTypes.hpp>
-#include <FslUtil##NAMESPACE_NAME##/Util.hpp>
+#include <FslUtil##NAMESPACE_NAME##/Util.hpp>##ADDITIONAL_INCLUDES##
 #include <FslBase/Attributes.hpp>
 #include <CL/cl.h>
 #include <cassert>
