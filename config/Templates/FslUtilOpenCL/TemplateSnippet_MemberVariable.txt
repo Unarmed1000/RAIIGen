@@ -1,0 +1,1 @@
+        ##MEMBER_TYPE## ##MEMBER_NAME##;

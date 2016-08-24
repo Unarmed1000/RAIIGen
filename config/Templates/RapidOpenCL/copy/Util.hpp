@@ -36,7 +36,7 @@ namespace RapidOpenCL
     {
       if (errorCode != CL_SUCCESS)
       {
-        throw OpenCLErrorException(errorCode);
+        throw OpenCLErrorException("Unknown", errorCode);
       }
     }
 
@@ -45,7 +45,7 @@ namespace RapidOpenCL
       if (errorCode != CL_SUCCESS)
       {
         assert(pszMessage != nullptr);
-        throw OpenCLErrorException(message, errorCode);
+        throw OpenCLErrorException(pszMessage, errorCode);
       }
     }
 
@@ -64,7 +64,7 @@ namespace RapidOpenCL
       {
         assert(pszMessage != nullptr);
         assert(pszFileName != nullptr);
-        throw OpenCLErrorException(message, pszMessage, pszFileName, lineNumber);
+        throw OpenCLErrorException(pszMessage, errorCode, pszFileName, lineNumber);
       }
     }
     
@@ -73,7 +73,7 @@ namespace RapidOpenCL
       if (errorCode != CL_SUCCESS)
       {
         assert(pszMessage != nullptr);
-        throw OpenCLErrorException(message, pszMessage, fileName, lineNumber);
+        throw OpenCLErrorException(pszMessage, errorCode, fileName, lineNumber);
       }
     }
 

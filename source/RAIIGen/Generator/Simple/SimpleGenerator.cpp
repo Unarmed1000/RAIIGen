@@ -1017,9 +1017,14 @@ namespace MB
       {
         for (auto itr = files.begin(); itr != files.end(); ++itr)
         {
-          auto srcContent = IO::File::ReadAllText(**itr);
+          auto content = IO::File::ReadAllText(**itr);
+
+          StringUtil::Replace(content, "##AG_TOOL_STATEMENT##", config.ToolStatement);
+          StringUtil::Replace(content, "##NAMESPACE_NAME##", config.NamespaceName);
+          StringUtil::Replace(content, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
+
           auto dstFileName = IO::Path::Combine(dstPath, IO::Path::GetFileName(**itr));
-          WriteAllTextIfChanged(dstFileName, srcContent);
+          WriteAllTextIfChanged(dstFileName, content);
         }
       }
     }

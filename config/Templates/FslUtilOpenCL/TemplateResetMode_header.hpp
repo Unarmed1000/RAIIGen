@@ -1,5 +1,5 @@
-#ifndef RAPIDOPENCL_EXCEPTIONS_HPP
-#define RAPIDOPENCL_EXCEPTIONS_HPP
+#ifndef RAPIDOPENCL_RESETMODE_HPP
+#define RAPIDOPENCL_RESETMODE_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,67 +22,18 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <stdexcept>
-#include <string>
-#include <CL/cl.h>
+// ##AG_TOOL_STATEMENT##
 
 namespace RapidOpenCL
 {
-  class OpenCLException : public std::runtime_error
+  enum class ResetMode
   {
-    std::string m_fileName;
-    int m_lineNumber;
-  public:
-    explicit OpenCLException(const std::string& whatArg)
-      : std::runtime_error(whatArg)
-      , m_fileName()
-      , m_lineNumber(0)    
-    {
-    }
-
-    explicit OpenCLException(const std::string& whatArg, const std::string& fileName, const int lineNumber)
-      : std::runtime_error(whatArg)
-      , m_fileName(fileName)
-      , m_lineNumber(lineNumber)    
-    {
-    }
-
-    
-    std::string GetFileName() const 
-    { 
-      return m_fileName; 
-    }
-
-    
-    int GetLineNumber() const 
-    { 
-      return m_lineNumber; 
-    }
+    //! Destroys any allocated resource
+    Destroy,
+    //! Destroys any owned resources and then creates the requested one
+    Create
   };
-  
-    
-  
-  class OpenCLErrorException : public OpenCLException
-  {
-    cl_int m_errorCode;
-  public:
-    explicit OpenCLErrorException(const std::string& whatArg, const cl_int errorCode)
-      : OpenCLException(whatArg)
-      , m_errorCode(errorCode)
-    {
-    }
-
-    explicit OpenCLErrorException(const std::string& whatArg, const cl_int errorCode, const std::string& fileName, const int lineNumber)
-      : OpenCLException(whatArg, fileName, lineNumber)
-      , m_errorCode(errorCode)
-    {
-    }
-    
-    cl_int GetErrorCode() const
-    {
-      return m_errorCode;
-    }
-  };  
 }
+
 
 #endif

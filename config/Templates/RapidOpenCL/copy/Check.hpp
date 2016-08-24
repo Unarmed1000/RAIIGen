@@ -28,7 +28,7 @@
 // Please beware that these are not pulled in by any of the RAII classes, so its 100% up to the user of the library to include it
 // if the functionality is desired.
 
-#define RAPIDOPENCL_CHECK(X)                  RapidOpenCL::Util::Check((X), __FILE__, __LINE__)
+#define RAPIDOPENCL_CHECK(X)                  RapidOpenCL::Util::Check((X), #X, __FILE__, __LINE__)
 #define RAPIDOPENCL_CHECK2(X, mESSAGE)        RapidOpenCL::Util::Check((X), (mESSAGE), __FILE__, __LINE__)
 
 #endif

@@ -1,0 +1,1 @@
+        ##MEMBER_NAME## = ##DEFAULT_VALUE##;

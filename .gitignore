@@ -243,17 +243,4 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
-/output/OpenCL1.1
-/output/OpenCL1.2
-/output/OpenCL2.0
-/output/OpenCL2.1
-/output/OpenVX1.0.1
-/output/OpenVX1.1
-/output/Vulkan1.0
-/output/RapidOpenCL1.1
-/output/RapidOpenCL1.2
-/output/RapidOpenCL2.0
-/output/RapidOpenCL2.1
-/output/RapidOpenVX1.0.1
-/output/RapidOpenVX1.1
-/output/RapidVulkan1.0
+/output/

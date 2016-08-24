@@ -414,9 +414,9 @@ namespace MB
     const std::vector<FunctionParameterTypeOverride> g_functionParameterTypeOverride
     {
       // clCreateContextFromType
-      FunctionParameterTypeOverride("clCreateContextFromType", 2, "void (*)(const char *, const void *, size_t, void *) __attribute__((stdcall))", "void (CL_CALLBACK *)(const char *, const void *, size_t, void *)"),
+      FunctionParameterTypeOverride("clCreateContextFromType", 2, "void (*)(const char *, const void *, size_t, void *) __attribute__((stdcall))", "FNOpenCLNotify"),
       // clCreateContext
-      FunctionParameterTypeOverride("clCreateContext", 3, "void (*)(const char *, const void *, size_t, void *) __attribute__((stdcall))", "void (CL_CALLBACK *)(const char *, const void *, size_t, void *)"),
+      FunctionParameterTypeOverride("clCreateContext", 3, "void (*)(const char *, const void *, size_t, void *) __attribute__((stdcall))", "FNOpenCLNotify"),
     };
 
 
