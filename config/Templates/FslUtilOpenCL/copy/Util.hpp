@@ -58,7 +58,7 @@ namespace Fsl
         if (errorCode != CL_SUCCESS)
         {
           assert(pszMessage != nullptr);
-          throw OpenCLErrorException(pszMessage, errorCode);
+          throw OpenCLErrorException(ToNiceMessage(pszMessage, errorCode), errorCode);
         }
       }
 
@@ -67,7 +67,7 @@ namespace Fsl
       {
         if (errorCode != CL_SUCCESS)
         {
-          throw OpenCLErrorException(message, errorCode);
+          throw OpenCLErrorException(ToNiceMessage(message, errorCode), errorCode);
         }
       }
 
@@ -77,7 +77,7 @@ namespace Fsl
         {
           assert(pszMessage != nullptr);
           assert(pszFileName != nullptr);
-          throw OpenCLErrorException(pszMessage, errorCode, pszFileName, lineNumber);
+          throw OpenCLErrorException(ToNiceMessage(pszMessage, errorCode, pszFileName, lineNumber), errorCode, pszFileName, lineNumber);
         }
       }
       
@@ -86,7 +86,7 @@ namespace Fsl
         if (errorCode != CL_SUCCESS)
         {
           assert(pszMessage != nullptr);
-          throw OpenCLErrorException(pszMessage, errorCode, fileName, lineNumber);
+          throw OpenCLErrorException(ToNiceMessage(pszMessage, errorCode, fileName, lineNumber), errorCode, fileName, lineNumber);
         }
       }
 
@@ -96,7 +96,7 @@ namespace Fsl
         if (errorCode != CL_SUCCESS)
         {
           assert(pszFileName != nullptr);
-          throw OpenCLErrorException(message, errorCode, pszFileName, lineNumber);
+          throw OpenCLErrorException(ToNiceMessage(message, errorCode, pszFileName, lineNumber), errorCode, pszFileName, lineNumber);
         }
       }
       
@@ -104,9 +104,12 @@ namespace Fsl
       {
         if (errorCode != CL_SUCCESS)
         {
-          throw OpenCLErrorException(message, errorCode, fileName, lineNumber);
+          throw OpenCLErrorException(ToNiceMessage(message, errorCode, fileName, lineNumber), errorCode, fileName, lineNumber);
         }
       }
+    private:
+      static std::string ToNiceMessage(const std::string& message, const cl_int errorCode);
+      static std::string ToNiceMessage(const std::string& message, const cl_int errorCode, const std::string& fileName, const int lineNumber);
     };
   }
 }

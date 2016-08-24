@@ -1,4 +1,5 @@
     //! @brief Destroys any owned resources and then creates the requested one
+    //! @note  Function: ##SOURCE_FUNCTION_NAME##
     void Reset(const ResetMode resetMode)
     {
       // Free any currently allocated resource

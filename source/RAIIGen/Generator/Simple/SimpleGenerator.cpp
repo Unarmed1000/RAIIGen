@@ -759,6 +759,7 @@ namespace MB
       StringUtil::Replace(content, "##CREATE_FUNCTION_ARGUMENTS##", createFunctionArguments);
       StringUtil::Replace(content, "##CREATE_FUNCTION##", fullAnalysis.Pair.Create.Name);
       StringUtil::Replace(content, "##RESET_PARAMETER_VALIDATION##", resetParamValidation);
+      StringUtil::Replace(content, "##SOURCE_FUNCTION_NAME##", fullAnalysis.Pair.Create.Name);
       return content;
     }
 

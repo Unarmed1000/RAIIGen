@@ -58,7 +58,7 @@ namespace Fsl
         if (status != VX_SUCCESS)
         {
           assert(pszMessage != nullptr);
-          throw OpenVXStatusErrorException(pszMessage, status);
+          throw OpenVXStatusErrorException(ToNiceMessage(pszMessage, status), status);
         }
       }
 
@@ -67,7 +67,7 @@ namespace Fsl
       {
         if (status != VX_SUCCESS)
         {
-          throw OpenVXStatusErrorException(message, status);
+          throw OpenVXStatusErrorException(ToNiceMessage(message, status), status);
         }
       }
 
@@ -77,7 +77,7 @@ namespace Fsl
         {
           assert(pszMessage != nullptr);
           assert(pszFileName != nullptr);
-          throw OpenVXStatusErrorException(pszMessage, status, pszFileName, lineNumber);
+          throw OpenVXStatusErrorException(ToNiceMessage(pszMessage, status, pszFileName, lineNumber), status, pszFileName, lineNumber);
         }
       }
       
@@ -86,7 +86,7 @@ namespace Fsl
         if (status != VX_SUCCESS)
         {
           assert(pszMessage != nullptr);
-          throw OpenVXStatusErrorException(pszMessage, status, fileName, lineNumber);
+          throw OpenVXStatusErrorException(ToNiceMessage(pszMessage, status, fileName, lineNumber), status, fileName, lineNumber);
         }
       }
 
@@ -96,7 +96,7 @@ namespace Fsl
         if (status != VX_SUCCESS)
         {
           assert(pszFileName != nullptr);
-          throw OpenVXStatusErrorException(message, status, pszFileName, lineNumber);
+          throw OpenVXStatusErrorException(ToNiceMessage(message, status, pszFileName, lineNumber), status, pszFileName, lineNumber);
         }
       }
       
@@ -104,7 +104,7 @@ namespace Fsl
       {
         if (status != VX_SUCCESS)
         {
-          throw OpenVXStatusErrorException(message, status, fileName, lineNumber);
+          throw OpenVXStatusErrorException(ToNiceMessage(message, status, fileName, lineNumber), status, fileName, lineNumber);
         }
       }
 
@@ -144,7 +144,7 @@ namespace Fsl
         {
           assert(pszMessage != nullptr);
           assert(pszFileName != nullptr);        
-          throw OpenVXCreateException(pszMessage, pszFileName, lineNumber);
+          throw OpenVXCreateException(ToNiceMessage(pszMessage, pszFileName, lineNumber), pszFileName, lineNumber);
         }
       }
 
@@ -154,7 +154,7 @@ namespace Fsl
         if (pResult == nullptr)
         {
           assert(pszMessage != nullptr);
-          throw OpenVXCreateException(pszMessage, fileName, lineNumber);
+          throw OpenVXCreateException(ToNiceMessage(pszMessage, fileName, lineNumber), fileName, lineNumber);
         }
       }
       
@@ -164,7 +164,7 @@ namespace Fsl
         if (pResult == nullptr)
         {
           assert(pszFileName != nullptr);        
-          throw OpenVXCreateException(message, pszFileName, lineNumber);
+          throw OpenVXCreateException(ToNiceMessage(message, pszFileName, lineNumber), pszFileName, lineNumber);
         }
       }
       
@@ -173,9 +173,13 @@ namespace Fsl
       {
         if (pResult == nullptr)
         {
-          throw OpenVXCreateException(message, fileName, lineNumber);
+          throw OpenVXCreateException(ToNiceMessage(message, fileName, lineNumber), fileName, lineNumber);
         }
       }
+    private:
+      static std::string ToNiceMessage(const std::string& message, const vx_status errorCode);
+      static std::string ToNiceMessage(const std::string& message, const vx_status errorCode, const std::string& fileName, const int lineNumber);
+      static std::string ToNiceMessage(const std::string& message, const std::string& fileName, const int lineNumber);
     };
   }
 }
