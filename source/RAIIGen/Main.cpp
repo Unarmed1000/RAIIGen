@@ -41,7 +41,7 @@ namespace MB
   namespace
   {
     const std::string g_programName = "RAIIGen";
-    const std::string g_programVersion = "V0.2.7";
+    const std::string g_programVersion = "V0.2.8";
 
 
 

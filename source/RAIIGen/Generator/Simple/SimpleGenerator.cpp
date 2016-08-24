@@ -71,6 +71,7 @@ namespace MB
       std::string CreateVoidConstructorSource;
       std::string ResetVoidMemberHeader;
       std::string ResetVoidMemberSource;
+      std::string DefaultValueMod;
     };
 
 
@@ -583,8 +584,14 @@ namespace MB
       return itr != typeDefaultValues.end() ? itr->second : std::string(DEFAULT_VALUE_NOT_FOUND);
     }
 
+    void ReplaceDefaultValue(std::string& rContent, const std::string& type, const std::unordered_map<std::string, std::string>& typeDefaultValues, const Snippets& snippets)
+    {
+      StringUtil::Replace(rContent, "##DEFAULT_VALUE##", snippets.DefaultValueMod);
+      StringUtil::Replace(rContent, "##DEFAULT_VALUE##", GetDefaultValue(typeDefaultValues, type));
+    }
 
-    std::string GenerateForAllMembers(const std::deque<MemberVariable>& allMemberVariables, const std::string snippetTemplate, const std::unordered_map<std::string, std::string>& typeDefaultValues)
+
+    std::string GenerateForAllMembers(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables, const std::string snippetTemplate, const std::unordered_map<std::string, std::string>& typeDefaultValues)
     {
       const bool scriptUsesDefaultValue = ContainsDefaultValue(snippetTemplate);
 
@@ -596,7 +603,7 @@ namespace MB
         StringUtil::Replace(snippet, "##MEMBER_ARGUMENT_NAME##", itr->ArgumentName);
         if (scriptUsesDefaultValue)
         {
-          StringUtil::Replace(snippet, "##DEFAULT_VALUE##", GetDefaultValue(typeDefaultValues, itr->Type));
+          ReplaceDefaultValue(snippet, itr->Type, typeDefaultValues, snippets);
         }
         result += END_OF_LINE + snippet;
       }
@@ -604,7 +611,7 @@ namespace MB
     }
 
 
-    std::string GenerateConstructorInitialization(const std::deque<MemberVariable>& allMemberVariables, const std::string snippetTemplate, const std::unordered_map<std::string, std::string>& typeDefaultValues)
+    std::string GenerateConstructorInitialization(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables, const std::string snippetTemplate, const std::unordered_map<std::string, std::string>& typeDefaultValues)
     {
       const bool scriptUsesDefaultValue = ContainsDefaultValue(snippetTemplate);
 
@@ -617,7 +624,7 @@ namespace MB
         StringUtil::Replace(snippet, "##MEMBER_SEPERATOR##", seperator);
         if (scriptUsesDefaultValue)
         {
-          StringUtil::Replace(snippet, "##DEFAULT_VALUE##", GetDefaultValue(typeDefaultValues, itr->Type));
+          ReplaceDefaultValue(snippet, itr->Type, typeDefaultValues, snippets);
         }
         seperator = ",";
         result += END_OF_LINE + snippet;
@@ -742,7 +749,7 @@ namespace MB
       std::string createMethodParameters = GenerateParameterList(fullAnalysis.Result.MethodArguments);
       std::string createMethodParameterNames = GenerateParameterNameList(fullAnalysis.Result.MethodArguments);
       const std::string createFunctionArguments = GenerateExpandedParameterNameList(fullAnalysis.Result.CreateArguments);
-      const std::string resetParamValidation = GenerateForAllMembers(fullAnalysis.Result.AdditionalMemberVariables, snippets.ResetParamValidation, config.TypeDefaultValues);
+      const std::string resetParamValidation = GenerateForAllMembers(snippets, fullAnalysis.Result.AdditionalMemberVariables, snippets.ResetParamValidation, config.TypeDefaultValues);
 
       std::string content(activeSnippet);
       StringUtil::Replace(content, "##CLASS_NAME##", fullAnalysis.Result.ClassName);
@@ -841,14 +848,14 @@ namespace MB
 
       const std::string memberParameters = GenerateMemberAsParameters(fullAnalysis.Result.AllMemberVariables);
       const std::string memberParameterNames = GenerateMemberAsNames(fullAnalysis.Result.AllMemberVariables);
-      const std::string resetSetMembers = GenerateForAllMembers(fullAnalysis.Result.AllMemberVariables, snippets.ResetSetMemberVariable, config.TypeDefaultValues);
-      const std::string defaultConstructorInitialization = GenerateConstructorInitialization(fullAnalysis.Result.AllMemberVariables, snippets.ConstructorMemberInitialization, config.TypeDefaultValues);
-      const std::string moveConstructorMemberInitialization = GenerateConstructorInitialization(fullAnalysis.Result.AllMemberVariables, snippets.MoveConstructorClaimMember, config.TypeDefaultValues);
-      const std::string moveAssignmentClaimMembers = GenerateForAllMembers(fullAnalysis.Result.AllMemberVariables, snippets.MoveAssignmentClaimMember, config.TypeDefaultValues);
-      const std::string moveAssignmentInvalidateMembers = GenerateForAllMembers(fullAnalysis.Result.AllMemberVariables, snippets.MoveAssignmentInvalidateMember, config.TypeDefaultValues);
-      const std::string moveConstructorInvalidateMembers = GenerateForAllMembers(fullAnalysis.Result.AllMemberVariables, snippets.MoveConstructorInvalidateMember, config.TypeDefaultValues);
-      const std::string resetInvalidateMembers = GenerateForAllMembers(fullAnalysis.Result.AllMemberVariables, snippets.ResetInvalidateMemberVariable, config.TypeDefaultValues);
-      const std::string resetMemberAssertions = GenerateForAllMembers(fullAnalysis.Result.AllMemberVariables, snippets.ResetMemberAssertion, config.TypeDefaultValues);
+      const std::string resetSetMembers = GenerateForAllMembers(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetSetMemberVariable, config.TypeDefaultValues);
+      const std::string defaultConstructorInitialization = GenerateConstructorInitialization(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ConstructorMemberInitialization, config.TypeDefaultValues);
+      const std::string moveConstructorMemberInitialization = GenerateConstructorInitialization(snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveConstructorClaimMember, config.TypeDefaultValues);
+      const std::string moveAssignmentClaimMembers = GenerateForAllMembers(snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveAssignmentClaimMember, config.TypeDefaultValues);
+      const std::string moveAssignmentInvalidateMembers = GenerateForAllMembers(snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveAssignmentInvalidateMember, config.TypeDefaultValues);
+      const std::string moveConstructorInvalidateMembers = GenerateForAllMembers(snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveConstructorInvalidateMember, config.TypeDefaultValues);
+      const std::string resetInvalidateMembers = GenerateForAllMembers(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetInvalidateMemberVariable, config.TypeDefaultValues);
+      const std::string resetMemberAssertions = GenerateForAllMembers(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetMemberAssertion, config.TypeDefaultValues);
 
       const std::string destroyFunctionArguments = GenerateExpandedParameterNameList(fullAnalysis.Result.DestroyArguments);
 
@@ -869,7 +876,7 @@ namespace MB
       StringUtil::Replace(content, "##RESOURCE_MEMBER_NAME##", fullAnalysis.Result.ResourceMemberVariable.Name);
       StringUtil::Replace(content, "##CLASS_ADDITIONAL_MEMBER_VARIABLES##", classAdditionalMemberVariables);
       StringUtil::Replace(content, "##CLASS_ADDITIONAL_GET_MEMBER_VARIABLE_METHODS##", classAdditionalGetMemberVariablesMethods);
-      StringUtil::Replace(content, "##DEFAULT_VALUE##", GetDefaultValue(config.TypeDefaultValues, fullAnalysis.Result.ResourceMemberVariable.Type));
+      ReplaceDefaultValue(content, fullAnalysis.Result.ResourceMemberVariable.Type, config.TypeDefaultValues, snippets);
 
       StringUtil::Replace(content, "##DESTROY_FUNCTION##", fullAnalysis.Pair.Destroy.Name);
       StringUtil::Replace(content, "##RESET_SET_MEMBERS##", resetSetMembers);
@@ -956,6 +963,8 @@ namespace MB
     const auto pathSnippetCreateVoidConstructorSource = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateVoidConstructorSource.txt");
     const auto pathSnippetResetVoidMemberHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetVoidMemberHeader.txt");
     const auto pathSnippetResetVoidMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetVoidMemberSource.txt");
+    const auto pathSnippetDefaultValueMod = IO::Path::Combine(templateRoot, "TemplateSnippet_DefaultValueMod.txt");
+    
 
     const auto sourceTemplate = IO::File::ReadAllText(pathSource);
     Snippets snippets;
@@ -977,6 +986,7 @@ namespace MB
     snippets.CreateVoidConstructorSource = IO::File::ReadAllText(pathSnippetCreateVoidConstructorSource);
     snippets.ResetVoidMemberHeader = IO::File::ReadAllText(pathSnippetResetVoidMemberHeader);
     snippets.ResetVoidMemberSource = IO::File::ReadAllText(pathSnippetResetVoidMemberSource);
+    snippets.DefaultValueMod= IO::File::ReadAllText(pathSnippetDefaultValueMod);
 
     std::unordered_set<std::string> typesWithoutDefaultValues;
 

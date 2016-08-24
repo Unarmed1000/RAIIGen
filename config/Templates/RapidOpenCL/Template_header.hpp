@@ -24,7 +24,6 @@
 
 // ##AG_TOOL_STATEMENT##
 
-#include <RapidOpenCL/Values.hpp>
 #include <RapidOpenCL/Util.hpp>
 #include <CL/cl.h>
 #include <cassert>
