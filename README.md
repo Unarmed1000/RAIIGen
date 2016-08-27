@@ -1,5 +1,5 @@
 # RAIIGen
-Scan Vulkan, OpenCL and OpenVX headers and generate useful C++11 RAII classes.
+Scan Vulkan, OpenCL, OpenGLES and OpenVX headers and generate useful C++11 RAII classes.
 
 Experimental project to experiment a bit with libclang and generate some useful RAII classes.
 The main goal of this is to experiment and see whats possible, so nothing has been polished. The end goal is just to have something that is 'good enough'.
