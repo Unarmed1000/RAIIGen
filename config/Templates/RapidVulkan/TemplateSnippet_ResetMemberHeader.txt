@@ -1,7 +1,9 @@
     //! @brief Destroys any owned resources and then creates the requested one
     //! @note  Function: ##SOURCE_FUNCTION_NAME##
     void Reset(##CREATE_METHOD_PARAMETERS##)
-    {##RESET_PARAMETER_VALIDATION##
+    {
+#ifndef RAPIDVULKAN_DISABLE_PARAM_VALIDATION##RESET_PARAMETER_VALIDATION##
+#endif
 
       // Free any currently allocated resource
       if (IsValid())

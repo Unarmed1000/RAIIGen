@@ -729,7 +729,6 @@ namespace MB
       // 
       AbsorbFunctions(managed, config.ClassFunctionAbsorbtion);
 
-
       for (auto itr = managed.begin(); itr != managed.end(); ++itr)
       {
         FindObjectFunctions(functionAnalysis, managed, itr->Result);
@@ -936,6 +935,31 @@ namespace MB
       StringUtil::Replace(content, "##HANDLE_CLASS_NAME##", snippets.HandleClassName);
       return content;
     }
+
+    void TestCreateFunctionStructParameters(const Capture& capture, const SimpleGeneratorConfig& config, const std::deque<FullAnalysis>& fullAnalysis)
+    {
+      std::cout << "Create function parameter struct analysis\n";
+      {
+        auto structDict = capture.GetStructDict();
+        for (auto itr = fullAnalysis.begin(); itr != fullAnalysis.end(); ++itr)
+        {
+          for (auto itrParam = itr->Pair.Create.Parameters.begin(); itrParam != itr->Pair.Create.Parameters.end(); ++itrParam)
+          {
+            if (!IsIgnoreParameter(*itrParam, config.ForceNullParameter) && itrParam->Type.IsStruct)
+            {
+              if (structDict.find(itrParam->Type.Name) != structDict.end())
+              {
+                std::cout << "  CreateFunction: " << itr->Pair.Create.Name << " found struct: " << itrParam->Type.Name << "\n";
+              }
+              else
+              {
+                std::cout << "  CreateFunction: " << itr->Pair.Create.Name << " not found struct: " << itrParam->Type.Name << "\n";
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
 
@@ -1005,6 +1029,7 @@ namespace MB
 
     auto fullAnalysis = Analyze(config, m_functionAnalysis, typesWithoutDefaultValues);
 
+    TestCreateFunctionStructParameters(capture, config, fullAnalysis);
 
     const bool generateSourceFile = sourceTemplate.size() > 0;
     for (auto itr = fullAnalysis.begin(); itr != fullAnalysis.end(); ++itr)

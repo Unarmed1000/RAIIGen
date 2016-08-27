@@ -76,6 +76,16 @@ namespace MB
 
     void Dump();
 
+    const std::unordered_map<std::string, StructRecord>& GetStructDict() const
+    {
+      return m_structs;
+    }
+
+    const std::unordered_map<std::string, EnumRecord>& GetEnumDict() const
+    {
+      return m_enums;
+    }
+
     const std::deque<FunctionRecord>& GetFunctions() const
     {
       return m_records;
