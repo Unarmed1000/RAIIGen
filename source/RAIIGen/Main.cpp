@@ -33,8 +33,10 @@
 #include <RAIIGen/Capture.hpp>
 #include <RAIIGen/Generator/BasicConfig.hpp>
 #include <RAIIGen/Generator/OpenCLGenerator.hpp>
+#include <RAIIGen/Generator/OpenGLESGenerator.hpp>
 #include <RAIIGen/Generator/OpenVXGenerator.hpp>
 #include <RAIIGen/Generator/VulkanGenerator.hpp>
+
 
 namespace MB
 {
@@ -168,9 +170,10 @@ namespace MB
       //  //"-std=c++1y"
       //};
 
-      std::vector<std::string> clangArgsTemp(includePaths.size());
-      for (std::size_t i = 0; i < clangArgsTemp.size(); ++i)
-        clangArgsTemp[i] = (std::string("-I") + includePaths[i].ToUTF8String());
+      std::deque<std::string> clangArgsTemp;
+      for (std::size_t i = 0; i < includePaths.size(); ++i)
+        clangArgsTemp.push_back(std::string("-I") + includePaths[i].ToUTF8String());
+      clangArgsTemp.push_back("-DGL_GLEXT_PROTOTYPES");
 
       std::vector<const char*> clangArgs(clangArgsTemp.size());
       for (std::size_t i = 0; i < clangArgs.size(); ++i)
@@ -259,6 +262,11 @@ namespace MB
       RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.2");
       RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "FslUtilOpenVX", "OpenVX", "1.0.1");
       RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "FslUtilOpenVX", "OpenVX", "1.1");
+
+      RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES2/gl2.h", "RapidOpenGLES", "OpenGLES", "2.0");
+      RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl3.h", "RapidOpenGLES", "OpenGLES", "3.0");
+      RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl31.h", "RapidOpenGLES", "OpenGLES", "3.1");
+      RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl32.h", "RapidOpenGLES", "OpenGLES", "3.2");
     }
   }
 }

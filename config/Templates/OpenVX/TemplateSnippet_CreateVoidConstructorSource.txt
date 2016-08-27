@@ -1,5 +1,0 @@
-    ##CLASS_NAME##::##CLASS_NAME##(const ResetMode resetMode)
-      : ##CLASS_NAME##()
-    {
-      Reset(resetMode);
-    }

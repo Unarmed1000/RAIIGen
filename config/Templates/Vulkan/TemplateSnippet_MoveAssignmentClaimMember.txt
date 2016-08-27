@@ -1,1 +1,0 @@
-        ##MEMBER_NAME## = other.##MEMBER_NAME##;

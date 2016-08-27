@@ -103,6 +103,7 @@
     <ClInclude Include="include\RAIIGen\Generator\FunctionAnalysis.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\GeneratorConfig.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\OpenCLGenerator.hpp" />
+    <ClInclude Include="include\RAIIGen\Generator\OpenGLESGenerator.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\OpenVXGenerator.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\BasicConfig.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\SimpleGenerator.hpp" />
@@ -175,6 +176,7 @@
     <ClCompile Include="source\RAIIGen\Capture.cpp" />
     <ClCompile Include="source\RAIIGen\CaseUtil.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\OpenCLGenerator.cpp" />
+    <ClCompile Include="source\RAIIGen\Generator\OpenGLESGenerator.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\OpenVXGenerator.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\Simple\SimpleGenerator.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\Generator.cpp" />

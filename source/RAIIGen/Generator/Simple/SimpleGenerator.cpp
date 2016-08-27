@@ -454,14 +454,14 @@ namespace MB
         }
 
         std::cout << "  Return type used as resource: " << typeName << " (*)\n";
+        // Check intermediary name for collisions
+        for (auto itr = functions.Create.Parameters.begin(); itr != functions.Create.Parameters.end(); ++itr)
+        {
+          if (itr->Name == result.IntermediaryName)
+            throw NotSupportedException("Intermediary name collides with parameter name");
+        }
       }
  
-      // Check intermediary name for collisions
-      for (auto itr = functions.Create.Parameters.begin(); itr != functions.Create.Parameters.end(); ++itr)
-      {
-        if (itr->Name == result.IntermediaryName)
-          throw NotSupportedException("Intermediary name collides with parameter name");
-      }
 
       for (auto itr = functions.Destroy.Parameters.begin(); itr != functions.Destroy.Parameters.end(); ++itr)
       {

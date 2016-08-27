@@ -1,3 +1,0 @@
-      //! @brief Create the requested resource
-      //! @note  Function: ##SOURCE_FUNCTION_NAME##
-      ##CLASS_NAME##(##CREATE_METHOD_PARAMETERS##);
