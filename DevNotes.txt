@@ -1,0 +1,2 @@
+Vulkan
+- Add VK_HEADER_VERSION information to the generated code

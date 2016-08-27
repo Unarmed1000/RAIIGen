@@ -947,9 +947,15 @@ namespace MB
           {
             if (!IsIgnoreParameter(*itrParam, config.ForceNullParameter) && itrParam->Type.IsStruct)
             {
-              if (structDict.find(itrParam->Type.Name) != structDict.end())
+              auto itrStruct = structDict.find(itrParam->Type.Name);
+              if (itrStruct != structDict.end())
               {
                 std::cout << "  CreateFunction: " << itr->Pair.Create.Name << " found struct: " << itrParam->Type.Name << "\n";
+                const auto & structRecord = itrStruct->second;
+                for (auto itrStruct = structRecord.Members.begin(); itrStruct != structRecord.Members.end(); ++itrStruct)
+                {
+                  std::cout << "    " << itrStruct->Type.FullTypeString << " " << itrStruct->Name << "\n";
+                }
               }
               else
               {
