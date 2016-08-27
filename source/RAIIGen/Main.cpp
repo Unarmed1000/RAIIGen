@@ -36,7 +36,7 @@
 #include <RAIIGen/Generator/OpenGLESGenerator.hpp>
 #include <RAIIGen/Generator/OpenVXGenerator.hpp>
 #include <RAIIGen/Generator/VulkanGenerator.hpp>
-
+#include <RAIIGen/ClangInfoDump.hpp>
 
 namespace MB
 {
@@ -46,88 +46,6 @@ namespace MB
     const std::string g_programVersion = "V0.3.0";
 
     using namespace Fsl;
-
-    //std::string GetCursorKindName(CXCursorKind cursorKind)
-    //{
-    //  CXString kindName = clang_getCursorKindSpelling(cursorKind);
-    //  std::string result = clang_getCString(kindName);
-
-    //  clang_disposeString(kindName);
-    //  return result;
-    //}
-
-
-    //std::string GetCursorSpelling(CXCursor cursor)
-    //{
-    //  CXString cursorSpelling = clang_getCursorSpelling(cursor);
-    //  std::string result = clang_getCString(cursorSpelling);
-
-    //  clang_disposeString(cursorSpelling);
-    //  return result;
-    //}
-
-
-    ////VKAPI_ATTR VkResult VKAPI_CALL vkCreateInstance(
-    ////  const VkInstanceCreateInfo*                 pCreateInfo,
-    ////  const VkAllocationCallbacks*                pAllocator,
-    ////  VkInstance*                                 pInstance);
-    ////
-    ////FunctionDecl(vkCreateInstance)
-    ////  - TypeRef(VkResult)
-    ////  - ParmDecl(pCreateInfo)
-    ////  --TypeRef(VkInstanceCreateInfo)
-    ////  - ParmDecl(pAllocator)
-    ////  --TypeRef(VkAllocationCallbacks)
-    ////  - ParmDecl(pInstance)
-    ////  --TypeRef(VkInstance)
-    ////
-    //void ExamineFunc(const CXCursor& cursor, const CXCursorKind cursorKind, const int currentLevel)
-    //{
-    //  const std::string cursorKindName = GetCursorKindName(cursorKind);
-    //  const std::string cursorSpelling = GetCursorSpelling(cursor);
-
-    //  if (cursorSpelling.find("vkCreate") == 0)
-    //  {
-    //    std::cout << std::string(currentLevel, '-') << " " << cursorKindName << " (" << cursorSpelling << ")\n";
-
-    //  }
-    //  else if (cursorSpelling.find("vkDestroy") == 0)
-    //    std::cout << std::string(currentLevel, '-') << " " << cursorKindName << " (" << cursorSpelling << ")\n";
-    //  else if (cursorSpelling.find("vkAllocate") == 0)
-    //    std::cout << std::string(currentLevel, '-') << " " << cursorKindName << " (" << cursorSpelling << ")\n";
-    //  else if (cursorSpelling.find("vkFree") == 0)
-    //    std::cout << std::string(currentLevel, '-') << " " << cursorKindName << " (" << cursorSpelling << ")\n";
-    //}
-
-
-    //CXChildVisitResult Visitor(CXCursor cursor, CXCursor /* parent */, CXClientData clientData)
-    //{
-    //  CXSourceLocation location = clang_getCursorLocation(cursor);
-    //  if (clang_Location_isFromMainFile(location) == 0)
-    //    return CXChildVisit_Continue;
-
-    //  CXCursorKind cursorKind = clang_getCursorKind(cursor);
-
-    //  unsigned int curLevel = *(reinterpret_cast<unsigned int*>(clientData));
-    //  unsigned int nextLevel = curLevel + 1;
-
-    //  //clang_getCursorType(cursor);
-    //  switch (cursorKind)
-    //  {
-    //  case CXCursor_FunctionDecl:
-    //    ExamineFunc(cursor, cursorKind, curLevel);
-    //    break;
-    //  default:
-    //    std::cout << std::string(curLevel, '-') << " " << GetCursorKindName(cursorKind) << " (" << GetCursorSpelling(cursor) << ")\n";
-    //    break;
-    //  }
-
-
-    //  clang_visitChildren(cursor, Visitor, &nextLevel);
-
-    //  return CXChildVisit_Continue;
-    //}
-
 
     struct Config
     {
@@ -192,8 +110,8 @@ namespace MB
       CXCursor rootCursor = clang_getTranslationUnitCursor(tu);
 
       {
-        //unsigned int treeLevel = 0;
-        //clang_visitChildren(rootCursor, Visitor, &treeLevel);
+        unsigned int treeLevel = 0;
+        //clang_visitChildren(rootCursor, ClangInfoDump::Visitor, &treeLevel);
       }
 
       {

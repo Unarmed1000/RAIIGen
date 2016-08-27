@@ -1,5 +1,5 @@
-#ifndef MB_CAPTURE_HPP
-#define MB_CAPTURE_HPP
+#ifndef MB_CLANGUTIL_HPP
+#define MB_CLANGUTIL_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,72 +22,56 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RAIIGen/CaptureConfig.hpp>
-#include <RAIIGen/EnumRecord.hpp>
-#include <RAIIGen/FunctionRecord.hpp>
-#include <RAIIGen/FunctionErrors.hpp>
-#include <RAIIGen/StructRecord.hpp>
-#include <unordered_map>
-#include <memory>
-#include <string>
 #include <clang-c/Index.h>
-
+#include <string>
 
 namespace MB
 {
-  class Capture
+  namespace ClangUtil
   {
-    enum class CaptureMode
+    inline std::string GetCursorKindName(CXCursorKind cursorKind)
     {
-      Off,
-      Struct,
-      Enum
-    };
-
-    struct CaptureInfo
-    {
-      CaptureMode Mode;
-      std::size_t Level;
-      CaptureInfo()
-        : Mode(CaptureMode::Off)
-        , Level(0)
-      {
-      }
-
-      CaptureInfo(const CaptureMode mode, const std::size_t level)
-        : Mode(mode)
-        , Level(level)
-      {
-      }
-    };
-
-    CaptureConfig m_config;
-    std::size_t m_level;
-    std::deque<FunctionRecord> m_records;
-    std::deque<FunctionErrors> m_functionErrors;
-    std::unordered_map<std::string, StructRecord> m_structs;
-    std::unordered_map<std::string, EnumRecord> m_enums;
-    std::deque<CaptureInfo> m_captureInfo;
-    std::deque<StructRecord> m_captureStructs;
-    std::deque<EnumRecord> m_captureEnums;
-  public:
-    Capture(const CaptureConfig& config, CXCursor rootCursor);
-    CXChildVisitResult OnVisit(CXCursor cursor, CXCursor parent);
-
-    void Dump();
-
-    const std::deque<FunctionRecord>& GetFunctions() const
-    {
-      return m_records;
+      CXString name = clang_getCursorKindSpelling(cursorKind);
+      std::string result = clang_getCString(name);
+      clang_disposeString(name);
+      return result;
     }
 
-    std::deque<FunctionRecord>& DirectFunctions()
+
+    inline std::string GetCursorDisplayName(CXCursor cursor)
     {
-      return m_records;
+      CXString name = clang_getCursorDisplayName(cursor);
+      std::string result = clang_getCString(name);
+      clang_disposeString(name);
+      return result;
     }
 
-    static CXChildVisitResult VistorForwarder(CXCursor cursor, CXCursor parent, CXClientData clientData);
-  private:
-  };
+
+    inline std::string GetCursorSpelling(CXCursor cursor)
+    {
+      CXString name = clang_getCursorSpelling(cursor);
+      std::string result = clang_getCString(name);
+
+      clang_disposeString(name);
+      return result;
+    }
+
+
+    inline std::string GetTypeSpelling(CXType type)
+    {
+      CXString name = clang_getTypeSpelling(type);
+      std::string result = clang_getCString(name);
+      clang_disposeString(name);
+      return result;
+    }
+
+    inline std::string GetTypeKindSpelling(CXTypeKind typeKind)
+    {
+      CXString name = clang_getTypeKindSpelling(typeKind);
+      std::string result = clang_getCString(name);
+      clang_disposeString(name);
+      return result;
+    }
+  }
 }
 #endif

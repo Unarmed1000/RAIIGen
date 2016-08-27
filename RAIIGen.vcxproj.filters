@@ -324,6 +324,24 @@
     <ClInclude Include="include\RAIIGen\Generator\OpenGLESGenerator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\RAIIGen\ClangInfoDump.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\ClangUtil.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\MemberRecord.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\StructRecord.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\EnumMemberRecord.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\EnumRecord.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\RAIIGen\Capture.cpp">
@@ -501,6 +519,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\RAIIGen\Generator\OpenGLESGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RAIIGen\ClangInfoDump.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,5 +1,5 @@
-#ifndef MB_CAPTURE_HPP
-#define MB_CAPTURE_HPP
+#ifndef MB_STRUCTRECORD_HPP
+#define MB_STRUCTRECORD_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,72 +22,46 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RAIIGen/CaptureConfig.hpp>
-#include <RAIIGen/EnumRecord.hpp>
-#include <RAIIGen/FunctionRecord.hpp>
-#include <RAIIGen/FunctionErrors.hpp>
-#include <RAIIGen/StructRecord.hpp>
-#include <unordered_map>
-#include <memory>
+#include <RAIIGen/TypeRecord.hpp>
+#include <RAIIGen/MemberRecord.hpp>
+#include <deque>
 #include <string>
-#include <clang-c/Index.h>
-
 
 namespace MB
 {
-  class Capture
+  struct StructRecord
   {
-    enum class CaptureMode
+    std::string Name;
+    std::deque<MemberRecord> Members;
+
+    StructRecord()
+      : Name()
+      , Members()
     {
-      Off,
-      Struct,
-      Enum
-    };
-
-    struct CaptureInfo
-    {
-      CaptureMode Mode;
-      std::size_t Level;
-      CaptureInfo()
-        : Mode(CaptureMode::Off)
-        , Level(0)
-      {
-      }
-
-      CaptureInfo(const CaptureMode mode, const std::size_t level)
-        : Mode(mode)
-        , Level(level)
-      {
-      }
-    };
-
-    CaptureConfig m_config;
-    std::size_t m_level;
-    std::deque<FunctionRecord> m_records;
-    std::deque<FunctionErrors> m_functionErrors;
-    std::unordered_map<std::string, StructRecord> m_structs;
-    std::unordered_map<std::string, EnumRecord> m_enums;
-    std::deque<CaptureInfo> m_captureInfo;
-    std::deque<StructRecord> m_captureStructs;
-    std::deque<EnumRecord> m_captureEnums;
-  public:
-    Capture(const CaptureConfig& config, CXCursor rootCursor);
-    CXChildVisitResult OnVisit(CXCursor cursor, CXCursor parent);
-
-    void Dump();
-
-    const std::deque<FunctionRecord>& GetFunctions() const
-    {
-      return m_records;
     }
 
-    std::deque<FunctionRecord>& DirectFunctions()
+    StructRecord(const std::string& name)
+      : Name(name)
+      , Members()
     {
-      return m_records;
     }
 
-    static CXChildVisitResult VistorForwarder(CXCursor cursor, CXCursor parent, CXClientData clientData);
-  private:
+    void Clear()
+    {
+      Name.clear();
+      Members.clear();
+    }
+
+
+    bool operator==(const StructRecord &rhs) const
+    {
+      return Name == rhs.Name && Members == rhs.Members;
+    }
+
+    bool operator!=(const StructRecord &rhs) const
+    {
+      return !(*this == rhs);
+    }
   };
 }
 #endif

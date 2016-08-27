@@ -33,57 +33,17 @@
 #include <FslBase/String/StringUtil.hpp>
 #include <RAIIGen/Capture.hpp>
 #include <RAIIGen/CaseUtil.hpp>
+#include <RAIIGen/ClangUtil.hpp>
 #include <RAIIGen/StringHelper.hpp>
 
 using namespace Fsl;
 
 namespace MB
 {
+  using namespace ClangUtil;
+
   namespace
   {
-    std::string GetCursorKindName(CXCursorKind cursorKind)
-    {
-      CXString name = clang_getCursorKindSpelling(cursorKind);
-      std::string result = clang_getCString(name);
-      clang_disposeString(name);
-      return result;
-    }
-
-
-    std::string GetCursorDisplayName(CXCursor cursor)
-    {
-      CXString name = clang_getCursorDisplayName(cursor);
-      std::string result = clang_getCString(name);
-      clang_disposeString(name);
-      return result;
-    }
-
-
-    std::string GetCursorSpelling(CXCursor cursor)
-    {
-      CXString name = clang_getCursorSpelling(cursor);
-      std::string result = clang_getCString(name);
-
-      clang_disposeString(name);
-      return result;
-    }
-
-
-    std::string GetTypeSpelling(CXType type)
-    {
-      CXString name = clang_getTypeSpelling(type);
-      std::string result = clang_getCString(name);
-      clang_disposeString(name);
-      return result;
-    }
-
-    std::string GetTypeKindSpelling(CXTypeKind typeKind)
-    {
-      CXString name = clang_getTypeKindSpelling(typeKind);
-      std::string result = clang_getCString(name);
-      clang_disposeString(name);
-      return result;
-    }
 
 
     struct TypeInfo
@@ -242,7 +202,11 @@ namespace MB
 
       const auto canonicalType = clang_getCanonicalType(typeInfo.Type);
       if (canonicalType.kind == CXType_Record)
+      {
         typeRecord.IsStruct = true;
+
+        //auto cur = clang_getTypeDeclaration(canonicalType);
+      }
 
       if (typeInfo.Type.kind == CXType_Unexposed && canonicalType.kind == CXType_FunctionProto )
       {
@@ -397,6 +361,36 @@ namespace MB
     {
       return std::find_if(filters.begin(), filters.end(), [functionName](const std::string& val) { return functionName.find(val) == 0; }) != filters.end();
     }
+
+    
+    MemberRecord GetMember(CXCursor cursor)
+    {
+      auto fieldType = GetType(cursor);
+      const auto cursorSpelling = GetCursorSpelling(cursor);
+      return MemberRecord(fieldType, cursorSpelling);
+    }
+
+
+    EnumMemberRecord GetEnumMember(CXCursor cursor)
+    {
+      const auto cursorSpelling = GetCursorSpelling(cursor);
+      return EnumMemberRecord(cursorSpelling);
+    }
+
+    template<typename T>
+    std::string BuildFullName(const std::deque<T>& parents, const std::string& name)
+    {
+      if (parents.size() == 0)
+        return name;
+
+      std::string fullName;
+      for (auto itr = parents.begin(); itr != parents.end(); ++itr)
+      {
+        fullName = itr->Name + ".";
+      }
+      return fullName + name;
+    }
+
   }
 
 
@@ -432,6 +426,30 @@ namespace MB
 
     CXCursorKind cursorKind = clang_getCursorKind(cursor);
 
+    if (m_captureInfo.size() > 0)
+    {
+      const auto& captureInfo = m_captureInfo.back();
+      if (captureInfo.Mode == CaptureMode::Struct)
+      {
+        assert(m_captureStructs.size() > 0);
+        if (cursorKind == CXCursor_FieldDecl)
+        {
+          //std::cout << std::string(m_level, '-') << " " << GetCursorKindName(cursorKind) << " ('" << typeSpelling << "' '" << cursorSpelling << "')\n";
+
+          m_captureStructs.back().Members.push_back(GetMember(cursor));
+        }
+      }
+      else if (captureInfo.Mode == CaptureMode::Enum)
+      {
+        assert(m_captureEnums.size() > 0);
+        if (cursorKind == CXCursor_EnumConstantDecl)
+        {
+          m_captureEnums.back().Members.push_back(GetEnumMember(cursor));
+        }
+      }
+    }
+
+
     if (cursorKind == CXCursor_FunctionDecl)
     {
       const auto functionName = GetCursorSpelling(cursor);
@@ -445,11 +463,48 @@ namespace MB
           m_functionErrors.push_back(funcErrors);
       }
     }
+    else if (cursorKind == CXCursor_StructDecl)
+    {
+      auto name = GetCursorSpelling(cursor);
+      auto fullName = BuildFullName(m_captureStructs, name);
+      m_captureInfo.push_back(CaptureInfo(CaptureMode::Struct, m_level));
+      m_captureStructs.push_back(StructRecord(fullName));
+    }
+    else if (cursorKind == CXCursor_EnumDecl)
+    {
+      auto name = GetCursorSpelling(cursor);
+      auto fullName = BuildFullName(m_captureEnums, name);
+      m_captureInfo.push_back(CaptureInfo(CaptureMode::Enum, m_level));
+      m_captureEnums.push_back(EnumRecord(fullName));
+    }
+
 
     {
       ++m_level;
       clang_visitChildren(cursor, VistorForwarder, this);
       --m_level;
+
+      if (m_captureInfo.size() > 0 && m_level <= m_captureInfo.back().Level)
+      {
+        switch (m_captureInfo.back().Mode)
+        {
+        case CaptureMode::Struct:
+          assert(m_captureStructs.size() > 0);
+          m_structs[m_captureStructs.back().Name] = m_captureStructs.back();
+          m_captureStructs.pop_back();
+          break;
+        case CaptureMode::Enum:
+          assert(m_captureEnums.size() > 0);
+          m_enums[m_captureEnums.back().Name] = m_captureEnums.back();
+          m_captureEnums.pop_back();
+          break;
+        default:
+          std::cout << "WARNING: unhandled capture mode\n";
+          break;
+        }
+
+        m_captureInfo.pop_back();
+      }
     }
     return CXChildVisit_Continue;
   }

@@ -93,8 +93,12 @@
     <ClInclude Include="include\FslBase\Transition\TransitionVector2.hpp" />
     <ClInclude Include="include\RAIIGen\Capture.hpp" />
     <ClInclude Include="include\RAIIGen\CaptureConfig.hpp" />
+    <ClInclude Include="include\RAIIGen\ClangInfoDump.hpp" />
+    <ClInclude Include="include\RAIIGen\ClangUtil.hpp" />
     <ClInclude Include="include\RAIIGen\DuplicatedParameterName.hpp" />
     <ClInclude Include="include\RAIIGen\CaseUtil.hpp" />
+    <ClInclude Include="include\RAIIGen\EnumMemberRecord.hpp" />
+    <ClInclude Include="include\RAIIGen\EnumRecord.hpp" />
     <ClInclude Include="include\RAIIGen\FunctionErrors.hpp" />
     <ClInclude Include="include\RAIIGen\FunctionParameterNameOverride.hpp" />
     <ClInclude Include="include\RAIIGen\FunctionParameterTypeOverride.hpp" />
@@ -113,10 +117,12 @@
     <ClInclude Include="include\RAIIGen\Generator\MatchType.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\SimpleGeneratorConfig.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\VulkanGenerator.hpp" />
+    <ClInclude Include="include\RAIIGen\MemberRecord.hpp" />
     <ClInclude Include="include\RAIIGen\ParameterRecord.hpp" />
     <ClInclude Include="include\RAIIGen\ParameterType.hpp" />
     <ClInclude Include="include\RAIIGen\ProgramInfo.hpp" />
     <ClInclude Include="include\RAIIGen\StringHelper.hpp" />
+    <ClInclude Include="include\RAIIGen\StructRecord.hpp" />
     <ClInclude Include="include\RAIIGen\TypeRecord.hpp" />
     <ClInclude Include="source\FslBase\Math\Matrix3Fields.hpp" />
     <ClInclude Include="source\FslBase\Math\MatrixFields.hpp" />
@@ -175,6 +181,7 @@
     <ClCompile Include="source\FslBase\Transition\TransitionVector2.cpp" />
     <ClCompile Include="source\RAIIGen\Capture.cpp" />
     <ClCompile Include="source\RAIIGen\CaseUtil.cpp" />
+    <ClCompile Include="source\RAIIGen\ClangInfoDump.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\OpenCLGenerator.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\OpenGLESGenerator.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\OpenVXGenerator.cpp" />

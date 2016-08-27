@@ -77,6 +77,22 @@ namespace MB
       FunctionNamePair("vkCreateDisplayPlaneSurfaceKHR", "vkDestroySurfaceKHR"),
     };
 
+    struct RAIIClassCustomization
+    {
+      RAIIClassCustomization(const std::string& sourceCreateMethod)
+      {
+      }
+    };
+
+
+    const std::vector<RAIIClassCustomization> g_arrayFunctionNamePair
+    {
+      RAIIClassCustomization("vkAllocateCommandBuffers"),
+      RAIIClassCustomization("vkAllocateDescriptorSets"),
+      RAIIClassCustomization("vkCreateComputePipelines"),
+      RAIIClassCustomization("vkCreateGraphicsPipelines"),
+    };
+
 
     const std::vector<ClassFunctionAbsorb> g_classFunctionAbsorbtion
     {
