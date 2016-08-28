@@ -6,13 +6,15 @@ Vulkan
 - For the 'array' allocations spawn two classes one that allocates one object and one that allocates a array.
 - Some destructors require 'params' from the create struct, so detect that and add it as members to the RAII class.
 - Autogenerate the error code to string classes.
-- Generate 'convenience' methods by unrolling the 'create' struct. Hiding the 'standard' value params.
   These unrolled methods should be optional so add a DISABLE macro around them.
 - Autogenerate the 'enumerate' methods.
 - Finish the auto detection of 'member' candidates and add autogeneration code. These members should also be optional.  
+- Make the unroll code flexibe or vulkan specific.
 
 All:
 - Move the error code lookup back into a header file. So we are header only. 
   Any users can then do their own 'wrapper' hpp/cpp wrapper.
 - Autogenerate the error code to string classes.
 
+Done:
+- Vulkan: Generate 'convenience' methods by unrolling the 'create' struct. Hiding the 'standard' value params.

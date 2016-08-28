@@ -32,16 +32,19 @@ namespace MB
   {
     TypeRecord Type;
     std::string Name;
+    std::string ArgumentName;
 
     MemberRecord()
       : Type()
       , Name()
+      , ArgumentName()
     {
     }
 
     MemberRecord(const TypeRecord& type, const std::string& name)
       : Type(type)
       , Name(name)
+      , ArgumentName(name)
     {
     }
 
@@ -57,7 +60,7 @@ namespace MB
 
     bool operator==(const MemberRecord &rhs) const
     {
-      return Type == rhs.Type && Name == rhs.Name;
+      return Type == rhs.Type && Name == rhs.Name && ArgumentName == rhs.ArgumentName;
     }
 
     bool operator!=(const MemberRecord &rhs) const

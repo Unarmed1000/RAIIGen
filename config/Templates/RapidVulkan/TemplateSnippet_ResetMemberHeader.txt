@@ -3,6 +3,7 @@
     void Reset(##CREATE_METHOD_PARAMETERS##)
     {
 #ifndef RAPIDVULKAN_DISABLE_PARAM_VALIDATION##RESET_PARAMETER_VALIDATION##
+#else##RESET_ASSERT_VALIDATION##
 #endif
 
       // Free any currently allocated resource

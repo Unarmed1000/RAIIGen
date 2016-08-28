@@ -34,8 +34,10 @@ namespace MB
     const std::unordered_map<std::string, std::string> TypeDefaultValues;
     const std::vector<std::string> ForceNullParameter;
     const std::string TypeNamePrefix;
+    const bool UnrollCreateStructs;
 
     SimpleGeneratorConfig()
+      : UnrollCreateStructs(false)
     {
     }
 
@@ -43,12 +45,13 @@ namespace MB
     SimpleGeneratorConfig(const GeneratorConfig& config,
       const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
       const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
-      const std::string& typeNamePrefix)
+      const std::string& typeNamePrefix, const bool unrollCreateStructs)
       : GeneratorConfig(config)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)
       , TypeDefaultValues(typeDefaultValues)
       , ForceNullParameter(forceNullParameter)
       , TypeNamePrefix(typeNamePrefix)
+      , UnrollCreateStructs(unrollCreateStructs)
     {
     }
 
@@ -56,12 +59,13 @@ namespace MB
                           const std::vector<FunctionNamePair>& functionPairs, const std::vector<FunctionNamePair>& manualFunctionMatches,
                           const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion, 
                           const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
-                          const std::string& typeNamePrefix)
+                          const std::string& typeNamePrefix, const bool unrollCreateStructs)
       : GeneratorConfig(basicConfig, functionPairs, manualFunctionMatches)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)
       , TypeDefaultValues(typeDefaultValues)
       , ForceNullParameter(forceNullParameter)
       , TypeNamePrefix(typeNamePrefix)
+      , UnrollCreateStructs(unrollCreateStructs)
     {
     }
   };

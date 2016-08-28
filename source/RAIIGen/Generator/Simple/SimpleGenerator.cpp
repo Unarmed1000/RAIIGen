@@ -73,8 +73,10 @@ namespace MB
       std::string ResetVoidMemberSource;
       std::string ResetUnrollMemberHeader;
       std::string ResetUnrollMemberSource;
+      std::string ResetUnrollStructVariable;
       std::string DefaultValueMod;
       std::string IncludeResetMode;
+      std::string UnrolledWrap;
     };
 
 
@@ -97,6 +99,13 @@ namespace MB
         : Header(strHeader)
         , Source(strSource)
       {
+      }
+      
+      GeneratedMethodCode& operator+=(const GeneratedMethodCode& rhs)
+      {
+        Header += rhs.Header;
+        Source += rhs.Source;
+        return *this;
       }
     };
 
@@ -155,6 +164,7 @@ namespace MB
 
     struct MethodArgument
     {
+      TypeRecord FullType;
       std::string FullTypeString;
       std::string ArgumentName;
       std::string ParameterValue;
@@ -163,16 +173,18 @@ namespace MB
       {
       }
 
-      MethodArgument(const std::string& fullTypeString, const std::string& argumentName)
-        : FullTypeString(fullTypeString)
+      MethodArgument(const TypeRecord& fullType, const std::string& fullTypeString, const std::string& argumentName)
+        : FullType(fullType)
+        , FullTypeString(fullTypeString)
         , ArgumentName(argumentName)
         , ParameterValue(argumentName)
       {
       }
 
 
-      MethodArgument(const std::string& fullTypeString, const std::string& argumentName, const std::string& parameterValue)
-        : FullTypeString(fullTypeString)
+      MethodArgument(const TypeRecord& fullType, const std::string& fullTypeString, const std::string& argumentName, const std::string& parameterValue)
+        : FullType(fullType)
+        , FullTypeString(fullTypeString)
         , ArgumentName(argumentName)
         , ParameterValue(parameterValue)
       {
@@ -186,12 +198,90 @@ namespace MB
 
       bool operator==(const MethodArgument &rhs) const
       {
-        return FullTypeString == rhs.FullTypeString &&
+        return FullType == rhs.FullType &&
+          FullTypeString == rhs.FullTypeString &&
           ArgumentName == rhs.ArgumentName &&
           ParameterValue == rhs.ParameterValue;
       }
 
       bool operator!=(const MethodArgument &rhs) const
+      {
+        return !(*this == rhs);
+      }
+    };
+
+    enum class UnrollMode
+    {
+      Skipped,
+      Unrolled
+    };
+
+    struct UnrolledStructMember
+    {
+      UnrollMode Mode;
+      MethodArgument Argument;
+
+      UnrolledStructMember()
+        : Mode(UnrollMode::Skipped)
+        , Argument()
+      {
+      }
+
+      UnrolledStructMember(const UnrollMode& mode, const MethodArgument& member)
+        : Mode(mode)
+        , Argument(member)
+      {
+      }
+
+
+
+      bool operator==(const UnrolledStructMember &rhs) const
+      {
+        return Mode == rhs.Mode &&
+          Argument == rhs.Argument;
+      }
+
+      bool operator!=(const UnrolledStructMember &rhs) const
+      {
+        return !(*this == rhs);
+      }
+    };
+
+    struct UnrolledStruct
+    {
+      MethodArgument Source;
+      std::deque<UnrolledStructMember> Members;
+
+      UnrolledStruct(const MethodArgument& source)
+        : Source(source)
+        , Members()
+      {
+      }
+
+      bool operator==(const UnrolledStruct &rhs) const
+      {
+        return Source == rhs.Source &&
+          Members == rhs.Members;
+      }
+
+      bool operator!=(const UnrolledStruct &rhs) const
+      {
+        return !(*this == rhs);
+      }
+    };
+
+    struct UnrolledCreateMethod
+    {
+      std::deque<MethodArgument> MethodArguments;
+      std::deque<UnrolledStruct> UnrolledStructs;
+
+      bool operator==(const UnrolledCreateMethod &rhs) const
+      {
+        return MethodArguments == rhs.MethodArguments &&
+          UnrolledStructs == rhs.UnrolledStructs;
+      }
+
+      bool operator!=(const UnrolledCreateMethod &rhs) const
       {
         return !(*this == rhs);
       }
@@ -208,6 +298,7 @@ namespace MB
       std::deque<MethodArgument> MethodArguments;
       std::deque<MethodArgument> CreateArguments;
       std::deque<MethodArgument> DestroyArguments;
+      UnrolledCreateMethod UnrolledCreateMethod;
 
 
       bool operator==(const AnalysisResult &rhs) const
@@ -219,7 +310,8 @@ namespace MB
           AllMemberVariables == rhs.AllMemberVariables &&
           MethodArguments == rhs.MethodArguments &&
           CreateArguments == rhs.CreateArguments &&
-          DestroyArguments == rhs.DestroyArguments;
+          DestroyArguments == rhs.DestroyArguments && 
+          UnrolledCreateMethod == rhs.UnrolledCreateMethod;
       }
 
       bool operator!=(const AnalysisResult &rhs) const
@@ -294,6 +386,29 @@ namespace MB
     }
 
 
+    MethodArgument CPPifyArgument(const TypeRecord& type, const std::string& argumentName)
+    {
+      MethodArgument result;
+      result.FullType = type;
+      result.ArgumentName = argumentName;
+      result.ParameterValue = argumentName;
+
+      if (type.IsConstQualified && type.IsStruct && type.IsPointer)
+      {
+        result.FullTypeString = "const " + type.Name + "&";
+        result.ArgumentName = GetResourceArgumentName(type, argumentName);
+        result.ParameterValue = "&" + argumentName;
+      }
+      else if (type.IsConstQualified)
+        result.FullTypeString = type.FullTypeString;
+      else if (!type.IsPointer)
+        result.FullTypeString = "const " + type.FullTypeString;
+      else
+        result.FullTypeString = type.FullTypeString;
+      return result;
+    }
+
+
     MethodArgument ToMethodArgument(const ParameterRecord& value)
     {
       // C++'ify the arguments
@@ -314,30 +429,19 @@ namespace MB
       else
         fullTypeString = value.Type.FullTypeString;
 
-      return MethodArgument(fullTypeString, argumentName, parameterName);
+      return MethodArgument(value.Type, fullTypeString, argumentName, parameterName);
     }
+
 
     MethodArgument ToMethodArgument(const MemberVariable& value)
     {
-      // C++'ify the arguments
-      std::string fullTypeString;
-      std::string argumentName(value.ArgumentName);
-      std::string parameterName(value.ArgumentName);
+      return CPPifyArgument(value.FullType, value.ArgumentName);
+    }
 
-      if (value.FullType.IsConstQualified && value.FullType.IsStruct && value.FullType.IsPointer)
-      {
-        fullTypeString = "const " + value.FullType.Name + "&";
-        argumentName = GetResourceArgumentName(value.FullType, value.ArgumentName);
-        parameterName = "&" + argumentName;
-      }
-      else if (value.FullType.IsConstQualified)
-        fullTypeString = value.FullType.FullTypeString;
-      else if (!value.FullType.IsPointer)
-        fullTypeString = "const " + value.FullType.FullTypeString;
-      else
-        fullTypeString = value.FullType.FullTypeString;
 
-      return MethodArgument(fullTypeString, argumentName, parameterName);
+    MethodArgument ToMethodArgument(const MemberRecord& value)
+    {
+      return CPPifyArgument(value.Type, value.ArgumentName);
     }
 
 
@@ -711,7 +815,59 @@ namespace MB
     }
 
 
-    std::deque<FullAnalysis> Analyze(const SimpleGeneratorConfig& config, const FunctionAnalysis& functionAnalysis, std::unordered_set<std::string>& rTypesWithoutDefaultValues)
+    void AnalyzeCreateFunctionStructParameters(const Capture& capture, const SimpleGeneratorConfig& config, std::deque<FullAnalysis>& rFullAnalysis)
+    {
+      //std::cout << "Create function parameter struct analysis\n";
+      {
+        auto structDict = capture.GetStructDict();
+        for (auto itr = rFullAnalysis.begin(); itr != rFullAnalysis.end(); ++itr)
+        {
+          UnrolledCreateMethod unrolledCreateMethod;
+          std::unordered_set<std::string> uniqueNames;
+          for (auto itrParam = itr->Result.MethodArguments.begin(); itrParam != itr->Result.MethodArguments.end(); ++itrParam)
+          {
+            if (itrParam->FullType.IsStruct)
+            {
+              UnrolledStruct unrolledStruct(*itrParam);
+              auto itrStruct = structDict.find(itrParam->FullType.Name);
+              if (itrStruct != structDict.end())
+              {
+                std::cout << "  CreateFunction: " << itr->Pair.Create.Name << " found struct: " << itrParam->FullType.Name << "\n";
+                const auto & structRecord = itrStruct->second;
+                for (auto itrStruct = structRecord.Members.begin(); itrStruct != structRecord.Members.end(); ++itrStruct)
+                {
+                  if (itrStruct->Name != "sType" && itrStruct->Name != "pNext")
+                  {
+                    const auto argument = ToMethodArgument(*itrStruct);
+                    if (uniqueNames.find(argument.ArgumentName) != uniqueNames.end())
+                      throw std::runtime_error("Unique name clash");
+                    uniqueNames.insert(argument.ArgumentName);
+                    unrolledCreateMethod.MethodArguments.push_back(argument);
+                    unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Unrolled, ToMethodArgument(*itrStruct)));
+                  }
+                  else
+                    unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Skipped, ToMethodArgument(*itrStruct)));
+                  //std::cout << "    " << itrStruct->Type.FullTypeString << " " << itrStruct->Name << "\n";
+                }
+              }
+              unrolledCreateMethod.UnrolledStructs.push_back(unrolledStruct);
+            }
+            else
+            {
+              if (uniqueNames.find(itrParam->ArgumentName) != uniqueNames.end())
+                throw std::runtime_error("Unique name clash");
+              uniqueNames.insert(itrParam->ArgumentName);
+              unrolledCreateMethod.MethodArguments.push_back(*itrParam);
+            }
+          }
+          if (unrolledCreateMethod.UnrolledStructs.size() > 0)
+            itr->Result.UnrolledCreateMethod = std::move(unrolledCreateMethod);
+        }
+      }
+    }
+
+
+    std::deque<FullAnalysis> Analyze(const Capture& capture, const SimpleGeneratorConfig& config, const FunctionAnalysis& functionAnalysis, std::unordered_set<std::string>& rTypesWithoutDefaultValues)
     {
       std::deque<FullAnalysis> managed;
       for (auto itr = functionAnalysis.Matched.begin(); itr != functionAnalysis.Matched.end(); ++itr)
@@ -730,6 +886,9 @@ namespace MB
 
       // 
       AbsorbFunctions(managed, config.ClassFunctionAbsorbtion);
+
+      if( config.UnrollCreateStructs )
+        AnalyzeCreateFunctionStructParameters(capture, config, managed);
 
       for (auto itr = managed.begin(); itr != managed.end(); ++itr)
       {
@@ -752,6 +911,7 @@ namespace MB
       std::string createMethodParameterNames = GenerateParameterNameList(fullAnalysis.Result.MethodArguments);
       const std::string createFunctionArguments = GenerateExpandedParameterNameList(fullAnalysis.Result.CreateArguments);
       const std::string resetParamValidation = GenerateForAllMembers(snippets, fullAnalysis.Result.AdditionalMemberVariables, snippets.ResetParamValidation, config.TypeDefaultValues);
+      const std::string resetParamAsserts = GenerateForAllMembers(snippets, fullAnalysis.Result.AdditionalMemberVariables, snippets.ResetMemberAssertion, config.TypeDefaultValues);
 
       std::string content(activeSnippet);
       StringUtil::Replace(content, "##CLASS_NAME##", fullAnalysis.Result.ClassName);
@@ -760,6 +920,7 @@ namespace MB
       StringUtil::Replace(content, "##CREATE_FUNCTION_ARGUMENTS##", createFunctionArguments);
       StringUtil::Replace(content, "##CREATE_FUNCTION##", fullAnalysis.Pair.Create.Name);
       StringUtil::Replace(content, "##RESET_PARAMETER_VALIDATION##", resetParamValidation);
+      StringUtil::Replace(content, "##RESET_ASSERT_VALIDATION##", resetParamAsserts);
       StringUtil::Replace(content, "##SOURCE_FUNCTION_NAME##", fullAnalysis.Pair.Create.Name);
       return content;
     }
@@ -779,6 +940,130 @@ namespace MB
           resultSource += END_OF_LINE + END_OF_LINE + GenerateExtraCreate(config, snippets, snippetSource, snippetVoidSource, *itr, false);
         }
       }
+      return GeneratedMethodCode(resultHeader, resultSource);
+    }
+
+    // https://www.khronos.org/registry/vulkan/specs/1.0/xhtml/vkspec.html
+    // Any parameter that is a structure containing a sType member must have a value of sType which is a valid VkStructureType value matching 
+    // the type of the structure. As a general rule, the name of this value is obtained by taking the structure name, stripping the leading Vk, 
+    // prefixing each capital letter with _, converting the entire resulting string to upper case, and prefixing it with VK_STRUCTURE_TYPE_. 
+    // For example, structures of type VkImageCreateInfo must have a sType value of VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO.
+    std::string GenerateVulkanStructFlagName(const std::string structName)
+    {
+      if (structName.size() < 2 || structName[0] != 'V' || structName[1] != 'k')
+        throw NotSupportedException("the struct did not start with the expected Vk");
+
+      auto flagName =  structName.substr(2);
+      std::vector<char> dst(flagName.size() * 2);
+      std::size_t dstIndex = 0;
+      for (std::size_t i = 0; i < flagName.size(); ++i, ++dstIndex)
+      {
+        if (flagName[i] >= 'A' && flagName[i] <= 'Z')
+        {
+          dst[dstIndex] = '_';
+          ++dstIndex;
+        }
+        dst[dstIndex] = CaseUtil::UpperCase(flagName[i]);
+      }
+      return "VK_STRUCTURE_TYPE" + std::string(dst.data(), dstIndex);
+    }
+
+
+    std::string GenerateUnrolledStructLocalVariables(const std::string& snippet, const std::string& snippetSet, const FullAnalysis& fullAnalysis)
+    {
+      std::string result;
+      for (auto itr = fullAnalysis.Result.UnrolledCreateMethod.UnrolledStructs.begin(); itr != fullAnalysis.Result.UnrolledCreateMethod.UnrolledStructs.end(); ++itr)
+      {
+        std::string setMembers;
+        std::string variable = itr->Source.ArgumentName + ".";
+        for (auto itrMember = itr->Members.begin(); itrMember != itr->Members.end(); ++itrMember)
+        {
+          std::string contentM = snippetSet;
+          std::string value;
+          if (itrMember->Mode == UnrollMode::Skipped)
+          {
+            if (itrMember->Argument.ArgumentName == "sType")
+              value = GenerateVulkanStructFlagName(itr->Source.FullType.Name);
+            else if (itrMember->Argument.ArgumentName == "pNext")
+              value = "nullptr";
+            else
+              value = itrMember->Argument.ParameterValue;
+          }
+          else
+            value = itrMember->Argument.ParameterValue;
+
+          StringUtil::Replace(contentM, "##MEMBER_NAME##", variable + itrMember->Argument.ArgumentName);
+          StringUtil::Replace(contentM, "##MEMBER_ARGUMENT_NAME##", value);
+          setMembers += contentM + END_OF_LINE;
+        }
+
+
+        std::string content = snippet;
+        StringUtil::Replace(content, "##STRUCT_TYPE##", itr->Source.FullType.Name);
+        StringUtil::Replace(content, "##STRUCT_NAME##", itr->Source.ArgumentName);
+        StringUtil::Replace(content, "##STRUCT_SET_MEMBERS##", setMembers);
+        result += END_OF_LINE + content;
+      }
+      return result;
+    }
+
+    
+    std::string GenerateUnrolledCreate(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetFunction, const FullAnalysis& fullAnalysis, const bool allowAbsorb, const bool isConstructor)
+    {
+      if (!allowAbsorb && fullAnalysis.AbsorbedFunctions && fullAnalysis.AbsorbedFunctions->size() > 0)
+        throw NotSupportedException("Absorbed functions can not contain absorbed functions");
+
+      const auto& unrolledCreateMethod = fullAnalysis.Result.UnrolledCreateMethod;
+      if (fullAnalysis.Result.UnrolledCreateMethod.MethodArguments.size() <= 0)
+        return std::string();
+
+      std::string localVariables = GenerateUnrolledStructLocalVariables(snippets.ResetUnrollStructVariable, snippets.ResetSetMemberVariable, fullAnalysis);
+      std::string createMethodParameters = GenerateParameterList(fullAnalysis.Result.UnrolledCreateMethod.MethodArguments);
+      std::string createMethodParameterNames = GenerateParameterNameList(isConstructor ? fullAnalysis.Result.UnrolledCreateMethod.MethodArguments : fullAnalysis.Result.MethodArguments);
+      const std::string createFunctionArguments = GenerateExpandedParameterNameList(fullAnalysis.Result.CreateArguments);
+
+      std::string content(snippetFunction);
+      StringUtil::Replace(content, "##LOCAL_VARIABLES##", localVariables);
+      StringUtil::Replace(content, "##CLASS_NAME##", fullAnalysis.Result.ClassName);
+      StringUtil::Replace(content, "##CREATE_METHOD_PARAMETERS##", createMethodParameters);
+      StringUtil::Replace(content, "##CREATE_METHOD_PARAMETER_NAMES##", createMethodParameterNames);
+      StringUtil::Replace(content, "##CREATE_FUNCTION_ARGUMENTS##", createFunctionArguments);
+      StringUtil::Replace(content, "##CREATE_FUNCTION##", fullAnalysis.Pair.Create.Name);
+      StringUtil::Replace(content, "##SOURCE_FUNCTION_NAME##", fullAnalysis.Pair.Create.Name);
+      return content;
+    }
+
+    std::string UnrolledWrap(const std::string& source, const std::string& snippet)
+    {
+      if (source.size() <= 0)
+        return source;
+
+      std::string content(snippet);
+      StringUtil::Replace(content, "##UNROLLED_METHODS##", source);
+      return content;
+    }
+
+    GeneratedMethodCode GenerateUnrolledCreates(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetHeader, const std::string& snippetSource, const FullAnalysis& fullAnalysis, const bool isConstructor)
+    {
+      std::string resultHeader = GenerateUnrolledCreate(config, snippets, snippetHeader, fullAnalysis, true, isConstructor);
+      std::string resultSource = GenerateUnrolledCreate(config, snippets, snippetSource, fullAnalysis, true, isConstructor);
+
+      if (fullAnalysis.AbsorbedFunctions && fullAnalysis.AbsorbedFunctions->size() > 0)
+      {
+        for (auto itr = fullAnalysis.AbsorbedFunctions->begin(); itr != fullAnalysis.AbsorbedFunctions->end(); ++itr)
+        {
+          const auto tmpHeader = GenerateUnrolledCreate(config, snippets, snippetHeader, *itr, false, isConstructor);
+          if(tmpHeader.size() > 0)
+            resultHeader += END_OF_LINE + END_OF_LINE + tmpHeader;
+          const auto tmpSource = GenerateUnrolledCreate(config, snippets, snippetSource, *itr, false, isConstructor);
+          if (tmpSource.size() > 0)
+            resultSource += END_OF_LINE + END_OF_LINE + tmpSource;
+        }
+      }
+
+      resultHeader = UnrolledWrap(resultHeader, snippets.UnrolledWrap);
+      resultSource = UnrolledWrap(resultSource, snippets.UnrolledWrap);
+
       return GeneratedMethodCode(resultHeader, resultSource);
     }
 
@@ -898,6 +1183,19 @@ namespace MB
 
       auto classExtraConstructors = GenerateExtraCreates(config, snippets, snippets.CreateConstructorHeader, snippets.CreateConstructorSource, snippets.CreateVoidConstructorHeader, snippets.CreateVoidConstructorSource, fullAnalysis);
       auto classExtraResetMethods = GenerateExtraCreates(config, snippets, snippets.ResetMemberHeader, snippets.ResetMemberSource, snippets.ResetVoidMemberHeader, snippets.ResetVoidMemberSource, fullAnalysis);
+      auto classUnrolledConstructors = GenerateUnrolledCreates(config, snippets, snippets.CreateConstructorHeader, snippets.CreateConstructorSource, fullAnalysis, true);
+      auto classUnrolledResetMethods = GenerateUnrolledCreates(config, snippets, snippets.ResetUnrollMemberHeader, snippets.ResetUnrollMemberSource, fullAnalysis, false);
+
+      if (classUnrolledConstructors.Header.size() > 0)
+      {
+        classExtraConstructors += GeneratedMethodCode(END_OF_LINE + END_OF_LINE);
+        classExtraConstructors += classUnrolledConstructors;
+      }
+      if (classUnrolledResetMethods.Header.size() > 0)
+      {
+        classExtraResetMethods += GeneratedMethodCode(END_OF_LINE + END_OF_LINE);
+        classExtraResetMethods += classUnrolledResetMethods;
+      }
 
       const std::string additionalIncludes = GenerateAdditionalIncludes(config, snippets, fullAnalysis);
 
@@ -936,37 +1234,6 @@ namespace MB
       StringUtil::Replace(content, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
       StringUtil::Replace(content, "##HANDLE_CLASS_NAME##", snippets.HandleClassName);
       return content;
-    }
-
-    void TestCreateFunctionStructParameters(const Capture& capture, const SimpleGeneratorConfig& config, const std::deque<FullAnalysis>& fullAnalysis)
-    {
-      std::cout << "Create function parameter struct analysis\n";
-      {
-        auto structDict = capture.GetStructDict();
-        for (auto itr = fullAnalysis.begin(); itr != fullAnalysis.end(); ++itr)
-        {
-          for (auto itrParam = itr->Pair.Create.Parameters.begin(); itrParam != itr->Pair.Create.Parameters.end(); ++itrParam)
-          {
-            if (!IsIgnoreParameter(*itrParam, config.ForceNullParameter) && itrParam->Type.IsStruct)
-            {
-              auto itrStruct = structDict.find(itrParam->Type.Name);
-              if (itrStruct != structDict.end())
-              {
-                std::cout << "  CreateFunction: " << itr->Pair.Create.Name << " found struct: " << itrParam->Type.Name << "\n";
-                const auto & structRecord = itrStruct->second;
-                for (auto itrStruct = structRecord.Members.begin(); itrStruct != structRecord.Members.end(); ++itrStruct)
-                {
-                  std::cout << "    " << itrStruct->Type.FullTypeString << " " << itrStruct->Name << "\n";
-                }
-              }
-              else
-              {
-                std::cout << "  CreateFunction: " << itr->Pair.Create.Name << " not found struct: " << itrParam->Type.Name << "\n";
-              }
-            }
-          }
-        }
-      }
     }
   }
 
@@ -1009,8 +1276,10 @@ namespace MB
     const auto pathSnippetResetVoidMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetVoidMemberSource.txt");
     const auto pathSnippetResetUnrollMemberHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetUnrollMemberHeader.txt");
     const auto pathSnippetResetUnrollMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetUnrollMemberSource.txt");
+    const auto pathSnippetResetUnrollStructVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetUnrollStructVariable.txt");
     const auto pathSnippetDefaultValueMod = IO::Path::Combine(templateRoot, "TemplateSnippet_DefaultValueMod.txt");
     const auto pathSnippetIncludeResetMode = IO::Path::Combine(templateRoot, "TemplateSnippet_IncludeResetMode.txt");
+    const auto pathSnippetUnrolledWrap = IO::Path::Combine(templateRoot, "TemplateSnippet_UnrolledWrap.txt");
 
     const auto sourceTemplate = IO::File::ReadAllText(pathSource);
     Snippets snippets;
@@ -1034,14 +1303,15 @@ namespace MB
     snippets.ResetVoidMemberSource = IO::File::ReadAllText(pathSnippetResetVoidMemberSource);
     snippets.ResetUnrollMemberHeader = IO::File::ReadAllText(pathSnippetResetUnrollMemberHeader);
     snippets.ResetUnrollMemberSource = IO::File::ReadAllText(pathSnippetResetUnrollMemberSource);
+    snippets.ResetUnrollStructVariable = IO::File::ReadAllText(pathSnippetResetUnrollStructVariable);
     snippets.DefaultValueMod= IO::File::ReadAllText(pathSnippetDefaultValueMod);
     snippets.IncludeResetMode = IO::File::ReadAllText(pathSnippetIncludeResetMode);
+    snippets.UnrolledWrap = IO::File::ReadAllText(pathSnippetUnrolledWrap);
 
     std::unordered_set<std::string> typesWithoutDefaultValues;
 
-    auto fullAnalysis = Analyze(config, m_functionAnalysis, typesWithoutDefaultValues);
+    auto fullAnalysis = Analyze(capture, config, m_functionAnalysis, typesWithoutDefaultValues);
 
-    TestCreateFunctionStructParameters(capture, config, fullAnalysis);
 
     const bool generateSourceFile = sourceTemplate.size() > 0;
     for (auto itr = fullAnalysis.begin(); itr != fullAnalysis.end(); ++itr)
