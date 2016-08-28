@@ -571,7 +571,15 @@ namespace MB
 
       for (auto itr = functions.Destroy.Parameters.begin(); itr != functions.Destroy.Parameters.end(); ++itr)
       {
-        result.DestroyArguments.push_back(dstMap[itr->ArgumentName]);
+        auto itrFindDst = dstMap.find(itr->ArgumentName);
+        if(itrFindDst != dstMap.end() )
+          result.DestroyArguments.push_back(itrFindDst->second);
+        // FIX: enable
+        //else
+        //{
+        //  LookupParameterInStruct()
+        //  throw NotSupportedException("The destroy parameter could not be found");
+        //}
       }
 
       if (!result.ResourceMemberVariable.IsValid())
@@ -815,6 +823,7 @@ namespace MB
     }
 
 
+    //! Analyze the create parameters and 'unroll' the structs 
     void AnalyzeCreateFunctionStructParameters(const Capture& capture, const SimpleGeneratorConfig& config, std::deque<FullAnalysis>& rFullAnalysis)
     {
       //std::cout << "Create function parameter struct analysis\n";
@@ -1073,8 +1082,7 @@ namespace MB
       std::string content;
       for (auto itr = allMemberVariables.begin(); itr != allMemberVariables.end(); ++itr)
       {
-        const auto resourceAsArgument = ToMethodArgument(*itr);
-        content += resourceAsArgument.FullTypeString + " " + resourceAsArgument.ArgumentName;
+        content += std::string("const ") + itr->Type + " " + itr->ArgumentName;
         if ((itr + 1) != allMemberVariables.end())
           content += ", ";
       }
@@ -1086,8 +1094,7 @@ namespace MB
       std::string content;
       for (auto itr = allMemberVariables.begin(); itr != allMemberVariables.end(); ++itr)
       {
-        const auto resourceAsArgument = ToMethodArgument(*itr);
-        content += resourceAsArgument.ArgumentName;
+        content += itr->ArgumentName;
         if ((itr + 1) != allMemberVariables.end())
           content += ", ";
       }
