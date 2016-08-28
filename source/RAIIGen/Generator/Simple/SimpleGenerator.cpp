@@ -71,6 +71,8 @@ namespace MB
       std::string CreateVoidConstructorSource;
       std::string ResetVoidMemberHeader;
       std::string ResetVoidMemberSource;
+      std::string ResetUnrollMemberHeader;
+      std::string ResetUnrollMemberSource;
       std::string DefaultValueMod;
       std::string IncludeResetMode;
     };
@@ -1005,6 +1007,8 @@ namespace MB
     const auto pathSnippetCreateVoidConstructorSource = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateVoidConstructorSource.txt");
     const auto pathSnippetResetVoidMemberHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetVoidMemberHeader.txt");
     const auto pathSnippetResetVoidMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetVoidMemberSource.txt");
+    const auto pathSnippetResetUnrollMemberHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetUnrollMemberHeader.txt");
+    const auto pathSnippetResetUnrollMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetUnrollMemberSource.txt");
     const auto pathSnippetDefaultValueMod = IO::Path::Combine(templateRoot, "TemplateSnippet_DefaultValueMod.txt");
     const auto pathSnippetIncludeResetMode = IO::Path::Combine(templateRoot, "TemplateSnippet_IncludeResetMode.txt");
 
@@ -1028,6 +1032,8 @@ namespace MB
     snippets.CreateVoidConstructorSource = IO::File::ReadAllText(pathSnippetCreateVoidConstructorSource);
     snippets.ResetVoidMemberHeader = IO::File::ReadAllText(pathSnippetResetVoidMemberHeader);
     snippets.ResetVoidMemberSource = IO::File::ReadAllText(pathSnippetResetVoidMemberSource);
+    snippets.ResetUnrollMemberHeader = IO::File::ReadAllText(pathSnippetResetUnrollMemberHeader);
+    snippets.ResetUnrollMemberSource = IO::File::ReadAllText(pathSnippetResetUnrollMemberSource);
     snippets.DefaultValueMod= IO::File::ReadAllText(pathSnippetDefaultValueMod);
     snippets.IncludeResetMode = IO::File::ReadAllText(pathSnippetIncludeResetMode);
 
