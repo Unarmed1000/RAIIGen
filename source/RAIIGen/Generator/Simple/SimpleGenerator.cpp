@@ -127,6 +127,8 @@ namespace MB
       std::string Name;
 
       std::string ArgumentName;
+      // The name of the original source argument
+      std::string SourceArgumentName;
       std::string NiceNameUpperCamelCase;
 
       MemberVariable()
@@ -138,6 +140,7 @@ namespace MB
         , Type(type)
         , Name(name)
         , ArgumentName(argumentName)
+        , SourceArgumentName(argumentName)
         , NiceNameUpperCamelCase(niceNameUpperCamelCase)
       {
       }
@@ -153,6 +156,7 @@ namespace MB
           Type == rhs.Type &&
           Name == rhs.Name &&
           ArgumentName == rhs.ArgumentName &&
+          SourceArgumentName == rhs.SourceArgumentName &&
           NiceNameUpperCamelCase == rhs.NiceNameUpperCamelCase;
       }
 
@@ -385,6 +389,11 @@ namespace MB
       return MemberVariable(value.Type, value.Type.Name, "m_" + value.ArgumentName, value.ArgumentName, CaseUtil::UpperCaseFirstCharacter(value.ArgumentName));
     }
 
+    MemberVariable ToMemberVariable(const MemberRecord& value)
+    {
+      return MemberVariable(value.Type, value.Type.Name, "m_" + value.ArgumentName, value.ArgumentName, CaseUtil::UpperCaseFirstCharacter(value.ArgumentName));
+    }
+
 
     MethodArgument CPPifyArgument(const TypeRecord& type, const std::string& argumentName)
     {
@@ -452,8 +461,43 @@ namespace MB
       return StringHelper::EnforceLowerCamelCaseNameStyle(typeName.substr(typeNamePrefix.size()));
     }
 
+    struct ParamInStruct
+    {
+      MethodArgument SourceParameter;
+      StructRecord SourceStruct;
+      MemberRecord StructMember;
+      ParamInStruct(const MethodArgument& sourceParameter, const StructRecord& sourceStruct, const MemberRecord& structMember)
+        : SourceParameter(sourceParameter)
+        , SourceStruct(sourceStruct)
+        , StructMember(structMember)
+      {
+      }
+    };
 
-    AnalysisResult Analyze(const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const std::string& lowerCamelCaseClassName, const std::vector<std::string>& forceNullParameter)
+    ParamInStruct LookupParameterInStruct(const Capture& capture, const std::deque<MethodArgument>& createParameters, const ParameterRecord& findParameter)
+    {
+      auto structDict = capture.GetStructDict();
+
+      for (auto itr = createParameters.begin(); itr != createParameters.end(); ++itr)
+      {
+        if (itr->FullType.IsStruct)
+        {
+          const auto itrStruct = structDict.find(itr->FullType.Name);
+          if (itrStruct != structDict.end())
+          {
+            for (auto itrStructMembers = itrStruct->second.Members.begin(); itrStructMembers != itrStruct->second.Members.end(); ++itrStructMembers)
+            {
+              if (itrStructMembers->Type == findParameter.Type && itrStructMembers->ArgumentName == findParameter.ArgumentName)
+                return ParamInStruct(*itr, itrStruct->second, *itrStructMembers);
+            }
+          }
+        }
+      }
+      throw NotSupportedException("The destroy parameter could not be found");
+    }
+
+
+    AnalysisResult Analyze(const Capture& capture, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const std::string& lowerCamelCaseClassName, const std::vector<std::string>& forceNullParameter)
     {
       bool resourceParameterFound = false;
       std::unordered_map<std::string, MethodArgument> dstMap;
@@ -574,12 +618,15 @@ namespace MB
         auto itrFindDst = dstMap.find(itr->ArgumentName);
         if(itrFindDst != dstMap.end() )
           result.DestroyArguments.push_back(itrFindDst->second);
-        // FIX: enable
-        //else
-        //{
-        //  LookupParameterInStruct()
-        //  throw NotSupportedException("The destroy parameter could not be found");
-        //}
+        else
+        {
+          auto found = LookupParameterInStruct(capture, result.CreateArguments, *itr);
+          auto asMember = ToMemberVariable(found.StructMember);
+          asMember.SourceArgumentName = found.SourceParameter.ArgumentName + "." + asMember.ArgumentName;
+
+          result.AllMemberVariables.push_back(asMember);
+          result.DestroyArguments.push_back(ToMethodArgument(asMember));
+        }
       }
 
       if (!result.ResourceMemberVariable.IsValid())
@@ -706,7 +753,7 @@ namespace MB
     }
 
 
-    std::string GenerateForAllMembers(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables, const std::string snippetTemplate, const std::unordered_map<std::string, std::string>& typeDefaultValues)
+    std::string GenerateForAllMembers(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables, const std::string snippetTemplate, const std::unordered_map<std::string, std::string>& typeDefaultValues, const bool useSourceArgument = false)
     {
       const bool scriptUsesDefaultValue = ContainsDefaultValue(snippetTemplate);
 
@@ -715,7 +762,7 @@ namespace MB
       {
         std::string snippet = snippetTemplate;
         StringUtil::Replace(snippet, "##MEMBER_NAME##", itr->Name);
-        StringUtil::Replace(snippet, "##MEMBER_ARGUMENT_NAME##", itr->ArgumentName);
+        StringUtil::Replace(snippet, "##MEMBER_ARGUMENT_NAME##", useSourceArgument ? itr->SourceArgumentName : itr->ArgumentName);
         if (scriptUsesDefaultValue)
         {
           ReplaceDefaultValue(snippet, itr->Type, typeDefaultValues, snippets);
@@ -886,7 +933,7 @@ namespace MB
         else
           std::cout << "Matched: " << itr->Create.Name << " with " << itr->Destroy.Name << "\n";
 
-        const auto result = Analyze(config, *itr, CaseUtil::LowerCaseFirstCharacter(itr->Name), config.ForceNullParameter);
+        const auto result = Analyze(capture, config, *itr, CaseUtil::LowerCaseFirstCharacter(itr->Name), config.ForceNullParameter);
 
         CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
 
@@ -1177,7 +1224,8 @@ namespace MB
 
       const std::string memberParameters = GenerateMemberAsParameters(fullAnalysis.Result.AllMemberVariables);
       const std::string memberParameterNames = GenerateMemberAsNames(fullAnalysis.Result.AllMemberVariables);
-      const std::string resetSetMembers = GenerateForAllMembers(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetSetMemberVariable, config.TypeDefaultValues);
+      const std::string resetSetMembers = GenerateForAllMembers(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetSetMemberVariable, config.TypeDefaultValues, true);
+      const std::string resetSetMembersNormal = GenerateForAllMembers(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetSetMemberVariable, config.TypeDefaultValues);
       const std::string defaultConstructorInitialization = GenerateConstructorInitialization(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ConstructorMemberInitialization, config.TypeDefaultValues);
       const std::string moveConstructorMemberInitialization = GenerateConstructorInitialization(snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveConstructorClaimMember, config.TypeDefaultValues);
       const std::string moveAssignmentClaimMembers = GenerateForAllMembers(snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveAssignmentClaimMember, config.TypeDefaultValues);
@@ -1225,6 +1273,7 @@ namespace MB
 
       StringUtil::Replace(content, "##DESTROY_FUNCTION##", fullAnalysis.Pair.Destroy.Name);
       StringUtil::Replace(content, "##RESET_SET_MEMBERS##", resetSetMembers);
+      StringUtil::Replace(content, "##RESET_SET_MEMBERS_NORMAL##", resetSetMembersNormal);
       StringUtil::Replace(content, "##RESOURCE_INTERMEDIARY_NAME##", fullAnalysis.Result.IntermediaryName);
       StringUtil::Replace(content, "##RESET_MEMBER_ASSERTIONS##", resetMemberAssertions);
       StringUtil::Replace(content, "##RESET_INVALIDATE_MEMBERS##", resetInvalidateMembers);

@@ -117,7 +117,7 @@ namespace Fsl
         if (IsValid())
           Reset();
 
-##RESET_SET_MEMBERS##
+##RESET_SET_MEMBERS_NORMAL##
       }
 
 ##CLASS_EXTRA_RESET_METHODS_HEADER####CLASS_ADDITIONAL_GET_MEMBER_VARIABLE_METHODS##

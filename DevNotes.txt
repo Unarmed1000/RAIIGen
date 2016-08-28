@@ -2,13 +2,12 @@ Just some dev notes on features that might or might not be added in the future.
 
 Vulkan
 - Add VK_HEADER_VERSION information to the generated code
-- Some destructors require 'params' from the create struct, so detect that and add it as members to the RAII class.
 - Scan the documentation HTML and add it as doxygen comments in the generated code.
 - For the 'array' allocations spawn two classes one that allocates one object and one that allocates a array.
-- Autogenerate the error code to string classes.
-  These unrolled methods should be optional so add a DISABLE macro around them.
-- Autogenerate the 'enumerate' methods.
+- For the 'array' allocations: Make sure that the 'count' params dont get added as members.
 - Finish the auto detection of 'member' candidates and add autogeneration code. These members should also be optional.  
+- Autogenerate the error code to string classes.
+- Autogenerate the 'enumerate' methods.
 - Make the unroll code flexibe or vulkan specific. For now its just disabled for everything but vulkan.
 
 All:
@@ -17,4 +16,6 @@ All:
 - Autogenerate the error code to string classes.
 
 Done:
+- VULKAN: Some destructors require 'params' from the create struct, so detect that and add it as members to the RAII class.
+  VULKAN: These unrolled methods should be optional so add a DISABLE macro around them.
 - Vulkan: Generate 'convenience' methods by unrolling the 'create' struct. Hiding the 'standard' value params.
