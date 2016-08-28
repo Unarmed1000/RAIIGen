@@ -463,10 +463,10 @@ namespace MB
 
     struct ParamInStruct
     {
-      ParameterRecord SourceParameter;
+      MethodArgument SourceParameter;
       StructRecord SourceStruct;
       MemberRecord StructMember;
-      ParamInStruct(const ParameterRecord& sourceParameter, const StructRecord& sourceStruct, const MemberRecord& structMember)
+      ParamInStruct(const MethodArgument& sourceParameter, const StructRecord& sourceStruct, const MemberRecord& structMember)
         : SourceParameter(sourceParameter)
         , SourceStruct(sourceStruct)
         , StructMember(structMember)
@@ -474,15 +474,15 @@ namespace MB
       }
     };
 
-    ParamInStruct LookupParameterInStruct(const Capture& capture, const std::deque<ParameterRecord>& createParameters, const ParameterRecord& findParameter)
+    ParamInStruct LookupParameterInStruct(const Capture& capture, const std::deque<MethodArgument>& createParameters, const ParameterRecord& findParameter)
     {
       auto structDict = capture.GetStructDict();
 
       for (auto itr = createParameters.begin(); itr != createParameters.end(); ++itr)
       {
-        if (itr->Type.IsStruct)
+        if (itr->FullType.IsStruct)
         {
-          const auto itrStruct = structDict.find(itr->Type.Name);
+          const auto itrStruct = structDict.find(itr->FullType.Name);
           if (itrStruct != structDict.end())
           {
             for (auto itrStructMembers = itrStruct->second.Members.begin(); itrStructMembers != itrStruct->second.Members.end(); ++itrStructMembers)
@@ -620,8 +620,7 @@ namespace MB
           result.DestroyArguments.push_back(itrFindDst->second);
         else
         {
-          // FIX: use result.CreateArguments instead of functions.Create.Parameters 
-          auto found = LookupParameterInStruct(capture, functions.Create.Parameters, *itr);
+          auto found = LookupParameterInStruct(capture, result.CreateArguments, *itr);
           auto asMember = ToMemberVariable(found.StructMember);
           asMember.SourceArgumentName = found.SourceParameter.ArgumentName + "." + asMember.ArgumentName;
 
