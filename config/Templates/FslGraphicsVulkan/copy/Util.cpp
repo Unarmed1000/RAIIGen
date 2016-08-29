@@ -1,5 +1,3 @@
-#ifndef FSLGRAPHICS##NAMESPACE_NAME!##_CHECK_HPP
-#define FSLGRAPHICS##NAMESPACE_NAME!##_CHECK_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
@@ -31,16 +29,27 @@
 *
 ****************************************************************************************************************************************************/
 
-// ##AG_TOOL_STATEMENT##
-// Auto generation template based on RapidVulkan https://github.com/Unarmed1000/RapidVulkan with permission.
-
 #include <FslGraphics##NAMESPACE_NAME##/Util.hpp>
+#include <FslGraphics##NAMESPACE_NAME##/DebugStrings.hpp>
+#include <sstream>
 
-// Define some ease of use macros for logging.
-// Please beware that these are not pulled in by any of the RAII classes, so its 100% up to the user of the library to include it
-// if the functionality is desired.
+namespace Fsl
+{
+  namespace Vulkan
+  {
+    std::string Util::ToNiceMessage(const std::string& message, const VkResult errorCode)
+    {
+      std::stringstream stream;
+      stream << message << " failed with error code " << Debug::ErrorCodeToString(errorCode) << " (" << errorCode <<")";
+      return stream.str();
+    }
 
-#define FSLGRAPHICSVULKAN_CHECK(X)                  Fsl::Vulkan::Util::Check((X), #X, __FILE__, __LINE__)
-#define FSLGRAPHICSVULKAN_CHECK2(X, mESSAGE)        Fsl::Vulkan::Util::Check((X), (mESSAGE), __FILE__, __LINE__)
 
-#endif
+    std::string Util::ToNiceMessage(const std::string& message, const VkResult errorCode, const std::string& fileName, const int lineNumber)
+    {
+      std::stringstream stream;
+      stream << message << " failed with error code " << Debug::ErrorCodeToString(errorCode) << " (" << errorCode <<") at " << fileName << "(" << lineNumber << ")";
+      return stream.str();
+    }
+  }
+}

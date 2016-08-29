@@ -1,1 +1,1 @@
-      ##MEMBER_SEPERATOR## ##MEMBER_NAME##(std::move(other.##MEMBER_NAME##))
+        ##MEMBER_SEPERATOR## ##MEMBER_NAME##(std::move(other.##MEMBER_NAME##))

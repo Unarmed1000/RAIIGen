@@ -1,5 +1,5 @@
-#ifndef FSLGRAPHICS##NAMESPACE_NAME!##_CHECK_HPP
-#define FSLGRAPHICS##NAMESPACE_NAME!##_CHECK_HPP
+#ifndef FSLGRAPHICS##NAMESPACE_NAME!##_DEBUGSTRINGS_HPP
+#define FSLGRAPHICS##NAMESPACE_NAME!##_DEBUGSTRINGS_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
@@ -31,16 +31,22 @@
 *
 ****************************************************************************************************************************************************/
 
-// ##AG_TOOL_STATEMENT##
-// Auto generation template based on RapidVulkan https://github.com/Unarmed1000/RapidVulkan with permission.
+// Based on RapidVulkan https://github.com/Unarmed1000/RapidVulkan with permission.
 
-#include <FslGraphics##NAMESPACE_NAME##/Util.hpp>
+// Make sure Common.hpp is the first include file (to make the error message as helpful as possible when disabled)
+#include <FslGraphics##NAMESPACE_NAME##/Common.hpp>
+#include <vulkan/vulkan.h>
 
-// Define some ease of use macros for logging.
-// Please beware that these are not pulled in by any of the RAII classes, so its 100% up to the user of the library to include it
-// if the functionality is desired.
-
-#define FSLGRAPHICSVULKAN_CHECK(X)                  Fsl::Vulkan::Util::Check((X), #X, __FILE__, __LINE__)
-#define FSLGRAPHICSVULKAN_CHECK2(X, mESSAGE)        Fsl::Vulkan::Util::Check((X), (mESSAGE), __FILE__, __LINE__)
+namespace Fsl
+{
+  namespace Vulkan
+  {
+    namespace Debug
+    {
+      //! @brief Convert the error code to a string
+      extern const char* ErrorCodeToString(const VkResult result);
+    };
+  }
+}
 
 #endif

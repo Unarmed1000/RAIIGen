@@ -49,7 +49,7 @@ namespace Fsl
       {
         if (errorCode != CL_SUCCESS)
         {
-          throw OpenCLErrorException("Unknown", errorCode);
+          throw OpenCLErrorException(ToNiceMessage("Unknown", errorCode), errorCode);
         }
       }
 

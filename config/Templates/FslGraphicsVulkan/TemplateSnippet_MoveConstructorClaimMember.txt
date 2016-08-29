@@ -1,1 +1,1 @@
-      ##MEMBER_SEPERATOR## ##MEMBER_NAME##(other.##MEMBER_NAME##)
+        ##MEMBER_SEPERATOR## ##MEMBER_NAME##(other.##MEMBER_NAME##)

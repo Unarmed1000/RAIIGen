@@ -1,2 +1,2 @@
-      ##STRUCT_TYPE## ##STRUCT_NAME##{};
+        ##STRUCT_TYPE## ##STRUCT_NAME##{};
 ##STRUCT_SET_MEMBERS##

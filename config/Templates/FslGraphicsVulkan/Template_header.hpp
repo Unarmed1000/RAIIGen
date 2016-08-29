@@ -35,7 +35,6 @@
 // Auto generation template based on RapidVulkan https://github.com/Unarmed1000/RapidVulkan with permission.
 
 #include <FslGraphics##NAMESPACE_NAME##/Common.hpp>
-#include <FslGraphics##NAMESPACE_NAME##/CustomTypes.hpp>
 #include <FslGraphics##NAMESPACE_NAME##/Util.hpp>##ADDITIONAL_INCLUDES##
 #include <FslBase/Attributes.hpp>
 #include <vulkan/vulkan.h>

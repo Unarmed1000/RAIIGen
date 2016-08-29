@@ -101,7 +101,7 @@ namespace MB
     }
 
 
-    MethodArgument CPPifyArgument(const TypeRecord& type, const std::string& argumentName)
+    MethodArgument CPPifyArgument(const TypeRecord& type, const std::string& argumentName, const bool allowPointerToReferenceConversion)
     {
       MethodArgument result;
       result.FullType = type;
@@ -110,9 +110,18 @@ namespace MB
 
       if (type.IsConstQualified && type.IsStruct && type.IsPointer)
       {
-        result.FullTypeString = "const " + type.Name + "&";
-        result.ArgumentName = GetResourceArgumentName(type, argumentName);
-        result.ParameterValue = "&" + argumentName;
+        if (allowPointerToReferenceConversion)
+        {
+          result.FullTypeString = "const " + type.Name + "&";
+          result.ArgumentName = GetResourceArgumentName(type, argumentName);
+          result.ParameterValue = "&" + argumentName;
+        }
+        else
+        {
+          result.FullTypeString = type.Name + "*const";
+          result.ArgumentName = argumentName;
+          result.ParameterValue = argumentName;
+        }
       }
       else if (type.IsConstQualified)
         result.FullTypeString = type.FullTypeString;
@@ -150,13 +159,13 @@ namespace MB
 
     MethodArgument ToMethodArgument(const MemberVariable& value)
     {
-      return CPPifyArgument(value.FullType, value.ArgumentName);
+      return CPPifyArgument(value.FullType, value.ArgumentName, true);
     }
 
 
-    MethodArgument ToMethodArgument(const MemberRecord& value)
+    MethodArgument ToMethodArgument(const MemberRecord& value, const bool allowPointerToReferenceConversion=true)
     {
-      return CPPifyArgument(value.Type, value.ArgumentName);
+      return CPPifyArgument(value.Type, value.ArgumentName, allowPointerToReferenceConversion);
     }
 
 
@@ -716,15 +725,14 @@ namespace MB
                   {
                     if (itrCustom != config.RAIIClassCustomizations.end() && itrCustom->ArrayCountName == itrStruct->ArgumentName )
                     {
-                      // FIX:
-                      const auto argument = ToMethodArgument(*itrStruct);
+                      const auto argument = ToMethodArgument(*itrStruct, false);
                       switch (itr->Mode)
                       {
                       case AnalyzeMode::SingleInstance:
-                        unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Counter1, ToMethodArgument(*itrStruct)));
+                        unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Counter1, ToMethodArgument(*itrStruct, false)));
                         break;
                       case AnalyzeMode::VectorInstance:
-                        unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Size, ToMethodArgument(*itrStruct)));
+                        unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Size, ToMethodArgument(*itrStruct, false)));
                         unrolledCreateMethod.MethodArguments.push_back(argument);
                         break;
                       default:
@@ -733,16 +741,16 @@ namespace MB
                     }
                     else
                     {
-                      const auto argument = ToMethodArgument(*itrStruct);
+                      const auto argument = ToMethodArgument(*itrStruct, false);
                       if (uniqueNames.find(argument.ArgumentName) != uniqueNames.end())
                         throw std::runtime_error("Unique name clash");
                       uniqueNames.insert(argument.ArgumentName);
                       unrolledCreateMethod.MethodArguments.push_back(argument);
-                      unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Unrolled, ToMethodArgument(*itrStruct)));
+                      unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Unrolled, ToMethodArgument(*itrStruct, false)));
                     }
                   }
                   else
-                    unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Skipped, ToMethodArgument(*itrStruct)));
+                    unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Skipped, ToMethodArgument(*itrStruct, false)));
                   //std::cout << "    " << itrStruct->Type.FullTypeString << " " << itrStruct->Name << "\n";
                 }
               }

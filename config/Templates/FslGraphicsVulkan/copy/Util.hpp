@@ -34,7 +34,7 @@
 // ##AG_TOOL_STATEMENT##
 // Auto generation template based on RapidVulkan https://github.com/Unarmed1000/RapidVulkan with permission.
 
-#include <<FslGraphics##NAMESPACE_NAME##/Exceptions.hpp>
+#include <FslGraphics##NAMESPACE_NAME##/Exceptions.hpp>
 #include <cassert>
 #include <string>
 #include <vulkan/vulkan.h>
@@ -48,8 +48,8 @@ namespace Fsl
     public:
       static inline void Check(const VkResult result)
       {
-        if (status != VK_SUCCESS)
-          throw VulkanErrorException(result);
+        if (result != VK_SUCCESS)
+          throw VulkanErrorException(ToNiceMessage("Unknown", result), result);
       }
 
       static inline void Check(const VkResult result, const char*const pszMessage)
@@ -57,7 +57,7 @@ namespace Fsl
         if (result != VK_SUCCESS)
         {
           assert(pszMessage != nullptr);
-          throw VulkanErrorException(message, result);
+          throw VulkanErrorException(ToNiceMessage(pszMessage, result), result);
         }
       }
 
@@ -65,7 +65,7 @@ namespace Fsl
       {
         if (result != VK_SUCCESS)
         {
-          throw VulkanErrorException(message, result);
+          throw VulkanErrorException(ToNiceMessage(message, result), result);
         }
       }
 
@@ -75,7 +75,7 @@ namespace Fsl
         {
           assert(pszMessage != nullptr);
           assert(pszFileName != nullptr);
-          throw VulkanErrorException(pszMessage, result, pszFileName, lineNumber);
+          throw VulkanErrorException(ToNiceMessage(pszMessage, result, pszFileName, lineNumber), result, pszFileName, lineNumber);
         }
       }
 
@@ -84,7 +84,7 @@ namespace Fsl
         if (result != VK_SUCCESS)
         {
           assert(pszMessage != nullptr);
-          throw VulkanErrorException(pszMessage, result, fileName, lineNumber);
+          throw VulkanErrorException(ToNiceMessage(pszMessage, result, fileName, lineNumber), result, fileName, lineNumber);
         }
       }
 
@@ -94,7 +94,7 @@ namespace Fsl
         if (result != VK_SUCCESS)
         {
           assert(pszFileName != nullptr);
-          throw VulkanErrorException(message, result, pszFileName, lineNumber);
+          throw VulkanErrorException(ToNiceMessage(message, result, pszFileName, lineNumber), result, pszFileName, lineNumber);
         }
       }
 
@@ -102,10 +102,12 @@ namespace Fsl
       {
         if (result != VK_SUCCESS)
         {
-          throw VulkanErrorException(message, result, fileName, lineNumber);
+          throw VulkanErrorException(ToNiceMessage(message, result, fileName, lineNumber), result, fileName, lineNumber);
         }
       }
-
+    private:
+      static std::string ToNiceMessage(const std::string& message, const VkResult errorCode);
+      static std::string ToNiceMessage(const std::string& message, const VkResult errorCode, const std::string& fileName, const int lineNumber);
     };
   }
 }

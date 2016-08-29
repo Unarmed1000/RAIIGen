@@ -34,7 +34,7 @@
 // ##AG_TOOL_STATEMENT##
 // Auto generation template based on RapidVulkan https://github.com/Unarmed1000/RapidVulkan with permission.
 
-#include <stdexcept>
+#include <FslGraphics/Exceptions.hpp>
 #include <string>
 #include <vulkan/vulkan.h>
 
@@ -47,13 +47,6 @@ namespace Fsl
       std::string m_fileName;
       int m_lineNumber;
     public:
-      explicit VulkanException()
-        : std::runtime_error()
-        , m_fileName()
-        , m_lineNumber(0)
-      {
-      }
-
       explicit VulkanException(const std::string& whatArg)
         : std::runtime_error(whatArg)
         , m_fileName()
@@ -83,16 +76,10 @@ namespace Fsl
 
 
 
-    class VulkanErrorException : public OpenVXException
+    class VulkanErrorException : public VulkanException
     {
       VkResult m_result;
     public:
-      explicit VulkanErrorException()
-        : VulkanException()
-        , m_result(VK_SUCCESS)
-      {
-      }
-
       explicit VulkanErrorException(const std::string& whatArg, const VkResult result)
         : VulkanException(whatArg)
         , m_result(result)
@@ -110,6 +97,24 @@ namespace Fsl
         return m_result;
       }
     };
+    
+    class UnsupportedVulkanPixelFormatException : public VulkanException
+    {
+      VkFormat m_pixelFormat;
+    public:
+      UnsupportedVulkanPixelFormatException(const std::string& str, const VkFormat pixelFormat)
+        : VulkanException(str)
+        , m_pixelFormat(pixelFormat)
+      {
+      }
+
+      UnsupportedVulkanPixelFormatException(const VkFormat pixelFormat)
+        : VulkanException("Unsupported pixel format")
+        , m_pixelFormat(pixelFormat)
+      {
+      }
+    };
+    
   }
 }
 
