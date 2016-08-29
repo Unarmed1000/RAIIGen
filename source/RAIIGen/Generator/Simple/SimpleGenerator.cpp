@@ -190,12 +190,9 @@ namespace MB
     }
 
 
-
-    AnalysisResult Analyze(const Capture& capture, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const std::string& lowerCamelCaseClassName, const std::vector<std::string>& forceNullParameter, const AnalyzeMode analyzeMode)
+    AnalysisResult AnalyzeCreate(std::unordered_map<std::string, MethodArgument>& rDstMap, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const std::vector<std::string>& forceNullParameter)
     {
-      bool resourceParameterFound = false;
-      std::unordered_map<std::string, MethodArgument> dstMap;
-
+      bool rResourceParameterFound = false;
       AnalysisResult result;
       for (auto itr = functions.Create.Parameters.begin(); itr != functions.Create.Parameters.end(); ++itr)
       {
@@ -216,7 +213,7 @@ namespace MB
             {
               if (!itr->Type.IsConstQualified && itr->Type.IsPointer)
               {
-                resourceParameterFound = true;
+                rResourceParameterFound = true;
                 // The non const pointer is normally the 'class' type of the create function
                 std::cout << "  Param matched: " << itr->Type.Name << " (*)\n";
                 const auto fixedArgumentName = GetResourceArgumentName(*itr);
@@ -238,7 +235,7 @@ namespace MB
                     destroyArgument.ParameterValue = "&" + result.ResourceMemberVariable.Name;
                   else
                     destroyArgument.ParameterValue = result.ResourceMemberVariable.Name;
-                  dstMap[itrFind->ArgumentName] = destroyArgument;
+                  rDstMap[itrFind->ArgumentName] = destroyArgument;
                 }
               }
               else
@@ -251,7 +248,7 @@ namespace MB
 
                 auto destroyArgument = ToMethodArgument(*itr);
                 destroyArgument.ParameterValue = member.Name;
-                dstMap[itrFind->ArgumentName] = destroyArgument;
+                rDstMap[itrFind->ArgumentName] = destroyArgument;
               }
             }
             else
@@ -264,7 +261,7 @@ namespace MB
 
               auto destroyArgument = ToMethodArgument(*itr);
               destroyArgument.ParameterValue = "nullptr";
-              dstMap[itrFind->ArgumentName] = destroyArgument;
+              rDstMap[itrFind->ArgumentName] = destroyArgument;
             }
           }
           else
@@ -276,12 +273,12 @@ namespace MB
         }
       }
 
-      if (!resourceParameterFound)
+      if (!rResourceParameterFound)
       {
         // So no members matched the params to the destroy method, lets check if the return type matches
         const auto typeName = functions.Create.ReturnType.Name;
         auto itrFind = std::find_if(functions.Destroy.Parameters.begin(), functions.Destroy.Parameters.end(), [typeName](const ParameterRecord& val) { return val.Type.Name == typeName; });
-        if(itrFind == functions.Destroy.Parameters.end())
+        if (itrFind == functions.Destroy.Parameters.end())
           throw NotSupportedException(std::string("Could not find created resource parameter for method: ") + functions.Create.Name);
 
         // We found a return type that matches a destroy parameter
@@ -294,7 +291,7 @@ namespace MB
             destroyArgument.ParameterValue = "&" + result.ResourceMemberVariable.Name;
           else
             destroyArgument.ParameterValue = result.ResourceMemberVariable.Name;
-          dstMap[itrFind->ArgumentName] = destroyArgument;
+          rDstMap[itrFind->ArgumentName] = destroyArgument;
         }
 
         std::cout << "  Return type used as resource: " << typeName << " (*)\n";
@@ -305,18 +302,25 @@ namespace MB
             throw NotSupportedException("Intermediary name collides with parameter name");
         }
       }
- 
 
+      if (!result.ResourceMemberVariable.IsValid())
+        throw NotSupportedException("The resource type could not be determined");
+      return result;
+    }
+
+
+    void AnalyzeDestroy(AnalysisResult& rResult, const Capture& capture, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const AnalyzeMode analyzeMode, const std::unordered_map<std::string, MethodArgument>& dstMap)
+    {
       const std::string createMethodName = functions.Create.Name;
       const auto itrCustom = std::find_if(config.RAIIClassCustomizations.begin(), config.RAIIClassCustomizations.end(), [createMethodName](const RAIIClassCustomization& val) { return val.SourceCreateMethod == createMethodName; });
       for (auto itr = functions.Destroy.Parameters.begin(); itr != functions.Destroy.Parameters.end(); ++itr)
       {
         auto itrFindDst = dstMap.find(itr->ArgumentName);
-        if(itrFindDst != dstMap.end() )
-          result.DestroyArguments.push_back(itrFindDst->second);
+        if (itrFindDst != dstMap.end())
+          rResult.DestroyArguments.push_back(itrFindDst->second);
         else
         {
-          auto found = LookupParameterInStruct(capture, result.CreateArguments, *itr);
+          auto found = LookupParameterInStruct(capture, rResult.CreateArguments, *itr);
           auto asMember = ToMemberVariable(found.StructMember);
           asMember.SourceArgumentName = found.SourceParameter.ArgumentName + "." + asMember.ArgumentName;
           auto asArgument = ToMethodArgument(asMember);
@@ -326,11 +330,11 @@ namespace MB
             switch (analyzeMode)
             {
             case AnalyzeMode::SingleInstance:
-              result.DestroyArguments.push_back(MethodArgument(asArgument.FullType, asArgument.FullTypeString, "1"));
+              rResult.DestroyArguments.push_back(MethodArgument(asArgument.FullType, asArgument.FullTypeString, "1"));
               break;
             case AnalyzeMode::VectorInstance:
               // FIX: the name is still not correct
-              result.DestroyArguments.push_back(MethodArgument(asArgument.FullType, asArgument.FullTypeString, itrCustom->ResourceName + ".size()"));
+              rResult.DestroyArguments.push_back(MethodArgument(asArgument.FullType, asArgument.FullTypeString, itrCustom->ResourceName + ".size()"));
               break;
             default:
               throw NotSupportedException("Unsupported analyze mode");
@@ -338,14 +342,20 @@ namespace MB
           }
           else
           {
-            result.AdditionalMemberVariables.push_back(asMember);
-            result.DestroyArguments.push_back(asArgument);
+            rResult.AdditionalMemberVariables.push_back(asMember);
+            rResult.DestroyArguments.push_back(asArgument);
           }
         }
       }
+    }
 
-      if (!result.ResourceMemberVariable.IsValid())
-        throw NotSupportedException("The resource type could not be determined");
+
+    AnalysisResult Analyze(const Capture& capture, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const std::string& lowerCamelCaseClassName, const std::vector<std::string>& forceNullParameter, const AnalyzeMode analyzeMode)
+    {
+      std::unordered_map<std::string, MethodArgument> dstMap;
+
+      AnalysisResult result = AnalyzeCreate(dstMap, config, functions, forceNullParameter);
+      AnalyzeDestroy(result, capture, config, functions, analyzeMode, dstMap);
 
       std::copy(result.AdditionalMemberVariables.begin(), result.AdditionalMemberVariables.end(), std::back_inserter(result.AllMemberVariables));
       result.AllMemberVariables.push_back(result.ResourceMemberVariable);
