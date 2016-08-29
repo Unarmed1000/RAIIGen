@@ -52,6 +52,9 @@ namespace MB
       std::string DefaultValueMod;
       std::string IncludeResetMode;
       std::string UnrolledWrap;
+
+      std::string HeaderSnippetMemberVariable;
+      std::string HeaderSnippetMemberVariableGet;
     };
 }
 #endif

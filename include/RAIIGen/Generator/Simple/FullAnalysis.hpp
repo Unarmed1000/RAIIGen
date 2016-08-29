@@ -22,6 +22,7 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
+#include <RAIIGen/Generator/Simple/AnalyzeMode.hpp>
 #include <RAIIGen/Generator/Simple/AnalysisResult.hpp>
 #include <RAIIGen/Generator/MatchedFunctionPair.hpp>
 #include <deque>
@@ -34,6 +35,7 @@ namespace MB
   public:
     MatchedFunctionPair Pair;
     AnalysisResult      Result;
+    AnalyzeMode         Mode;
 
     std::shared_ptr<std::deque<FullAnalysis> > AbsorbedFunctions;
 
@@ -41,13 +43,15 @@ namespace MB
       : Pair()
       , Result()
       , AbsorbedFunctions()
+      , Mode(AnalyzeMode::Normal)
     {
     }
 
-    FullAnalysis(const MatchedFunctionPair pair, const AnalysisResult& result)
+    FullAnalysis(const MatchedFunctionPair pair, const AnalysisResult& result, const AnalyzeMode mode)
       : Pair(pair)
       , Result(result)
       , AbsorbedFunctions()
+      , Mode(mode)
     {
     }
 
@@ -56,6 +60,7 @@ namespace MB
 
       return Pair == rhs.Pair &&
         Result == rhs.Result &&
+        Mode == rhs.Mode &&
         ((AbsorbedFunctions && rhs.AbsorbedFunctions && *AbsorbedFunctions == *rhs.AbsorbedFunctions) || (AbsorbedFunctions == rhs.AbsorbedFunctions));
     }
 

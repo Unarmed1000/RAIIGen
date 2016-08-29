@@ -190,7 +190,7 @@ namespace MB
     }
 
 
-    AnalysisResult AnalyzeCreate(std::unordered_map<std::string, MethodArgument>& rDstMap, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const std::vector<std::string>& forceNullParameter)
+    AnalysisResult AnalyzeCreate(std::unordered_map<std::string, MethodArgument>& rDstMap, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const std::vector<std::string>& forceNullParameter, const AnalyzeMode analyzeMode)
     {
       bool rResourceParameterFound = false;
       AnalysisResult result;
@@ -354,7 +354,7 @@ namespace MB
     {
       std::unordered_map<std::string, MethodArgument> dstMap;
 
-      AnalysisResult result = AnalyzeCreate(dstMap, config, functions, forceNullParameter);
+      AnalysisResult result = AnalyzeCreate(dstMap, config, functions, forceNullParameter, analyzeMode);
       AnalyzeDestroy(result, capture, config, functions, analyzeMode, dstMap);
 
       std::copy(result.AdditionalMemberVariables.begin(), result.AdditionalMemberVariables.end(), std::back_inserter(result.AllMemberVariables));
@@ -676,17 +676,17 @@ namespace MB
         {
           const auto result = Analyze(capture, config, *itr, CaseUtil::LowerCaseFirstCharacter(itr->Name), config.ForceNullParameter, AnalyzeMode::Normal);
           CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
-          managed.push_back(FullAnalysis(*itr, result));
+          managed.push_back(FullAnalysis(*itr, result, AnalyzeMode::Normal));
         }
         else
         {
           auto result = Analyze(capture, config, *itr, itrCustom->SingleInstanceClassName, config.ForceNullParameter, AnalyzeMode::SingleInstance);
           CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
-          managed.push_back(FullAnalysis(*itr, result));
+          managed.push_back(FullAnalysis(*itr, result, AnalyzeMode::SingleInstance));
 
           result = Analyze(capture, config, *itr, itrCustom->VectorInstanceClassName, config.ForceNullParameter, AnalyzeMode::VectorInstance);
           CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
-          managed.push_back(FullAnalysis(*itr, result));
+          managed.push_back(FullAnalysis(*itr, result, AnalyzeMode::VectorInstance));
         }
       }
 
@@ -1042,6 +1042,66 @@ namespace MB
       StringUtil::Replace(content, "##HANDLE_CLASS_NAME##", snippets.HandleClassName);
       return content;
     }
+
+
+    Snippets LoadSnippets(const IO::Path& templateRoot)
+    {
+      const auto pathHeaderSnippetMemberVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_MemberVariable.txt");
+      const auto pathHeaderSnippetMemberVariableGet = IO::Path::Combine(templateRoot, "TemplateSnippet_MemberVariableGet.txt");
+      const auto pathSnippetConstructorMemberInitialization = IO::Path::Combine(templateRoot, "TemplateSnippet_ConstructorMemberInitialization.txt");
+      const auto pathSnippetCreateConstructorHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateConstructorHeader.txt");
+      const auto pathSnippetCreateConstructorSource = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateConstructorSource.txt");
+      const auto pathSnippetResetSetMemberVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetSetMemberVariable.txt");
+      const auto pathSnippetResetInvalidateMemberVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetInvalidateMemberVariable.txt");
+      const auto pathSnippetResetMemberAssertion = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberAssertion.txt");
+      const auto pathSnippetResetMemberHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberHeader.txt");
+      const auto pathSnippetResetMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberSource.txt");
+      const auto pathSnippetResetParamValidation = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetParamValidation.txt");
+      const auto pathSnippetMoveAssignmentClaimMember = IO::Path::Combine(templateRoot, "TemplateSnippet_MoveAssignmentClaimMember.txt");
+      const auto pathSnippetMoveAssignmentInvalidateMember = IO::Path::Combine(templateRoot, "TemplateSnippet_MoveAssignmentInvalidateMember.txt");
+      const auto pathSnippetMoveConstructorInvalidateMember = IO::Path::Combine(templateRoot, "TemplateSnippet_MoveConstructorInvalidateMember.txt");
+      const auto pathSnippetMoveConstructorClaimMember = IO::Path::Combine(templateRoot, "TemplateSnippet_MoveConstructorClaimMember.txt");
+      const auto pathSnippetHandleClassName = IO::Path::Combine(templateRoot, "TemplateSnippet_HandleClassName.txt");
+      const auto pathSnippetCreateVoidConstructorHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateVoidConstructorHeader.txt");
+      const auto pathSnippetCreateVoidConstructorSource = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateVoidConstructorSource.txt");
+      const auto pathSnippetResetVoidMemberHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetVoidMemberHeader.txt");
+      const auto pathSnippetResetVoidMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetVoidMemberSource.txt");
+      const auto pathSnippetResetUnrollMemberHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetUnrollMemberHeader.txt");
+      const auto pathSnippetResetUnrollMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetUnrollMemberSource.txt");
+      const auto pathSnippetResetUnrollStructVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetUnrollStructVariable.txt");
+      const auto pathSnippetDefaultValueMod = IO::Path::Combine(templateRoot, "TemplateSnippet_DefaultValueMod.txt");
+      const auto pathSnippetIncludeResetMode = IO::Path::Combine(templateRoot, "TemplateSnippet_IncludeResetMode.txt");
+      const auto pathSnippetUnrolledWrap = IO::Path::Combine(templateRoot, "TemplateSnippet_UnrolledWrap.txt");
+
+      Snippets snippets;
+      snippets.ConstructorMemberInitialization = IO::File::ReadAllText(pathSnippetConstructorMemberInitialization);
+      snippets.CreateConstructorHeader = IO::File::ReadAllText(pathSnippetCreateConstructorHeader);
+      snippets.CreateConstructorSource = IO::File::ReadAllText(pathSnippetCreateConstructorSource);
+      snippets.ResetSetMemberVariable = IO::File::ReadAllText(pathSnippetResetSetMemberVariable);
+      snippets.ResetInvalidateMemberVariable = IO::File::ReadAllText(pathSnippetResetInvalidateMemberVariable);
+      snippets.ResetMemberAssertion = IO::File::ReadAllText(pathSnippetResetMemberAssertion);
+      snippets.ResetMemberHeader = IO::File::ReadAllText(pathSnippetResetMemberHeader);
+      snippets.ResetMemberSource = IO::File::ReadAllText(pathSnippetResetMemberSource);
+      snippets.ResetParamValidation = IO::File::ReadAllText(pathSnippetResetParamValidation);
+      snippets.MoveAssignmentClaimMember = IO::File::ReadAllText(pathSnippetMoveAssignmentClaimMember);
+      snippets.MoveAssignmentInvalidateMember = IO::File::ReadAllText(pathSnippetMoveAssignmentInvalidateMember);
+      snippets.MoveConstructorInvalidateMember = IO::File::ReadAllText(pathSnippetMoveConstructorInvalidateMember);
+      snippets.MoveConstructorClaimMember = IO::File::ReadAllText(pathSnippetMoveConstructorClaimMember);
+      snippets.HandleClassName = IO::File::ReadAllText(pathSnippetHandleClassName);
+      snippets.CreateVoidConstructorHeader = IO::File::ReadAllText(pathSnippetCreateVoidConstructorHeader);
+      snippets.CreateVoidConstructorSource = IO::File::ReadAllText(pathSnippetCreateVoidConstructorSource);
+      snippets.ResetVoidMemberHeader = IO::File::ReadAllText(pathSnippetResetVoidMemberHeader);
+      snippets.ResetVoidMemberSource = IO::File::ReadAllText(pathSnippetResetVoidMemberSource);
+      snippets.ResetUnrollMemberHeader = IO::File::ReadAllText(pathSnippetResetUnrollMemberHeader);
+      snippets.ResetUnrollMemberSource = IO::File::ReadAllText(pathSnippetResetUnrollMemberSource);
+      snippets.ResetUnrollStructVariable = IO::File::ReadAllText(pathSnippetResetUnrollStructVariable);
+      snippets.DefaultValueMod = IO::File::ReadAllText(pathSnippetDefaultValueMod);
+      snippets.IncludeResetMode = IO::File::ReadAllText(pathSnippetIncludeResetMode);
+      snippets.UnrolledWrap = IO::File::ReadAllText(pathSnippetUnrolledWrap);
+      snippets.HeaderSnippetMemberVariable = IO::File::ReadAllText(pathHeaderSnippetMemberVariable);
+      snippets.HeaderSnippetMemberVariableGet = IO::File::ReadAllText(pathHeaderSnippetMemberVariableGet);
+      return snippets;
+    }
   }
 
 
@@ -1052,68 +1112,16 @@ namespace MB
   SimpleGenerator::SimpleGenerator(const Capture& capture, const SimpleGeneratorConfig& config, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
     : Generator(capture, config)
   {
-    const auto pathResetModeHeader = IO::Path::Combine(templateRoot, "TemplateResetMode_header.hpp");
-    const auto resetModeHeaderTemplate = IO::File::ReadAllText(pathResetModeHeader);
+    const Snippets snippets = LoadSnippets(templateRoot);
 
     const auto pathHeader = IO::Path::Combine(templateRoot, "Template_header.hpp");
-    const auto pathHeaderSnippetMemberVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_MemberVariable.txt");
-    const auto pathHeaderSnippetMemberVariableGet = IO::Path::Combine(templateRoot, "TemplateSnippet_MemberVariableGet.txt");
-    const auto headerTemplate = IO::File::ReadAllText(pathHeader);
-    const auto headerSnippetMemberVariable = IO::File::ReadAllText(pathHeaderSnippetMemberVariable);
-    const auto headerSnippetMemberVariableGet = IO::File::ReadAllText(pathHeaderSnippetMemberVariableGet);
-
+    const auto pathHeaderVector = IO::Path::Combine(templateRoot, "Template_headerVector.hpp");
     const auto pathSource = IO::Path::Combine(templateRoot, "Template_source.cpp");
-    const auto pathSnippetConstructorMemberInitialization = IO::Path::Combine(templateRoot, "TemplateSnippet_ConstructorMemberInitialization.txt");
-    const auto pathSnippetCreateConstructorHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateConstructorHeader.txt");
-    const auto pathSnippetCreateConstructorSource = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateConstructorSource.txt");
-    const auto pathSnippetResetSetMemberVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetSetMemberVariable.txt");
-    const auto pathSnippetResetInvalidateMemberVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetInvalidateMemberVariable.txt");
-    const auto pathSnippetResetMemberAssertion = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberAssertion.txt");
-    const auto pathSnippetResetMemberHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberHeader.txt");
-    const auto pathSnippetResetMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberSource.txt");
-    const auto pathSnippetResetParamValidation = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetParamValidation.txt");
-    const auto pathSnippetMoveAssignmentClaimMember = IO::Path::Combine(templateRoot, "TemplateSnippet_MoveAssignmentClaimMember.txt");
-    const auto pathSnippetMoveAssignmentInvalidateMember = IO::Path::Combine(templateRoot, "TemplateSnippet_MoveAssignmentInvalidateMember.txt");
-    const auto pathSnippetMoveConstructorInvalidateMember = IO::Path::Combine(templateRoot, "TemplateSnippet_MoveConstructorInvalidateMember.txt");
-    const auto pathSnippetMoveConstructorClaimMember = IO::Path::Combine(templateRoot, "TemplateSnippet_MoveConstructorClaimMember.txt");
-    const auto pathSnippetHandleClassName = IO::Path::Combine(templateRoot, "TemplateSnippet_HandleClassName.txt");
-    const auto pathSnippetCreateVoidConstructorHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateVoidConstructorHeader.txt");
-    const auto pathSnippetCreateVoidConstructorSource = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateVoidConstructorSource.txt");
-    const auto pathSnippetResetVoidMemberHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetVoidMemberHeader.txt");
-    const auto pathSnippetResetVoidMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetVoidMemberSource.txt");
-    const auto pathSnippetResetUnrollMemberHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetUnrollMemberHeader.txt");
-    const auto pathSnippetResetUnrollMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetUnrollMemberSource.txt");
-    const auto pathSnippetResetUnrollStructVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetUnrollStructVariable.txt");
-    const auto pathSnippetDefaultValueMod = IO::Path::Combine(templateRoot, "TemplateSnippet_DefaultValueMod.txt");
-    const auto pathSnippetIncludeResetMode = IO::Path::Combine(templateRoot, "TemplateSnippet_IncludeResetMode.txt");
-    const auto pathSnippetUnrolledWrap = IO::Path::Combine(templateRoot, "TemplateSnippet_UnrolledWrap.txt");
-
+    const auto pathSourceVector = IO::Path::Combine(templateRoot, "Template_sourceVector.cpp");
+    const auto headerTemplate = IO::File::ReadAllText(pathHeader);
     const auto sourceTemplate = IO::File::ReadAllText(pathSource);
-    Snippets snippets;
-    snippets.ConstructorMemberInitialization = IO::File::ReadAllText(pathSnippetConstructorMemberInitialization);
-    snippets.CreateConstructorHeader = IO::File::ReadAllText(pathSnippetCreateConstructorHeader);
-    snippets.CreateConstructorSource = IO::File::ReadAllText(pathSnippetCreateConstructorSource);
-    snippets.ResetSetMemberVariable = IO::File::ReadAllText(pathSnippetResetSetMemberVariable);
-    snippets.ResetInvalidateMemberVariable = IO::File::ReadAllText(pathSnippetResetInvalidateMemberVariable);
-    snippets.ResetMemberAssertion = IO::File::ReadAllText(pathSnippetResetMemberAssertion);
-    snippets.ResetMemberHeader = IO::File::ReadAllText(pathSnippetResetMemberHeader);
-    snippets.ResetMemberSource = IO::File::ReadAllText(pathSnippetResetMemberSource);
-    snippets.ResetParamValidation = IO::File::ReadAllText(pathSnippetResetParamValidation);
-    snippets.MoveAssignmentClaimMember = IO::File::ReadAllText(pathSnippetMoveAssignmentClaimMember);
-    snippets.MoveAssignmentInvalidateMember = IO::File::ReadAllText(pathSnippetMoveAssignmentInvalidateMember);
-    snippets.MoveConstructorInvalidateMember = IO::File::ReadAllText(pathSnippetMoveConstructorInvalidateMember);
-    snippets.MoveConstructorClaimMember = IO::File::ReadAllText(pathSnippetMoveConstructorClaimMember);
-    snippets.HandleClassName = IO::File::ReadAllText(pathSnippetHandleClassName);
-    snippets.CreateVoidConstructorHeader = IO::File::ReadAllText(pathSnippetCreateVoidConstructorHeader);
-    snippets.CreateVoidConstructorSource = IO::File::ReadAllText(pathSnippetCreateVoidConstructorSource);
-    snippets.ResetVoidMemberHeader = IO::File::ReadAllText(pathSnippetResetVoidMemberHeader);
-    snippets.ResetVoidMemberSource = IO::File::ReadAllText(pathSnippetResetVoidMemberSource);
-    snippets.ResetUnrollMemberHeader = IO::File::ReadAllText(pathSnippetResetUnrollMemberHeader);
-    snippets.ResetUnrollMemberSource = IO::File::ReadAllText(pathSnippetResetUnrollMemberSource);
-    snippets.ResetUnrollStructVariable = IO::File::ReadAllText(pathSnippetResetUnrollStructVariable);
-    snippets.DefaultValueMod= IO::File::ReadAllText(pathSnippetDefaultValueMod);
-    snippets.IncludeResetMode = IO::File::ReadAllText(pathSnippetIncludeResetMode);
-    snippets.UnrolledWrap = IO::File::ReadAllText(pathSnippetUnrolledWrap);
+    const auto headerTemplateVector = IO::File::ReadAllText(pathHeaderVector);
+    const auto sourceTemplateVector = IO::File::ReadAllText(pathSourceVector);
 
     std::unordered_set<std::string> typesWithoutDefaultValues;
 
@@ -1123,14 +1131,16 @@ namespace MB
     const bool generateSourceFile = sourceTemplate.size() > 0;
     for (auto itr = fullAnalysis.begin(); itr != fullAnalysis.end(); ++itr)
     {
+      const auto activeHeaderTemplate = (itr->Mode != AnalyzeMode::VectorInstance ? headerTemplate : headerTemplateVector);
       {
-        auto headerContent = GenerateContent(config, *itr, headerTemplate, &headerSnippetMemberVariable, &headerSnippetMemberVariableGet, snippets);
+        auto headerContent = GenerateContent(config, *itr, activeHeaderTemplate, &snippets.HeaderSnippetMemberVariable, &snippets.HeaderSnippetMemberVariableGet, snippets);
         auto fileName = IO::Path::Combine(dstPath, itr->Result.ClassName + ".hpp");
         WriteAllTextIfChanged(fileName, headerContent);
       }
       if (generateSourceFile)
       {
-        auto sourceContent = GenerateContent(config, *itr, sourceTemplate, nullptr, nullptr, snippets);
+        const auto activeSourceTemplate = (itr->Mode != AnalyzeMode::VectorInstance ? sourceTemplate : sourceTemplateVector);
+        auto sourceContent = GenerateContent(config, *itr, activeSourceTemplate, nullptr, nullptr, snippets);
         auto fileName = IO::Path::Combine(dstPath, itr->Result.ClassName + ".cpp");
         WriteAllTextIfChanged(fileName, sourceContent);
       }
@@ -1160,6 +1170,8 @@ namespace MB
       }
     }
 
+    const auto pathResetModeHeader = IO::Path::Combine(templateRoot, "TemplateResetMode_header.hpp");
+    const auto resetModeHeaderTemplate = IO::File::ReadAllText(pathResetModeHeader);
     if (resetModeHeaderTemplate.size() > 0 && IsResetModeRequired(fullAnalysis))
     {
       std::string content(resetModeHeaderTemplate);
