@@ -1,0 +1,1 @@
+        ##MEMBER_NAME## = std::move(##MEMBER_ARGUMENT_NAME##);
