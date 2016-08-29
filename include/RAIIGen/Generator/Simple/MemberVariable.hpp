@@ -38,9 +38,11 @@ namespace MB
     std::string SourceArgumentName;
     std::string NiceNameUpperCamelCase;
     bool IsMoveable;
+    bool IsPOD;
 
     MemberVariable()
       : IsMoveable(false)
+      , IsPOD(true)
     {
     }
 
@@ -52,6 +54,7 @@ namespace MB
       , SourceArgumentName(argumentName)
       , NiceNameUpperCamelCase(niceNameUpperCamelCase)
       , IsMoveable(false)
+      , IsPOD(true)
     {
     }
 

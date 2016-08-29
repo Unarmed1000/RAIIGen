@@ -26,41 +26,47 @@
 
 namespace MB
 {
-    struct Snippets
-    {
-      std::string ConstructorMemberInitialization;
-      std::string CreateConstructorHeader;
-      std::string CreateConstructorSource;
-      std::string ResetSetMemberVariable;
-      std::string ResetSetMemberVariableMove;
-      std::string ResetInvalidateMemberVariable;
-      std::string ResetMemberAssertion;
-      std::string ResetMemberHeader;
-      std::string ResetMemberSource;
-      std::string ResetMemberHeaderVector;
-      std::string ResetMemberSourceVector;
-      std::string ResetParamValidation;
-      std::string ResetParamAssertion;
-      std::string MoveAssignmentClaimMember;
-      std::string MoveAssignmentClaimMemberMove;
-      std::string MoveAssignmentInvalidateMember;
-      std::string MoveConstructorInvalidateMember;
-      std::string MoveConstructorClaimMember;
-      std::string MoveConstructorClaimMemberMove;
-      std::string HandleClassName;
-      std::string CreateVoidConstructorHeader;
-      std::string CreateVoidConstructorSource;
-      std::string ResetVoidMemberHeader;
-      std::string ResetVoidMemberSource;
-      std::string ResetUnrollMemberHeader;
-      std::string ResetUnrollMemberSource;
-      std::string ResetUnrollStructVariable;
-      std::string DefaultValueMod;
-      std::string IncludeResetMode;
-      std::string UnrolledWrap;
+  struct SnippetContext
+  {
+    std::string Complex;
+    std::string POD;
+  };
 
-      std::string HeaderSnippetMemberVariable;
-      std::string HeaderSnippetMemberVariableGet;
-    };
+  struct Snippets
+  {
+    SnippetContext ConstructorMemberInitialization;
+    std::string CreateConstructorHeader;
+    std::string CreateConstructorSource;
+    std::string ResetSetMemberVariable;
+    std::string ResetSetMemberVariableMove;
+    SnippetContext ResetInvalidateMemberVariable;
+    std::string ResetMemberAssertion;
+    std::string ResetMemberHeader;
+    std::string ResetMemberSource;
+    std::string ResetMemberHeaderVector;
+    std::string ResetMemberSourceVector;
+    std::string ResetParamValidation;
+    std::string ResetParamAssertion;
+    std::string MoveAssignmentClaimMember;
+    std::string MoveAssignmentClaimMemberMove;
+    std::string MoveAssignmentInvalidateMember;
+    std::string MoveConstructorInvalidateMember;
+    std::string MoveConstructorClaimMember;
+    std::string MoveConstructorClaimMemberMove;
+    std::string HandleClassName;
+    std::string CreateVoidConstructorHeader;
+    std::string CreateVoidConstructorSource;
+    std::string ResetVoidMemberHeader;
+    std::string ResetVoidMemberSource;
+    std::string ResetUnrollMemberHeader;
+    std::string ResetUnrollMemberSource;
+    std::string ResetUnrollStructVariable;
+    std::string DefaultValueMod;
+    std::string IncludeResetMode;
+    std::string UnrolledWrap;
+
+    std::string HeaderSnippetMemberVariable;
+    std::string HeaderSnippetMemberVariableGet;
+  };
 }
 #endif
