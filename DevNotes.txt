@@ -1,11 +1,12 @@
 Just some dev notes on features that might or might not be added in the future.
 
 Vulkan
-- Add VK_HEADER_VERSION information to the generated code
-- Scan the documentation HTML and add it as doxygen comments in the generated code.
+- Array classes, single instance should verify that the 'count' param on the user supplied struct is 1
+- Finish the auto detection of 'member' candidates and add autogeneration code. These members should also be optional.  
 - For the 'array' allocations spawn two classes one that allocates one object and one that allocates a array.
 - For the 'array' allocations: Make sure that the 'count' params dont get added as members.
-- Finish the auto detection of 'member' candidates and add autogeneration code. These members should also be optional.  
+- Add VK_HEADER_VERSION information to the generated code
+- Scan the documentation HTML and add it as doxygen comments in the generated code.
 - Autogenerate the error code to string classes.
 - Autogenerate the 'enumerate' methods.
 - Make the unroll code flexibe or vulkan specific. For now its just disabled for everything but vulkan.

@@ -342,6 +342,45 @@
     <ClInclude Include="include\RAIIGen\EnumRecord.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\RAIIClassCustomization.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\Snippets.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\AnalyzeMode.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\GenerateMethodCode.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\MemberVariable.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\MethodArgument.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\UnrollMode.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\UnrolledStructMember.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\UnrolledStruct.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\UnrolledCreateMethod.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\AnalysisResult.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\FullAnalysis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\ParamInStruct.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\RAIIGen\Capture.cpp">

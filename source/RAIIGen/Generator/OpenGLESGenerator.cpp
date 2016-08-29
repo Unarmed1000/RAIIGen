@@ -65,6 +65,11 @@ namespace MB
     };
 
 
+    const std::vector<RAIIClassCustomization> g_arrayRAIIClassCustomization
+    {
+    };
+
+
     const std::vector<ClassFunctionAbsorb> g_classFunctionAbsorbtion
     {
     };
@@ -118,7 +123,7 @@ namespace MB
 
 
   OpenGLESGenerator::OpenGLESGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
-    : SimpleGenerator(capture, SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_classFunctionAbsorbtion, g_typeDefaultValues, g_forceNullParameter, TYPE_NAME_PREFIX, false), templateRoot, dstPath)
+    : SimpleGenerator(capture, SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, g_classFunctionAbsorbtion, g_typeDefaultValues, g_forceNullParameter, TYPE_NAME_PREFIX, false), templateRoot, dstPath)
   {
   }
 

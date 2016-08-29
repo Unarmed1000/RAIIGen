@@ -24,12 +24,14 @@
 
 #include <RAIIGen/Generator/GeneratorConfig.hpp>
 #include <RAIIGen/Generator/ClassFunctionAbsorb.hpp>
+#include <RAIIGen/Generator/RAIIClassCustomization.hpp>
 #include <unordered_map>
 
 namespace MB
 {
   struct SimpleGeneratorConfig : public GeneratorConfig
   {
+    const std::vector<RAIIClassCustomization> RAIIClassCustomizations;
     const std::vector<ClassFunctionAbsorb> ClassFunctionAbsorbtion;
     const std::unordered_map<std::string, std::string> TypeDefaultValues;
     const std::vector<std::string> ForceNullParameter;
@@ -43,10 +45,12 @@ namespace MB
 
 
     SimpleGeneratorConfig(const GeneratorConfig& config,
+      const std::vector<RAIIClassCustomization>& raiiClassCustomizations,
       const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
       const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
       const std::string& typeNamePrefix, const bool unrollCreateStructs)
       : GeneratorConfig(config)
+      , RAIIClassCustomizations(raiiClassCustomizations)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)
       , TypeDefaultValues(typeDefaultValues)
       , ForceNullParameter(forceNullParameter)
@@ -57,10 +61,12 @@ namespace MB
 
     SimpleGeneratorConfig(const BasicConfig& basicConfig, 
                           const std::vector<FunctionNamePair>& functionPairs, const std::vector<FunctionNamePair>& manualFunctionMatches,
-                          const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion, 
+                          const std::vector<RAIIClassCustomization>& raiiClassCustomizations,
+                          const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
                           const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
                           const std::string& typeNamePrefix, const bool unrollCreateStructs)
       : GeneratorConfig(basicConfig, functionPairs, manualFunctionMatches)
+      , RAIIClassCustomizations(raiiClassCustomizations)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)
       , TypeDefaultValues(typeDefaultValues)
       , ForceNullParameter(forceNullParameter)

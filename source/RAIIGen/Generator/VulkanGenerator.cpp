@@ -23,6 +23,7 @@
 #include <RAIIGen/Generator/VulkanGenerator.hpp>
 #include <RAIIGen/Generator/FunctionNamePair.hpp>
 #include <RAIIGen/Generator/MatchedFunctionPair.hpp>
+#include <RAIIGen/Generator/RAIIClassCustomization.hpp>
 #include <RAIIGen/CaseUtil.hpp>
 #include <RAIIGen/Capture.hpp>
 #include <FslBase/Exceptions.hpp>
@@ -77,20 +78,13 @@ namespace MB
       FunctionNamePair("vkCreateDisplayPlaneSurfaceKHR", "vkDestroySurfaceKHR"),
     };
 
-    struct RAIIClassCustomization
-    {
-      RAIIClassCustomization(const std::string& sourceCreateMethod)
-      {
-      }
-    };
 
-
-    const std::vector<RAIIClassCustomization> g_arrayFunctionNamePair
+    const std::vector<RAIIClassCustomization> g_arrayRAIIClassCustomization
     {
-      RAIIClassCustomization("vkAllocateCommandBuffers"),
-      RAIIClassCustomization("vkAllocateDescriptorSets"),
-      RAIIClassCustomization("vkCreateComputePipelines"),
-      RAIIClassCustomization("vkCreateGraphicsPipelines"),
+      RAIIClassCustomization("vkAllocateCommandBuffers", "CommandBuffer", "CommandBuffers", "commandBuffers", "commandBufferCount"),
+      RAIIClassCustomization("vkAllocateDescriptorSets", "DescriptorSet", "DescriptorSets", "descriptorSets", "descriptorSetCount"),
+      RAIIClassCustomization("vkCreateComputePipelines", "ComputePipeline", "ComputePipelines", "computePipelines", "createInfoCount"),
+      RAIIClassCustomization("vkCreateGraphicsPipelines", "vkCreateGraphicsPipeline", "vkCreateGraphicsPipelines", "graphicsPipelines", "createInfoCount"),
     };
 
 
@@ -148,7 +142,7 @@ namespace MB
 
 
   VulkanGenerator::VulkanGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
-    : SimpleGenerator(capture, SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_classFunctionAbsorbtion, g_typeDefaultValues, g_forceNullParameter, TYPE_NAME_PREFIX, true), templateRoot, dstPath)
+    : SimpleGenerator(capture, SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, g_classFunctionAbsorbtion, g_typeDefaultValues, g_forceNullParameter, TYPE_NAME_PREFIX, true), templateRoot, dstPath)
   {
   }
 

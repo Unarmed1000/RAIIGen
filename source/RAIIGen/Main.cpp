@@ -43,7 +43,7 @@ namespace MB
   namespace
   {
     const std::string g_programName = "RAIIGen";
-    const std::string g_programVersion = "V0.3.1";
+    const std::string g_programVersion = "V0.3.2";
 
     using namespace Fsl;
 

@@ -23,6 +23,13 @@
 #include <RAIIGen/Generator/Simple/SimpleGenerator.hpp>
 #include <RAIIGen/Generator/FunctionNamePair.hpp>
 #include <RAIIGen/Generator/MatchedFunctionPair.hpp>
+#include <RAIIGen/Generator/Simple/AnalyzeMode.hpp>
+#include <RAIIGen/Generator/Simple/GenerateMethodCode.hpp>
+#include <RAIIGen/Generator/Simple/MemberVariable.hpp>
+#include <RAIIGen/Generator/Simple/MethodArgument.hpp>
+#include <RAIIGen/Generator/Simple/Snippets.hpp>
+#include <RAIIGen/Generator/Simple/FullAnalysis.hpp>
+#include <RAIIGen/Generator/Simple/ParamInStruct.hpp>
 #include <RAIIGen/CaseUtil.hpp>
 #include <RAIIGen/Capture.hpp>
 #include <RAIIGen/StringHelper.hpp>
@@ -48,66 +55,7 @@ namespace MB
   namespace
   {
     const auto DEFAULT_VALUE_NOT_FOUND = "FIX_DEFAULT_FOR_TYPE_NOT_DEFINED";
-
     const auto END_OF_LINE = std::string("\r\n");
-
-    struct Snippets
-    {
-      std::string ConstructorMemberInitialization;
-      std::string CreateConstructorHeader;
-      std::string CreateConstructorSource;
-      std::string ResetSetMemberVariable;
-      std::string ResetInvalidateMemberVariable;
-      std::string ResetMemberAssertion;
-      std::string ResetMemberHeader;
-      std::string ResetMemberSource;
-      std::string ResetParamValidation;
-      std::string MoveAssignmentClaimMember;
-      std::string MoveAssignmentInvalidateMember;
-      std::string MoveConstructorInvalidateMember;
-      std::string MoveConstructorClaimMember;
-      std::string HandleClassName;
-      std::string CreateVoidConstructorHeader;
-      std::string CreateVoidConstructorSource;
-      std::string ResetVoidMemberHeader;
-      std::string ResetVoidMemberSource;
-      std::string ResetUnrollMemberHeader;
-      std::string ResetUnrollMemberSource;
-      std::string ResetUnrollStructVariable;
-      std::string DefaultValueMod;
-      std::string IncludeResetMode;
-      std::string UnrolledWrap;
-    };
-
-
-    struct GeneratedMethodCode
-    {
-      std::string Header;
-      std::string Source;
-
-      GeneratedMethodCode()
-      {
-      }
-
-      explicit GeneratedMethodCode(const std::string& str)
-        : Header(str)
-        , Source(str)
-      {
-      }
-
-      explicit GeneratedMethodCode(const std::string& strHeader, const std::string& strSource)
-        : Header(strHeader)
-        , Source(strSource)
-      {
-      }
-      
-      GeneratedMethodCode& operator+=(const GeneratedMethodCode& rhs)
-      {
-        Header += rhs.Header;
-        Source += rhs.Source;
-        return *this;
-      }
-    };
 
 
     bool IsIgnoreParameter(const ParameterRecord& param, const std::vector<std::string>& forceNullParameter)
@@ -119,248 +67,6 @@ namespace MB
       }
       return false;
     }
-
-    struct MemberVariable
-    {
-      TypeRecord FullType;
-      std::string Type;
-      std::string Name;
-
-      std::string ArgumentName;
-      // The name of the original source argument
-      std::string SourceArgumentName;
-      std::string NiceNameUpperCamelCase;
-
-      MemberVariable()
-      {
-      }
-
-      MemberVariable(const TypeRecord& fullType, const std::string& type, const std::string& name, const std::string& argumentName, const std::string& niceNameUpperCamelCase)
-        : FullType(fullType)
-        , Type(type)
-        , Name(name)
-        , ArgumentName(argumentName)
-        , SourceArgumentName(argumentName)
-        , NiceNameUpperCamelCase(niceNameUpperCamelCase)
-      {
-      }
-
-      bool IsValid() const
-      {
-        return Name.size() > 0;
-      }
-
-      bool operator==(const MemberVariable &rhs) const
-      {
-        return FullType == rhs.FullType &&
-          Type == rhs.Type &&
-          Name == rhs.Name &&
-          ArgumentName == rhs.ArgumentName &&
-          SourceArgumentName == rhs.SourceArgumentName &&
-          NiceNameUpperCamelCase == rhs.NiceNameUpperCamelCase;
-      }
-
-      bool operator!=(const MemberVariable &rhs) const
-      {
-        return !(*this == rhs);
-      }
-    };
-
-    struct MethodArgument
-    {
-      TypeRecord FullType;
-      std::string FullTypeString;
-      std::string ArgumentName;
-      std::string ParameterValue;
-
-      MethodArgument()
-      {
-      }
-
-      MethodArgument(const TypeRecord& fullType, const std::string& fullTypeString, const std::string& argumentName)
-        : FullType(fullType)
-        , FullTypeString(fullTypeString)
-        , ArgumentName(argumentName)
-        , ParameterValue(argumentName)
-      {
-      }
-
-
-      MethodArgument(const TypeRecord& fullType, const std::string& fullTypeString, const std::string& argumentName, const std::string& parameterValue)
-        : FullType(fullType)
-        , FullTypeString(fullTypeString)
-        , ArgumentName(argumentName)
-        , ParameterValue(parameterValue)
-      {
-      }
-
-
-      bool IsValid() const
-      {
-        return ArgumentName.size() > 0;
-      }
-
-      bool operator==(const MethodArgument &rhs) const
-      {
-        return FullType == rhs.FullType &&
-          FullTypeString == rhs.FullTypeString &&
-          ArgumentName == rhs.ArgumentName &&
-          ParameterValue == rhs.ParameterValue;
-      }
-
-      bool operator!=(const MethodArgument &rhs) const
-      {
-        return !(*this == rhs);
-      }
-    };
-
-    enum class UnrollMode
-    {
-      Skipped,
-      Unrolled
-    };
-
-    struct UnrolledStructMember
-    {
-      UnrollMode Mode;
-      MethodArgument Argument;
-
-      UnrolledStructMember()
-        : Mode(UnrollMode::Skipped)
-        , Argument()
-      {
-      }
-
-      UnrolledStructMember(const UnrollMode& mode, const MethodArgument& member)
-        : Mode(mode)
-        , Argument(member)
-      {
-      }
-
-
-
-      bool operator==(const UnrolledStructMember &rhs) const
-      {
-        return Mode == rhs.Mode &&
-          Argument == rhs.Argument;
-      }
-
-      bool operator!=(const UnrolledStructMember &rhs) const
-      {
-        return !(*this == rhs);
-      }
-    };
-
-    struct UnrolledStruct
-    {
-      MethodArgument Source;
-      std::deque<UnrolledStructMember> Members;
-
-      UnrolledStruct(const MethodArgument& source)
-        : Source(source)
-        , Members()
-      {
-      }
-
-      bool operator==(const UnrolledStruct &rhs) const
-      {
-        return Source == rhs.Source &&
-          Members == rhs.Members;
-      }
-
-      bool operator!=(const UnrolledStruct &rhs) const
-      {
-        return !(*this == rhs);
-      }
-    };
-
-    struct UnrolledCreateMethod
-    {
-      std::deque<MethodArgument> MethodArguments;
-      std::deque<UnrolledStruct> UnrolledStructs;
-
-      bool operator==(const UnrolledCreateMethod &rhs) const
-      {
-        return MethodArguments == rhs.MethodArguments &&
-          UnrolledStructs == rhs.UnrolledStructs;
-      }
-
-      bool operator!=(const UnrolledCreateMethod &rhs) const
-      {
-        return !(*this == rhs);
-      }
-    };
-
-
-    struct AnalysisResult
-    {
-      std::string ClassName;
-      std::string IntermediaryName;
-      MemberVariable ResourceMemberVariable;
-      std::deque<MemberVariable> AdditionalMemberVariables;
-      std::deque<MemberVariable> AllMemberVariables;
-      std::deque<MethodArgument> MethodArguments;
-      std::deque<MethodArgument> CreateArguments;
-      std::deque<MethodArgument> DestroyArguments;
-      UnrolledCreateMethod UnrolledCreateMethod;
-
-
-      bool operator==(const AnalysisResult &rhs) const
-      {
-        return ClassName == rhs.ClassName &&
-          IntermediaryName == rhs.IntermediaryName &&
-          ResourceMemberVariable == rhs.ResourceMemberVariable &&
-          AdditionalMemberVariables == rhs.AdditionalMemberVariables &&
-          AllMemberVariables == rhs.AllMemberVariables &&
-          MethodArguments == rhs.MethodArguments &&
-          CreateArguments == rhs.CreateArguments &&
-          DestroyArguments == rhs.DestroyArguments && 
-          UnrolledCreateMethod == rhs.UnrolledCreateMethod;
-      }
-
-      bool operator!=(const AnalysisResult &rhs) const
-      {
-        return !(*this == rhs);
-      }
-    };
-
-
-    class FullAnalysis
-    {
-    public:
-      MatchedFunctionPair Pair;
-      AnalysisResult      Result;
-
-      std::shared_ptr<std::deque<FullAnalysis> > AbsorbedFunctions;
-
-      FullAnalysis()
-        : Pair()
-        , Result()
-        , AbsorbedFunctions()
-      {
-      }
-
-      FullAnalysis(const MatchedFunctionPair pair, const AnalysisResult& result)
-        : Pair(pair)
-        , Result(result)
-        , AbsorbedFunctions()
-      {
-      }
-
-      bool operator==(const FullAnalysis &rhs) const
-      {
-        
-        return Pair == rhs.Pair && 
-          Result == rhs.Result && 
-          ((AbsorbedFunctions && rhs.AbsorbedFunctions && *AbsorbedFunctions == *rhs.AbsorbedFunctions) || (AbsorbedFunctions == rhs.AbsorbedFunctions));
-      }
-
-      bool operator!=(const FullAnalysis &rhs) const
-      {
-        return !(*this == rhs);
-      }
-
-    };
 
 
     std::string GetResourceArgumentName(const TypeRecord& type, const std::string& argumentName)
@@ -461,19 +167,6 @@ namespace MB
       return StringHelper::EnforceLowerCamelCaseNameStyle(typeName.substr(typeNamePrefix.size()));
     }
 
-    struct ParamInStruct
-    {
-      MethodArgument SourceParameter;
-      StructRecord SourceStruct;
-      MemberRecord StructMember;
-      ParamInStruct(const MethodArgument& sourceParameter, const StructRecord& sourceStruct, const MemberRecord& structMember)
-        : SourceParameter(sourceParameter)
-        , SourceStruct(sourceStruct)
-        , StructMember(structMember)
-      {
-      }
-    };
-
     ParamInStruct LookupParameterInStruct(const Capture& capture, const std::deque<MethodArgument>& createParameters, const ParameterRecord& findParameter)
     {
       auto structDict = capture.GetStructDict();
@@ -497,7 +190,8 @@ namespace MB
     }
 
 
-    AnalysisResult Analyze(const Capture& capture, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const std::string& lowerCamelCaseClassName, const std::vector<std::string>& forceNullParameter)
+
+    AnalysisResult Analyze(const Capture& capture, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const std::string& lowerCamelCaseClassName, const std::vector<std::string>& forceNullParameter, const AnalyzeMode analyzeMode)
     {
       bool resourceParameterFound = false;
       std::unordered_map<std::string, MethodArgument> dstMap;
@@ -613,6 +307,8 @@ namespace MB
       }
  
 
+      const std::string createMethodName = functions.Create.Name;
+      const auto itrCustom = std::find_if(config.RAIIClassCustomizations.begin(), config.RAIIClassCustomizations.end(), [createMethodName](const RAIIClassCustomization& val) { return val.SourceCreateMethod == createMethodName; });
       for (auto itr = functions.Destroy.Parameters.begin(); itr != functions.Destroy.Parameters.end(); ++itr)
       {
         auto itrFindDst = dstMap.find(itr->ArgumentName);
@@ -623,9 +319,28 @@ namespace MB
           auto found = LookupParameterInStruct(capture, result.CreateArguments, *itr);
           auto asMember = ToMemberVariable(found.StructMember);
           asMember.SourceArgumentName = found.SourceParameter.ArgumentName + "." + asMember.ArgumentName;
+          auto asArgument = ToMethodArgument(asMember);
 
-          result.AllMemberVariables.push_back(asMember);
-          result.DestroyArguments.push_back(ToMethodArgument(asMember));
+          if (itrCustom != config.RAIIClassCustomizations.end() && itrCustom->ArrayCountName == asMember.ArgumentName)
+          {
+            switch (analyzeMode)
+            {
+            case AnalyzeMode::SingleInstance:
+              result.DestroyArguments.push_back(MethodArgument(asArgument.FullType, asArgument.FullTypeString, "1"));
+              break;
+            case AnalyzeMode::VectorInstance:
+              // FIX: the name is still not correct
+              result.DestroyArguments.push_back(MethodArgument(asArgument.FullType, asArgument.FullTypeString, itrCustom->ResourceName + ".size()"));
+              break;
+            default:
+              throw NotSupportedException("Unsupported analyze mode");
+            }
+          }
+          else
+          {
+            result.AdditionalMemberVariables.push_back(asMember);
+            result.DestroyArguments.push_back(asArgument);
+          }
         }
       }
 
@@ -878,6 +593,9 @@ namespace MB
         auto structDict = capture.GetStructDict();
         for (auto itr = rFullAnalysis.begin(); itr != rFullAnalysis.end(); ++itr)
         {
+          const std::string createMethodName = itr->Pair.Create.Name;
+          const auto itrCustom = std::find_if(config.RAIIClassCustomizations.begin(), config.RAIIClassCustomizations.end(), [createMethodName](const RAIIClassCustomization& val) { return val.SourceCreateMethod == createMethodName; });
+
           UnrolledCreateMethod unrolledCreateMethod;
           std::unordered_set<std::string> uniqueNames;
           for (auto itrParam = itr->Result.MethodArguments.begin(); itrParam != itr->Result.MethodArguments.end(); ++itrParam)
@@ -894,12 +612,21 @@ namespace MB
                 {
                   if (itrStruct->Name != "sType" && itrStruct->Name != "pNext")
                   {
-                    const auto argument = ToMethodArgument(*itrStruct);
-                    if (uniqueNames.find(argument.ArgumentName) != uniqueNames.end())
-                      throw std::runtime_error("Unique name clash");
-                    uniqueNames.insert(argument.ArgumentName);
-                    unrolledCreateMethod.MethodArguments.push_back(argument);
-                    unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Unrolled, ToMethodArgument(*itrStruct)));
+                    if (itrCustom != config.RAIIClassCustomizations.end() && itrCustom->ArrayCountName == itrStruct->ArgumentName )
+                    {
+                      // FIX:
+                      const auto argument = ToMethodArgument(*itrStruct);
+                      unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Counter1, ToMethodArgument(*itrStruct)));
+                    }
+                    else
+                    {
+                      const auto argument = ToMethodArgument(*itrStruct);
+                      if (uniqueNames.find(argument.ArgumentName) != uniqueNames.end())
+                        throw std::runtime_error("Unique name clash");
+                      uniqueNames.insert(argument.ArgumentName);
+                      unrolledCreateMethod.MethodArguments.push_back(argument);
+                      unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Unrolled, ToMethodArgument(*itrStruct)));
+                    }
                   }
                   else
                     unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Skipped, ToMethodArgument(*itrStruct)));
@@ -933,11 +660,24 @@ namespace MB
         else
           std::cout << "Matched: " << itr->Create.Name << " with " << itr->Destroy.Name << "\n";
 
-        const auto result = Analyze(capture, config, *itr, CaseUtil::LowerCaseFirstCharacter(itr->Name), config.ForceNullParameter);
+        const std::string createMethodName = itr->Create.Name;
+        const auto itrCustom = std::find_if(config.RAIIClassCustomizations.begin(), config.RAIIClassCustomizations.end(), [createMethodName](const RAIIClassCustomization& val) { return val.SourceCreateMethod == createMethodName; });
+        if (itrCustom == config.RAIIClassCustomizations.end())
+        {
+          const auto result = Analyze(capture, config, *itr, CaseUtil::LowerCaseFirstCharacter(itr->Name), config.ForceNullParameter, AnalyzeMode::Normal);
+          CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
+          managed.push_back(FullAnalysis(*itr, result));
+        }
+        else
+        {
+          auto result = Analyze(capture, config, *itr, itrCustom->SingleInstanceClassName, config.ForceNullParameter, AnalyzeMode::SingleInstance);
+          CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
+          managed.push_back(FullAnalysis(*itr, result));
 
-        CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
-
-        managed.push_back(FullAnalysis(*itr, result));
+          result = Analyze(capture, config, *itr, itrCustom->VectorInstanceClassName, config.ForceNullParameter, AnalyzeMode::VectorInstance);
+          CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
+          managed.push_back(FullAnalysis(*itr, result));
+        }
       }
 
       // 
@@ -1036,7 +776,9 @@ namespace MB
         {
           std::string contentM = snippetSet;
           std::string value;
-          if (itrMember->Mode == UnrollMode::Skipped)
+          switch (itrMember->Mode)
+          {
+          case UnrollMode::Skipped:
           {
             if (itrMember->Argument.ArgumentName == "sType")
               value = GenerateVulkanStructFlagName(itr->Source.FullType.Name);
@@ -1044,9 +786,15 @@ namespace MB
               value = "nullptr";
             else
               value = itrMember->Argument.ParameterValue;
+            break;
+          case UnrollMode::Counter1:
+            value = "1";
+            break;
           }
-          else
+          default:
             value = itrMember->Argument.ParameterValue;
+            break;
+          }
 
           StringUtil::Replace(contentM, "##MEMBER_NAME##", variable + itrMember->Argument.ArgumentName);
           StringUtil::Replace(contentM, "##MEMBER_ARGUMENT_NAME##", value);
@@ -1192,13 +940,6 @@ namespace MB
       std::string classAdditionalMemberVariables;
       std::string classAdditionalGetMemberVariablesMethods;
       {
-        if (fullAnalysis.Result.AdditionalMemberVariables.size() > 0)
-        {
-          if (pSnippetMemberVariable != nullptr)
-            classAdditionalMemberVariables = END_OF_LINE;
-          if (pSnippetMemberVariableGet != nullptr)
-            classAdditionalGetMemberVariablesMethods = END_OF_LINE;
-        }
         for (auto itr = fullAnalysis.Result.AdditionalMemberVariables.begin(); itr != fullAnalysis.Result.AdditionalMemberVariables.end(); ++itr)
         {
           if (pSnippetMemberVariable != nullptr)
@@ -1206,7 +947,7 @@ namespace MB
             std::string memberVariable = *pSnippetMemberVariable;
             StringUtil::Replace(memberVariable, "##MEMBER_TYPE##", itr->Type);
             StringUtil::Replace(memberVariable, "##MEMBER_NAME##", itr->Name);
-            classAdditionalMemberVariables += memberVariable;
+            classAdditionalMemberVariables += END_OF_LINE + memberVariable;
           }
 
           if (pSnippetMemberVariableGet != nullptr)
@@ -1215,7 +956,7 @@ namespace MB
             StringUtil::Replace(memberVariableGet, "##MEMBER_TYPE##", itr->Type);
             StringUtil::Replace(memberVariableGet, "##MEMBER_NAME##", itr->Name);
             StringUtil::Replace(memberVariableGet, "##MEMBER_NICE_NAME##", itr->NiceNameUpperCamelCase);
-            classAdditionalGetMemberVariablesMethods += memberVariableGet;
+            classAdditionalGetMemberVariablesMethods += END_OF_LINE + memberVariableGet;
           }
         }
       }
@@ -1394,7 +1135,6 @@ namespace MB
         for (auto itr = files.begin(); itr != files.end(); ++itr)
         {
           auto content = IO::File::ReadAllText(**itr);
-
 
           StringUtil::Replace(content, "##API_NAME##", config.APIName);
           StringUtil::Replace(content, "##API_VERSION##", config.APIVersion);
