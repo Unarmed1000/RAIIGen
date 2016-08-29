@@ -1,5 +1,5 @@
-#ifndef RAPIDVULKAN_##CLASS_NAME!##_HPP
-#define RAPIDVULKAN_##CLASS_NAME!##_HPP
+#ifndef RAPIDOPENVX_##CLASS_NAME!##_HPP
+#define RAPIDOPENVX_##CLASS_NAME!##_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -24,13 +24,13 @@
 
 // ##AG_TOOL_STATEMENT##
 
-#include <RapidVulkan/Util.hpp>##ADDITIONAL_INCLUDES##
-#include <vulkan/vulkan.h>
+#include <RapidOpenVX/Util.hpp>##ADDITIONAL_INCLUDES##
+#include <VX/vx.h>
 #include <cassert>
 #include <util>
 #include <vector>
 
-namespace RapidVulkan
+namespace RapidOpenVX
 {
   //! This object is movable so it can be thought of as behaving in the same was as a unique_ptr and is compatible with std containers
   class ##CLASS_NAME##

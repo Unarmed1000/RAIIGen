@@ -83,14 +83,14 @@ namespace RapidVulkan
     //! @brief returns the managed handle and releases the ownership.
     ##RESOURCE_TYPE## Release()
     {
-      const auto resource = ##RESOURCE_MEMBER_NAME##; ##RESET_INVALIDATE_MEMBERS##
+      const auto resource = ##RESOURCE_MEMBER_NAME##;##RESET_INVALIDATE_MEMBERS##
       return resource;
     }
 
     //! @brief Destroys any owned resources and resets the object to its default state.
     void Reset()
     {
-      if (!IsValid())
+      if (! IsValid())
         return;
 ##RESET_MEMBER_ASSERTIONS##
 

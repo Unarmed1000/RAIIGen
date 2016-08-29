@@ -55,6 +55,7 @@ namespace RapidOpenVX
     }
 
     //! @brief Move constructor
+    //! Transfer ownership from other to this
     ##CLASS_NAME##(##CLASS_NAME##&& other)##MOVE_CONSTRUCTOR_MEMBER_INITIALIZATION##
     {
       // Remove the data from other##MOVE_CONSTRUCTOR_INVALIDATE_MEMBERS##

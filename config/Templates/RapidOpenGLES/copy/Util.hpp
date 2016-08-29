@@ -1,5 +1,5 @@
-#ifndef RAPIDVULKAN_VULKANUTIL_HPP
-#define RAPIDVULKAN_VULKANUTIL_HPP
+#ifndef RAPIDOPENGLES_OPENGLESUTIL_HPP
+#define RAPIDOPENGLES_OPENGLESUTIL_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,12 +22,12 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RapidVulkan/Exceptions.hpp>
+#include <RapidOpenGLES/Exceptions.hpp>
 #include <cassert>
 #include <string>
 #include <vulkan/vulkan.h>
 
-namespace RapidVulkan
+namespace RapidOpenGLES
 {
   class Util
   {
@@ -35,7 +35,7 @@ namespace RapidVulkan
     static inline void Check(const VkResult result)
     {
       if (status != VK_SUCCESS)
-        throw VulkanErrorException(result);
+        throw OpenGLESErrorException(result);
     }
 
     static inline void Check(const VkResult result, const char*const pszMessage)
@@ -43,7 +43,7 @@ namespace RapidVulkan
       if (result != VK_SUCCESS)
       {
         assert(pszMessage != nullptr);
-        throw VulkanErrorException(message, result);
+        throw OpenGLESErrorException(message, result);
       }
     }
 
@@ -51,7 +51,7 @@ namespace RapidVulkan
     {
       if (result != VK_SUCCESS)
       {
-        throw VulkanErrorException(message, result);
+        throw OpenGLESErrorException(message, result);
       }
     }
 
@@ -61,7 +61,7 @@ namespace RapidVulkan
       {
         assert(pszMessage != nullptr);
         assert(pszFileName != nullptr);
-        throw VulkanErrorException(pszMessage, result, pszFileName, lineNumber);
+        throw OpenGLESErrorException(pszMessage, result, pszFileName, lineNumber);
       }
     }
 
@@ -70,7 +70,7 @@ namespace RapidVulkan
       if (result != VK_SUCCESS)
       {
         assert(pszMessage != nullptr);
-        throw VulkanErrorException(pszMessage, result, fileName, lineNumber);
+        throw OpenGLESErrorException(pszMessage, result, fileName, lineNumber);
       }
     }
 
@@ -80,7 +80,7 @@ namespace RapidVulkan
       if (result != VK_SUCCESS)
       {
         assert(pszFileName != nullptr);
-        throw VulkanErrorException(message, result, pszFileName, lineNumber);
+        throw OpenGLESErrorException(message, result, pszFileName, lineNumber);
       }
     }
 
@@ -88,7 +88,7 @@ namespace RapidVulkan
     {
       if (result != VK_SUCCESS)
       {
-        throw VulkanErrorException(message, result, fileName, lineNumber);
+        throw OpenGLESErrorException(message, result, fileName, lineNumber);
       }
     }
 

@@ -1,5 +1,5 @@
-#ifndef RAPIDVULKAN_CHECK_HPP
-#define RAPIDVULKAN_CHECK_HPP
+#ifndef RAPIDOPENGLES_CHECK_HPP
+#define RAPIDOPENGLES_CHECK_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,13 +22,13 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RapidVulkan/Util.hpp>
+#include <RapidOpenGLES/Util.hpp>
 
 // Define some ease of use macros for logging.
 // Please beware that these are not pulled in by any of the RAII classes, so its 100% up to the user of the library to include it
 // if the functionality is desired.
 
-#define RAPIDVULKAN_CHECK(X)                  RapidVulkan::Util::Check((X), #X, __FILE__, __LINE__)
-#define RAPIDVULKAN_CHECK2(X, mESSAGE)        RapidVulkan::Util::Check((X), (mESSAGE), __FILE__, __LINE__)
+#define RAPIDOPENGLES_CHECK(X)                  RapidOpenGLES::Util::Check((X), #X, __FILE__, __LINE__)
+#define RAPIDOPENGLES_CHECK2(X, mESSAGE)        RapidOpenGLES::Util::Check((X), (mESSAGE), __FILE__, __LINE__)
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef RAPIDVULKAN_EXCEPTIONS_HPP
-#define RAPIDVULKAN_EXCEPTIONS_HPP
+#ifndef RAPIDOPENGLES_EXCEPTIONS_HPP
+#define RAPIDOPENGLES_EXCEPTIONS_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -26,28 +26,28 @@
 #include <string>
 #include <vulkan/vulkan.h>
 
-namespace RapidVulkan
+namespace RapidOpenGLES
 {
-  class VulkanException : public std::runtime_error
+  class OpenGLESException : public std::runtime_error
   {
     std::string m_fileName;
     int m_lineNumber;
   public:
-    explicit VulkanException()
+    explicit OpenGLESException()
       : std::runtime_error()
       , m_fileName()
       , m_lineNumber(0)
     {
     }
 
-    explicit VulkanException(const std::string& whatArg)
+    explicit OpenGLESException(const std::string& whatArg)
       : std::runtime_error(whatArg)
       , m_fileName()
       , m_lineNumber(0)
     {
     }
 
-    explicit VulkanException(const std::string& whatArg, const std::string& fileName, const int lineNumber)
+    explicit OpenGLESException(const std::string& whatArg, const std::string& fileName, const int lineNumber)
       : std::runtime_error(whatArg)
       , m_fileName(fileName)
       , m_lineNumber(lineNumber)
@@ -69,24 +69,24 @@ namespace RapidVulkan
 
 
 
-  class VulkanErrorException : public OpenVXException
+  class OpenGLESErrorException : public OpenVXException
   {
     VkResult m_result;
   public:
-    explicit VulkanErrorException()
-      : VulkanException()
+    explicit OpenGLESErrorException()
+      : OpenGLESException()
       , m_result(VK_SUCCESS)
     {
     }
 
-    explicit VulkanErrorException(const std::string& whatArg, const VkResult result)
-      : VulkanException(whatArg)
+    explicit OpenGLESErrorException(const std::string& whatArg, const VkResult result)
+      : OpenGLESException(whatArg)
       , m_result(result)
     {
     }
 
-    explicit VulkanErrorException(const std::string& whatArg, const VkResult result, const std::string& fileName, const int lineNumber)
-      : VulkanException(whatArg, fileName, lineNumber)
+    explicit OpenGLESErrorException(const std::string& whatArg, const VkResult result, const std::string& fileName, const int lineNumber)
+      : OpenGLESException(whatArg, fileName, lineNumber)
       , m_result(result)
     {
     }

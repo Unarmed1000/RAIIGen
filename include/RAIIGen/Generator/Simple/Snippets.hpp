@@ -35,18 +35,19 @@ namespace MB
   struct Snippets
   {
     SnippetContext ConstructorMemberInitialization;
+    std::string ResetAssertCommand;
     std::string CreateConstructorHeader;
     std::string CreateConstructorSource;
     std::string ResetSetMemberVariable;
     std::string ResetSetMemberVariableMove;
     SnippetContext ResetInvalidateMemberVariable;
-    std::string ResetMemberAssertion;
+    std::string ResetMemberAssertCondition;
     std::string ResetMemberHeader;
     std::string ResetMemberSource;
     std::string ResetMemberHeaderVector;
     std::string ResetMemberSourceVector;
     std::string ResetParamValidation;
-    std::string ResetParamAssertion;
+    std::string ResetParamAssertCondition;
     std::string MoveAssignmentClaimMember;
     std::string MoveAssignmentClaimMemberMove;
     std::string MoveAssignmentInvalidateMember;

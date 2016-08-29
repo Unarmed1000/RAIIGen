@@ -24,7 +24,7 @@
 
 // ##AG_TOOL_STATEMENT##
 
-namespace RapidOpenCL
+namespace RapidVulkan
 {
   enum class ResetMode
   {

@@ -1,5 +1,5 @@
-#ifndef RAPIDVULKAN_##CLASS_NAME!##_HPP
-#define RAPIDVULKAN_##CLASS_NAME!##_HPP
+#ifndef RAPIDOPENGLES_##CLASS_NAME!##_HPP
+#define RAPIDOPENGLES_##CLASS_NAME!##_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -24,11 +24,11 @@
 
 // ##AG_TOOL_STATEMENT##
 
-#include <RapidVulkan/Util.hpp>##ADDITIONAL_INCLUDES##
+#include <RapidOpenGLES/Util.hpp>##ADDITIONAL_INCLUDES##
 #include <vulkan/vulkan.h>
 #include <cassert>
 
-namespace RapidVulkan
+namespace RapidOpenGLES
 {
   //! This object is movable so it can be thought of as behaving in the same was as a unique_ptr and is compatible with std containers
   class ##CLASS_NAME##

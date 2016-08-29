@@ -548,6 +548,30 @@ namespace MB
     }
 
 
+    std::string GenerateAssertForAllMembers(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables, const std::string snippetTemplate, const std::unordered_map<std::string, std::string>& typeDefaultValues, const bool useSourceArgument = false)
+    {
+      const bool scriptUsesDefaultValue = ContainsDefaultValue(snippetTemplate);
+      std::string result;
+      for (auto itr = allMemberVariables.begin(); itr != allMemberVariables.end(); ++itr)
+      {
+        std::string snippet = snippetTemplate;
+        if (snippet.size() > 0)
+        {
+          std::string snippetCommand = snippets.ResetAssertCommand;
+          StringUtil::Replace(snippet, "##MEMBER_NAME##", itr->Name);
+          StringUtil::Replace(snippet, "##MEMBER_ARGUMENT_NAME##", useSourceArgument ? itr->SourceArgumentName : itr->ArgumentName);
+          if (scriptUsesDefaultValue)
+          {
+            ReplaceDefaultValue(snippet, itr->Type, typeDefaultValues, snippets);
+          }
+          StringUtil::Replace(snippetCommand, "##ASSERT_CONDITION##", snippet);
+          result += END_OF_LINE + snippetCommand;
+        }
+      }
+      return result;
+    }
+
+
     std::string GenerateConstructorInitializationMoveSupport(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables, const std::string snippetTemplate, const std::string snippetTemplateMove, const std::unordered_map<std::string, std::string>& typeDefaultValues)
     {
       std::string result;
@@ -796,7 +820,14 @@ namespace MB
       std::string createMethodParameterNames = GenerateParameterNameList(fullAnalysis.Result.MethodArguments);
       const std::string createFunctionArguments = GenerateExpandedParameterNameList(fullAnalysis.Result.CreateArguments);
       const std::string resetParamValidation = GenerateForAllMembers(snippets, fullAnalysis.Result.AdditionalMemberVariables, snippets.ResetParamValidation, config.TypeDefaultValues, true);
-      const std::string resetParamAsserts = GenerateForAllMembers(snippets, fullAnalysis.Result.AdditionalMemberVariables, snippets.ResetParamAssertion, config.TypeDefaultValues, true);
+      std::string resetParamAsserts = GenerateAssertForAllMembers(snippets, fullAnalysis.Result.AdditionalMemberVariables, snippets.ResetParamAssertCondition, config.TypeDefaultValues, true);
+
+      if (fullAnalysis.Mode == AnalyzeMode::SingleInstance)
+      {
+        std::string snippetCommand = snippets.ResetAssertCommand;
+        StringUtil::Replace(snippetCommand, "##ASSERT_CONDITION##", fullAnalysis.Result.ResourceCountVariableName + " == 1");
+        resetParamAsserts += END_OF_LINE + snippetCommand;
+      }
 
       std::string content(activeSnippet);
       StringUtil::Replace(content, "##CLASS_NAME##", fullAnalysis.Result.ClassName);
@@ -1081,7 +1112,7 @@ namespace MB
       const std::string moveAssignmentInvalidateMembers = GenerateForAllMembersMoveSupport(snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveAssignmentInvalidateMember, "", config.TypeDefaultValues);
       const std::string moveConstructorInvalidateMembers = GenerateForAllMembersMoveSupport(snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveConstructorInvalidateMember, "", config.TypeDefaultValues);
       const std::string resetInvalidateMembers = GenerateForAllMembersInvalidate(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetInvalidateMemberVariable, config.TypeDefaultValues);
-      const std::string resetMemberAssertions = GenerateForAllMembers(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetMemberAssertion, config.TypeDefaultValues);
+      const std::string resetMemberAssertions = GenerateAssertForAllMembers(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetMemberAssertCondition, config.TypeDefaultValues);
 
       const std::string destroyFunctionArguments = GenerateExpandedParameterNameList(fullAnalysis.Result.DestroyArguments);
 
@@ -1147,6 +1178,7 @@ namespace MB
     {
       const auto pathHeaderSnippetMemberVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_MemberVariable.txt");
       const auto pathHeaderSnippetMemberVariableGet = IO::Path::Combine(templateRoot, "TemplateSnippet_MemberVariableGet.txt");
+      const auto pathSnippetResetAssertCommand = IO::Path::Combine(templateRoot, "TemplateSnippet_AssertCommand.txt");
       const auto pathSnippetConstructorMemberInitialization = IO::Path::Combine(templateRoot, "TemplateSnippet_ConstructorMemberInitialization.txt");
       const auto pathSnippetConstructorMemberInitializationPOD = IO::Path::Combine(templateRoot, "TemplateSnippet_ConstructorMemberInitializationPOD.txt");
       const auto pathSnippetCreateConstructorHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateConstructorHeader.txt");
@@ -1155,13 +1187,13 @@ namespace MB
       const auto pathSnippetResetSetMemberVariableMove = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetSetMemberVariableMove.txt");
       const auto pathSnippetResetInvalidateMemberVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetInvalidateMemberVariable.txt");
       const auto pathSnippetResetInvalidateMemberVariablePOD = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetInvalidateMemberVariablePOD.txt");
-      const auto pathSnippetResetMemberAssertion = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberAssertion.txt");
+      const auto pathSnippetResetMemberAssertCondition = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberAssertCondition.txt");
       const auto pathSnippetResetMemberHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberHeader.txt");
       const auto pathSnippetResetMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberSource.txt");
       const auto pathSnippetResetMemberHeaderVector = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberHeaderVector.txt");
       const auto pathSnippetResetMemberSourceVector = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberSourceVector.txt");
       const auto pathSnippetResetParamValidation = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetParamValidation.txt");
-      const auto pathSnippetResetParamAssertion = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetParamAssertion.txt");
+      const auto pathSnippetResetParamAssertCondition = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetParamAssertCondition.txt");
       const auto pathSnippetMoveAssignmentClaimMember = IO::Path::Combine(templateRoot, "TemplateSnippet_MoveAssignmentClaimMember.txt");
       const auto pathSnippetMoveAssignmentClaimMemberMove = IO::Path::Combine(templateRoot, "TemplateSnippet_MoveAssignmentClaimMemberMove.txt");
       const auto pathSnippetMoveAssignmentInvalidateMember = IO::Path::Combine(templateRoot, "TemplateSnippet_MoveAssignmentInvalidateMember.txt");
@@ -1183,19 +1215,20 @@ namespace MB
       Snippets snippets;
       snippets.ConstructorMemberInitialization.Complex = IO::File::ReadAllText(pathSnippetConstructorMemberInitialization);
       snippets.ConstructorMemberInitialization.POD = IO::File::ReadAllText(pathSnippetConstructorMemberInitializationPOD);
+      snippets.ResetAssertCommand = IO::File::ReadAllText(pathSnippetResetAssertCommand);
       snippets.CreateConstructorHeader = IO::File::ReadAllText(pathSnippetCreateConstructorHeader);
       snippets.CreateConstructorSource = IO::File::ReadAllText(pathSnippetCreateConstructorSource);
       snippets.ResetSetMemberVariable = IO::File::ReadAllText(pathSnippetResetSetMemberVariable);
       snippets.ResetSetMemberVariableMove = IO::File::ReadAllText(pathSnippetResetSetMemberVariableMove);
       snippets.ResetInvalidateMemberVariable.Complex = IO::File::ReadAllText(pathSnippetResetInvalidateMemberVariable);
       snippets.ResetInvalidateMemberVariable.POD = IO::File::ReadAllText(pathSnippetResetInvalidateMemberVariablePOD);
-      snippets.ResetMemberAssertion = IO::File::ReadAllText(pathSnippetResetMemberAssertion);
+      snippets.ResetMemberAssertCondition = IO::File::ReadAllText(pathSnippetResetMemberAssertCondition);
       snippets.ResetMemberHeader = IO::File::ReadAllText(pathSnippetResetMemberHeader);
       snippets.ResetMemberSource = IO::File::ReadAllText(pathSnippetResetMemberSource);
       snippets.ResetMemberHeaderVector = IO::File::ReadAllText(pathSnippetResetMemberHeaderVector);
       snippets.ResetMemberSourceVector = IO::File::ReadAllText(pathSnippetResetMemberSourceVector);
       snippets.ResetParamValidation = IO::File::ReadAllText(pathSnippetResetParamValidation);
-      snippets.ResetParamAssertion = IO::File::ReadAllText(pathSnippetResetParamAssertion);
+      snippets.ResetParamAssertCondition = IO::File::ReadAllText(pathSnippetResetParamAssertCondition);
       snippets.MoveAssignmentClaimMember = IO::File::ReadAllText(pathSnippetMoveAssignmentClaimMember);
       snippets.MoveAssignmentClaimMemberMove = IO::File::ReadAllText(pathSnippetMoveAssignmentClaimMemberMove);
       snippets.MoveAssignmentInvalidateMember = IO::File::ReadAllText(pathSnippetMoveAssignmentInvalidateMember);

@@ -1,5 +1,5 @@
-#ifndef RAPIDVULKAN_RESETMODE_HPP
-#define RAPIDVULKAN_RESETMODE_HPP
+#ifndef RAPIDOPENGLES_RESETMODE_HPP
+#define RAPIDOPENGLES_RESETMODE_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -24,7 +24,7 @@
 
 // ##AG_TOOL_STATEMENT##
 
-namespace RapidOpenCL
+namespace RapidOpenGLES
 {
   enum class ResetMode
   {
