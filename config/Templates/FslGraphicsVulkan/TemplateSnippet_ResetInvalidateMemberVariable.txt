@@ -1,1 +1,1 @@
-      ##MEMBER_NAME##.clear();
+        ##MEMBER_NAME##.clear();

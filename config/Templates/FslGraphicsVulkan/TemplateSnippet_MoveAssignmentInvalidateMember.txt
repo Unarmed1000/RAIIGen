@@ -1,1 +1,1 @@
-        other.##MEMBER_NAME## = ##DEFAULT_VALUE##;
+          other.##MEMBER_NAME## = ##DEFAULT_VALUE##;
