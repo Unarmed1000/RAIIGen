@@ -69,11 +69,11 @@ namespace RapidVulkan
     }
 
     //! @brief Assume control of the ##CLASS_NAME## (this object becomes responsible for releasing it)
-    explicit ##CLASS_NAME##(##MEMBER_PARAMETERS##)
-      : ##CLASS_NAME##()
-    {
-      Reset(##MEMBER_PARAMETER_NAMES##);
-    }
+    //explicit ##CLASS_NAME##(##MEMBER_PARAMETERS##)
+    //  : ##CLASS_NAME##()
+    //{
+    //  Reset(##MEMBER_PARAMETER_NAMES##);
+    //}
 
 ##CLASS_EXTRA_CONSTRUCTORS_HEADER##
 
@@ -83,7 +83,7 @@ namespace RapidVulkan
     }
 
     //! @brief returns the managed handle and releases the ownership.
-    ##RESOURCE_TYPE## Release()
+    std::vector<##RESOURCE_TYPE##> Release()
     {
       auto resource = std::move(##RESOURCE_MEMBER_NAME##); ##RESET_INVALIDATE_MEMBERS##
       return resource;
@@ -99,6 +99,7 @@ namespace RapidVulkan
       ##DESTROY_FUNCTION##(##DESTROY_FUNCTION_ARGUMENTS##);##RESET_INVALIDATE_MEMBERS##
     }
 
+/*    
     //! @brief Destroys any owned resources and assume control of the ##CLASS_NAME## (this object becomes responsible for releasing it)
     void Reset(##MEMBER_PARAMETERS##)
     {
@@ -107,7 +108,8 @@ namespace RapidVulkan
 
 ##RESET_SET_MEMBERS_NORMAL##
     }
-
+*/
+    
 ##CLASS_EXTRA_RESET_METHODS_HEADER####CLASS_ADDITIONAL_GET_MEMBER_VARIABLE_METHODS##
 
     //! @brief Get size of the vector

@@ -3,8 +3,7 @@ Just some dev notes on features that might or might not be added in the future.
 Vulkan
 - Array classes, single instance should verify that the 'count' param on the user supplied struct is 1
 - Finish the auto detection of 'member' candidates and add autogeneration code. These members should also be optional.  
-- For the 'array' allocations spawn two classes one that allocates one object and one that allocates a array.
-- For the 'array' allocations: Make sure that the 'count' params dont get added as members.
+- For the pipelines we should use a common base class.
 - Add VK_HEADER_VERSION information to the generated code
 - Scan the documentation HTML and add it as doxygen comments in the generated code.
 - Autogenerate the error code to string classes.
@@ -12,11 +11,20 @@ Vulkan
 - Make the unroll code flexibe or vulkan specific. For now its just disabled for everything but vulkan.
 
 All:
+- (BUG) Array resources. Use clear instead of resource = DEFAULT_VALUE.
+- Array Resources. Generate a std::array based template implementation too for the cases where you absolutely need better control of memory use.
+- Array classes: re-ennable the 'handover' resources methods (they are disabled for now as the code for them is wrong)
 - Move the error code lookup back into a header file. So we are header only. 
   Any users can then do their own 'wrapper' hpp/cpp wrapper.
 - Autogenerate the error code to string classes.
 
 Done:
+- ALL: Array Resources. Move operators need to use std::move for the array
+- ALL: (Optimize) Array resources. Reset method on create done use std::move to assign from the temporary to the member instead of '='
+- ALL: (BUG) Reset assert parameter validation code uses members instead of parameters
+- ALL: (BUG) Reset parameter validation code generation is wrong for 'members' that was taken from a struct.
+- ALL: For the 'array' allocations spawn two classes one that allocates one object and one that allocates a array.
+- ALL: For the 'array' allocations: Make sure that the 'count' params dont get added as members.
 - VULKAN: Some destructors require 'params' from the create struct, so detect that and add it as members to the RAII class.
   VULKAN: These unrolled methods should be optional so add a DISABLE macro around them.
 - Vulkan: Generate 'convenience' methods by unrolling the 'create' struct. Hiding the 'standard' value params.

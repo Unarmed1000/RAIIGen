@@ -30,6 +30,7 @@ namespace MB
     Skipped,
     Unrolled,
     Counter1,
+    Size,
   };
 }
 #endif

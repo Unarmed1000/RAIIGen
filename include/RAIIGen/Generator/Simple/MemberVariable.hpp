@@ -37,8 +37,10 @@ namespace MB
     // The name of the original source argument
     std::string SourceArgumentName;
     std::string NiceNameUpperCamelCase;
+    bool IsMoveable;
 
     MemberVariable()
+      : IsMoveable(false)
     {
     }
 
@@ -49,6 +51,7 @@ namespace MB
       , ArgumentName(argumentName)
       , SourceArgumentName(argumentName)
       , NiceNameUpperCamelCase(niceNameUpperCamelCase)
+      , IsMoveable(false)
     {
     }
 

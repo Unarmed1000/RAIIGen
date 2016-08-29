@@ -39,7 +39,7 @@ namespace MB
     std::deque<MethodArgument> CreateArguments;
     std::deque<MethodArgument> DestroyArguments;
     UnrolledCreateMethod UnrolledCreateMethod;
-
+    std::string ResourceCountVariableName;
 
     bool operator==(const AnalysisResult &rhs) const
     {
@@ -51,7 +51,8 @@ namespace MB
         MethodArguments == rhs.MethodArguments &&
         CreateArguments == rhs.CreateArguments &&
         DestroyArguments == rhs.DestroyArguments &&
-        UnrolledCreateMethod == rhs.UnrolledCreateMethod;
+        UnrolledCreateMethod == rhs.UnrolledCreateMethod &&
+        ResourceCountVariableName == rhs.ResourceCountVariableName;
     }
 
     bool operator!=(const AnalysisResult &rhs) const
