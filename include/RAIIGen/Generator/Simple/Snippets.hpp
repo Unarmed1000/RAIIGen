@@ -41,13 +41,13 @@ namespace MB
     std::string ResetSetMemberVariable;
     std::string ResetSetMemberVariableMove;
     SnippetContext ResetInvalidateMemberVariable;
-    std::string ResetMemberAssertCondition;
+    SnippetContext ResetMemberAssertCondition;
     std::string ResetMemberHeader;
     std::string ResetMemberSource;
     std::string ResetMemberHeaderVector;
     std::string ResetMemberSourceVector;
     std::string ResetParamValidation;
-    std::string ResetParamAssertCondition;
+    SnippetContext ResetParamAssertCondition;
     std::string MoveAssignmentClaimMember;
     std::string MoveAssignmentClaimMemberMove;
     std::string MoveAssignmentInvalidateMember;

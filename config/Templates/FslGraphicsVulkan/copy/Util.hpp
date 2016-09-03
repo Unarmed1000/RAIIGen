@@ -1,5 +1,5 @@
-#ifndef FSLGRAPHICS##NAMESPACE_NAME!##_VULKANUTIL_HPP
-#define FSLGRAPHICS##NAMESPACE_NAME!##_VULKANUTIL_HPP
+#ifndef FSLGRAPHICS##NAMESPACE_NAME!##_UTIL_HPP
+#define FSLGRAPHICS##NAMESPACE_NAME!##_UTIL_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.

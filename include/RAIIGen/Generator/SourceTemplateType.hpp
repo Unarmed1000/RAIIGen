@@ -1,5 +1,5 @@
-#ifndef MB_GENERATOR_SIMPLE_FULLANALYSIS_HPP
-#define MB_GENERATOR_SIMPLE_FULLANALYSIS_HPP
+#ifndef MB_GENERATOR_SOURCETEMPLATETYPE_HPP
+#define MB_GENERATOR_SOURCETEMPLATETYPE_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,57 +22,17 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RAIIGen/Generator/Simple/AnalyzeMode.hpp>
-#include <RAIIGen/Generator/Simple/AnalysisResult.hpp>
-#include <RAIIGen/Generator/MatchedFunctionPair.hpp>
-#include <RAIIGen/Generator/SourceTemplateType.hpp>
-#include <deque>
-#include <memory>
 
 namespace MB
 {
-  class FullAnalysis
+  enum class SourceTemplateType
   {
-  public:
-    MatchedFunctionPair Pair;
-    AnalysisResult      Result;
-    AnalyzeMode         Mode;
-    SourceTemplateType  TemplateType;
-
-    std::shared_ptr<std::deque<FullAnalysis> > AbsorbedFunctions;
-
-    FullAnalysis()
-      : Pair()
-      , Result()
-      , AbsorbedFunctions()
-      , Mode(AnalyzeMode::Normal)
-      , TemplateType(SourceTemplateType::NormalResource)
-    {
-    }
-
-    FullAnalysis(const MatchedFunctionPair pair, const AnalysisResult& result, const AnalyzeMode mode, const SourceTemplateType sourceTemplateType)
-      : Pair(pair)
-      , Result(result)
-      , AbsorbedFunctions()
-      , Mode(mode)
-      , TemplateType(sourceTemplateType)
-    {
-    }
-
-    bool operator==(const FullAnalysis &rhs) const
-    {
-
-      return Pair == rhs.Pair &&
-        Result == rhs.Result &&
-        Mode == rhs.Mode &&
-        TemplateType == rhs.TemplateType &&
-        ((AbsorbedFunctions && rhs.AbsorbedFunctions && *AbsorbedFunctions == *rhs.AbsorbedFunctions) || (AbsorbedFunctions == rhs.AbsorbedFunctions));
-    }
-
-    bool operator!=(const FullAnalysis &rhs) const
-    {
-      return !(*this == rhs);
-    }
+    // Create and destroy works on a single resource handle
+    NormalResource,
+    // Both create and destroy works on arrays
+    ArrayResource,
+    // This type requires a for loop to destroy the instances that was allocated with one call during create
+    ArrayAllocationButSingleInstanceDestroy
   };
 }
 #endif

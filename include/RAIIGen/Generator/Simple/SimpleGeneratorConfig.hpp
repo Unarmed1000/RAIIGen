@@ -37,9 +37,11 @@ namespace MB
     const std::vector<std::string> ForceNullParameter;
     const std::string TypeNamePrefix;
     const bool UnrollCreateStructs;
+    const bool OwnershipTransferUseClaimMode;
 
     SimpleGeneratorConfig()
       : UnrollCreateStructs(false)
+      , OwnershipTransferUseClaimMode(false)
     {
     }
 
@@ -48,7 +50,7 @@ namespace MB
       const std::vector<RAIIClassCustomization>& raiiClassCustomizations,
       const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
       const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
-      const std::string& typeNamePrefix, const bool unrollCreateStructs)
+      const std::string& typeNamePrefix, const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode)
       : GeneratorConfig(config)
       , RAIIClassCustomizations(raiiClassCustomizations)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)
@@ -56,6 +58,7 @@ namespace MB
       , ForceNullParameter(forceNullParameter)
       , TypeNamePrefix(typeNamePrefix)
       , UnrollCreateStructs(unrollCreateStructs)
+      , OwnershipTransferUseClaimMode(ownershipTransferUseClaimMode)
     {
     }
 
@@ -64,7 +67,7 @@ namespace MB
                           const std::vector<RAIIClassCustomization>& raiiClassCustomizations,
                           const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
                           const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
-                          const std::string& typeNamePrefix, const bool unrollCreateStructs)
+                          const std::string& typeNamePrefix, const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode)
       : GeneratorConfig(basicConfig, functionPairs, manualFunctionMatches)
       , RAIIClassCustomizations(raiiClassCustomizations)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)
@@ -72,6 +75,7 @@ namespace MB
       , ForceNullParameter(forceNullParameter)
       , TypeNamePrefix(typeNamePrefix)
       , UnrollCreateStructs(unrollCreateStructs)
+      , OwnershipTransferUseClaimMode(ownershipTransferUseClaimMode)
     {
     }
   };

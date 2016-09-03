@@ -1,1 +1,1 @@
-        ##MEMBER_NAME## = std::move(other.##MEMBER_NAME##);
+          ##MEMBER_NAME## = std::move(other.##MEMBER_NAME##);

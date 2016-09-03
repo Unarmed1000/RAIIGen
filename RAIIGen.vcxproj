@@ -129,6 +129,7 @@
     <ClInclude Include="include\RAIIGen\Generator\Simple\UnrolledStruct.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\UnrolledStructMember.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\UnrollMode.hpp" />
+    <ClInclude Include="include\RAIIGen\Generator\SourceTemplateType.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\VulkanGenerator.hpp" />
     <ClInclude Include="include\RAIIGen\MemberRecord.hpp" />
     <ClInclude Include="include\RAIIGen\ParameterRecord.hpp" />

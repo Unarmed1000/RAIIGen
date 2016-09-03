@@ -1,0 +1,1 @@
+##MEMBER_ARGUMENT_NAME##.size() > 0

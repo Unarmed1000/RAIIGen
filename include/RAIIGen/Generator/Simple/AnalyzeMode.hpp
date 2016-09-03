@@ -29,7 +29,7 @@ namespace MB
   {
     Normal,
     SingleInstance,
-    VectorInstance
+    VectorInstance,
   };
 }
 #endif

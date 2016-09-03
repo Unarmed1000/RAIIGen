@@ -23,6 +23,7 @@
 //***************************************************************************************************************************************************
 
 #include <RAIIGen/Generator/MatchedFunctionPair.hpp>
+#include <RAIIGen/Generator/SourceTemplateType.hpp>
 
 namespace MB
 {
@@ -32,24 +33,35 @@ namespace MB
     std::string SingleInstanceClassName;
     std::string VectorInstanceClassName;
     std::string ResourceName;
-    std::string ArrayCountName;
+    std::string StructMemberArrayCountName;
+    std::string ParamMemberArrayCountName;
+    SourceTemplateType VectorInstanceTemplateType;
 
     RAIIClassCustomization()
       : SourceCreateMethod()
       , SingleInstanceClassName()
       , VectorInstanceClassName()
       , ResourceName()
-      , ArrayCountName()
+      , StructMemberArrayCountName()
+      , ParamMemberArrayCountName()
+      , VectorInstanceTemplateType(SourceTemplateType::ArrayResource)
     {
     }
 
-    RAIIClassCustomization(const std::string& sourceCreateMethod, const std::string& singleInstanceClassName, const std::string& vectorInstanceClassName, 
-                           const std::string& resourceName, const std::string& arrayCountName)
+    RAIIClassCustomization(const std::string& sourceCreateMethod, 
+                           const std::string& singleInstanceClassName, 
+                           const std::string& vectorInstanceClassName,
+                           const std::string& resourceName, 
+                           const std::string& structArrayCountName, 
+                           const std::string& paramArrayCountName,
+                           const SourceTemplateType vectorInstanceTemplateType = SourceTemplateType::ArrayResource)
       : SourceCreateMethod(sourceCreateMethod)
       , SingleInstanceClassName(singleInstanceClassName)
       , VectorInstanceClassName(vectorInstanceClassName)
       , ResourceName(resourceName)
-      , ArrayCountName(arrayCountName)
+      , StructMemberArrayCountName(structArrayCountName)
+      , ParamMemberArrayCountName(paramArrayCountName)
+      , VectorInstanceTemplateType(vectorInstanceTemplateType)
     {
     }
   };

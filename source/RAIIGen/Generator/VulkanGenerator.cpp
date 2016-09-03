@@ -81,10 +81,10 @@ namespace MB
 
     const std::vector<RAIIClassCustomization> g_arrayRAIIClassCustomization
     {
-      RAIIClassCustomization("vkAllocateCommandBuffers", "CommandBuffer", "CommandBuffers", "commandBuffers", "commandBufferCount"),
-      RAIIClassCustomization("vkAllocateDescriptorSets", "DescriptorSet", "DescriptorSets", "descriptorSets", "descriptorSetCount"),
-      RAIIClassCustomization("vkCreateComputePipelines", "ComputePipeline", "ComputePipelines", "computePipelines", "createInfoCount"),
-      RAIIClassCustomization("vkCreateGraphicsPipelines", "GraphicsPipeline", "GraphicsPipelines", "graphicsPipelines", "createInfoCount"),
+      RAIIClassCustomization("vkAllocateCommandBuffers", "CommandBuffer", "CommandBuffers", "commandBuffers", "commandBufferCount", ""),
+      RAIIClassCustomization("vkAllocateDescriptorSets", "DescriptorSet", "DescriptorSets", "descriptorSets", "descriptorSetCount", ""),
+      RAIIClassCustomization("vkCreateComputePipelines", "ComputePipeline", "ComputePipelines", "computePipelines", "", "createInfoCount", SourceTemplateType::ArrayAllocationButSingleInstanceDestroy),
+      RAIIClassCustomization("vkCreateGraphicsPipelines", "GraphicsPipeline", "GraphicsPipelines", "graphicsPipelines", "", "createInfoCount", SourceTemplateType::ArrayAllocationButSingleInstanceDestroy),
     };
 
 
@@ -142,7 +142,10 @@ namespace MB
 
 
   VulkanGenerator::VulkanGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
-    : SimpleGenerator(capture, SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, g_classFunctionAbsorbtion, g_typeDefaultValues, g_forceNullParameter, TYPE_NAME_PREFIX, true), templateRoot, dstPath)
+    : SimpleGenerator(capture, 
+                      SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
+                                            g_classFunctionAbsorbtion, g_typeDefaultValues, g_forceNullParameter, 
+                                            TYPE_NAME_PREFIX, true, true), templateRoot, dstPath)
   {
   }
 
