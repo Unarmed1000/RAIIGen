@@ -97,7 +97,10 @@ namespace RapidOpenCL
         return;
 ##RESET_MEMBER_ASSERTIONS##
 
-      ##DESTROY_FUNCTION##(##DESTROY_FUNCTION_ARGUMENTS##);##RESET_INVALIDATE_MEMBERS##
+      for(std::size_t i=0; i<##RESOURCE_MEMBER_NAME##.size(); ++i)
+      {
+        ##DESTROY_FUNCTION##(##DESTROY_FUNCTION_ARGUMENTS##);
+      }##RESET_INVALIDATE_MEMBERS##
     }
 
 /*    
