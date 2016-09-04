@@ -384,6 +384,15 @@
     <ClInclude Include="include\RAIIGen\Generator\SourceTemplateType.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\Struct\StructSnippets.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\Struct\CStructToCpp.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\IOUtil.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\RAIIGen\Capture.cpp">
@@ -564,6 +573,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\RAIIGen\ClangInfoDump.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RAIIGen\Generator\Simple\Struct\CStructToCpp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RAIIGen\IOUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

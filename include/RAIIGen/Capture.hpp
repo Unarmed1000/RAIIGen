@@ -65,6 +65,7 @@ namespace MB
     std::size_t m_level;
     std::deque<FunctionRecord> m_records;
     std::deque<FunctionErrors> m_functionErrors;
+    std::deque<StructRecord> m_structsInCapturedOrder;
     std::unordered_map<std::string, StructRecord> m_structs;
     std::unordered_map<std::string, EnumRecord> m_enums;
     std::deque<CaptureInfo> m_captureInfo;
@@ -90,6 +91,12 @@ namespace MB
     {
       return m_records;
     }
+
+    const std::deque<StructRecord>& GetStructs() const
+    {
+      return m_structsInCapturedOrder;
+    }
+
 
     std::deque<FunctionRecord>& DirectFunctions()
     {

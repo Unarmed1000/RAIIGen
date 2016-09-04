@@ -1,5 +1,5 @@
-#ifndef MB_STRINGHELPER_HPP
-#define MB_STRINGHELPER_HPP
+#ifndef MB_GENERATOR_SIMPLE_STRUCT_CSTRUCTTOCPP_HPP
+#define MB_GENERATOR_SIMPLE_STRUCT_CSTRUCTTOCPP_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,27 +22,16 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <string>
+#include <FslBase/IO/Path.hpp>
 
 namespace MB
 {
+  class Capture;
 
-  //! @brief Only works on ASCII chars.
-  class StringHelper
+  class CStructToCpp
   {
   public:
-    static std::string EnforceLowerCamelCaseNameStyle(const std::string& value);
-    static std::string EnforceUpperCamelCaseNameStyle(const std::string& value);
-
-    // https://www.khronos.org/registry/vulkan/specs/1.0/xhtml/vkspec.html
-    // Any parameter that is a structure containing a sType member must have a value of sType which is a valid VkStructureType value matching 
-    // the type of the structure. As a general rule, the name of this value is obtained by taking the structure name, stripping the leading Vk, 
-    // prefixing each capital letter with _, converting the entire resulting string to upper case, and prefixing it with VK_STRUCTURE_TYPE_. 
-    // For example, structures of type VkImageCreateInfo must have a sType value of VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO.
-    static std::string GenerateVulkanStructFlagName(const std::string structName);
+    CStructToCpp(const Capture& capture, const std::string& namespaceName, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstFileName);
   };
-
-  // Nasty, but ok for now
-  const std::string END_OF_LINE = "\r\n";
 }
 #endif

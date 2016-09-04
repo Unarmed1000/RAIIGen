@@ -33,6 +33,7 @@
 #include <RAIIGen/CaseUtil.hpp>
 #include <RAIIGen/Capture.hpp>
 #include <RAIIGen/StringHelper.hpp>
+#include <RAIIGen/IOUtil.hpp>
 #include <FslBase/Exceptions.hpp>
 #include <FslBase/IO/Directory.hpp>
 #include <FslBase/IO/File.hpp>
@@ -46,6 +47,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <cassert>
+#include <RAIIGen/Generator/Simple/Struct/CStructToCpp.hpp>
 
 
 using namespace Fsl;
@@ -56,7 +58,6 @@ namespace MB
   namespace
   {
     const auto DEFAULT_VALUE_NOT_FOUND = "FIX_DEFAULT_FOR_TYPE_NOT_DEFINED";
-    const auto END_OF_LINE = std::string("\r\n");
 
 
     bool IsIgnoreParameter(const ParameterRecord& param, const std::vector<std::string>& forceNullParameter)
@@ -901,37 +902,7 @@ namespace MB
       return GeneratedMethodCode(resultHeader, resultSource);
     }
 
-    // https://www.khronos.org/registry/vulkan/specs/1.0/xhtml/vkspec.html
-    // Any parameter that is a structure containing a sType member must have a value of sType which is a valid VkStructureType value matching 
-    // the type of the structure. As a general rule, the name of this value is obtained by taking the structure name, stripping the leading Vk, 
-    // prefixing each capital letter with _, converting the entire resulting string to upper case, and prefixing it with VK_STRUCTURE_TYPE_. 
-    // For example, structures of type VkImageCreateInfo must have a sType value of VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO.
-    std::string GenerateVulkanStructFlagName(const std::string structName)
-    {
-      if (structName.size() < 2 || structName[0] != 'V' || structName[1] != 'k')
-        throw NotSupportedException("the struct did not start with the expected Vk");
 
-      auto flagName =  structName.substr(2);
-      std::vector<char> dst(flagName.size() * 2);
-      std::size_t dstIndex = 0;
-      bool previousCharWasUpper = true;
-      for (std::size_t i = 0; i < flagName.size(); ++i, ++dstIndex)
-      {
-        if (flagName[i] >= 'A' && flagName[i] <= 'Z')
-        {
-          if (!previousCharWasUpper)
-          {
-            dst[dstIndex] = '_';
-            ++dstIndex;
-          }
-          previousCharWasUpper = true;
-        }
-        else
-          previousCharWasUpper = false;
-        dst[dstIndex] = CaseUtil::UpperCase(flagName[i]);
-      }
-      return "VK_STRUCTURE_TYPE_" + std::string(dst.data(), dstIndex);
-    }
 
 
     std::string GenerateUnrolledStructLocalVariables(const std::string& snippet, const std::string& snippetSet, const FullAnalysis& fullAnalysis)
@@ -950,7 +921,7 @@ namespace MB
           case UnrollMode::Skipped:
           {
             if (itrMember->Argument.ArgumentName == "sType")
-              value = GenerateVulkanStructFlagName(itr->Source.FullType.Name);
+              value = StringHelper::GenerateVulkanStructFlagName(itr->Source.FullType.Name);
             else if (itrMember->Argument.ArgumentName == "pNext")
               value = "nullptr";
             else
@@ -1350,7 +1321,7 @@ namespace MB
       {
         auto headerContent = GenerateContent(config, *itr, activeHeaderTemplate, &snippets.HeaderSnippetMemberVariable, &snippets.HeaderSnippetMemberVariableGet, snippets);
         auto fileName = IO::Path::Combine(dstPath, itr->Result.ClassName + ".hpp");
-        WriteAllTextIfChanged(fileName, headerContent);
+        IOUtil::WriteAllTextIfChanged(fileName, headerContent);
       }
       assert(static_cast<std::size_t>(itr->TemplateType) < sourceTemplates.size());
       const auto activeSourceTemplate = sourceTemplates[static_cast<std::size_t>(itr->TemplateType)];
@@ -1358,7 +1329,7 @@ namespace MB
       {
         auto sourceContent = GenerateContent(config, *itr, activeSourceTemplate, nullptr, nullptr, snippets);
         auto fileName = IO::Path::Combine(dstPath, itr->Result.ClassName + ".cpp");
-        WriteAllTextIfChanged(fileName, sourceContent);
+        IOUtil::WriteAllTextIfChanged(fileName, sourceContent);
       }
     }
 
@@ -1381,7 +1352,7 @@ namespace MB
           StringUtil::Replace(content, "##AG_TOOL_STATEMENT##", config.ToolStatement);
 
           auto dstFileName = IO::Path::Combine(dstPath, IO::Path::GetFileName(**itr));
-          WriteAllTextIfChanged(dstFileName, content);
+          IOUtil::WriteAllTextIfChanged(dstFileName, content);
         }
       }
     }
@@ -1399,7 +1370,7 @@ namespace MB
       StringUtil::Replace(content, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
       StringUtil::Replace(content, "##AG_TOOL_STATEMENT##", config.ToolStatement);
       auto dstFileName = IO::Path::Combine(dstPath, "ResetMode.hpp");
-      WriteAllTextIfChanged(dstFileName, content);
+      IOUtil::WriteAllTextIfChanged(dstFileName, content);
     }
 
     // Write 'Readme.txt'
@@ -1414,7 +1385,7 @@ namespace MB
       StringUtil::Replace(content, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
       StringUtil::Replace(content, "##AG_TOOL_STATEMENT##", config.ToolStatement);
       auto dstFileName = IO::Path::Combine(dstPath, "RAIIGenVersion.txt");
-      WriteAllTextIfChanged(dstFileName, content);
+      IOUtil::WriteAllTextIfChanged(dstFileName, content);
     }
 
 
@@ -1426,6 +1397,10 @@ namespace MB
     for (auto itr = sortedTypesWithoutDefaultValues.begin(); itr != sortedTypesWithoutDefaultValues.end(); ++itr)
       std::cout << "WARNING: Missing default value for type: " << *itr << "\n";
 
-
+    if (config.IsVulkan)
+    {
+      auto dstFileNameStructTypes = IO::Path::Combine(dstPath, "Vk/Types.hpp");
+      CStructToCpp test(capture, config.NamespaceName, templateRoot, dstFileNameStructTypes);
+    }
   }
 }

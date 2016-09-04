@@ -42,9 +42,6 @@ namespace MB
     Generator(const Capture& capture, const GeneratorConfig& config);
 
     std::deque<FunctionRecord>::const_iterator FindByName(const std::deque<FunctionRecord>& records, const std::string& name);
-
-
-    void WriteAllTextIfChanged(const Fsl::IO::Path& fileName, const std::string& content);
   };
 }
 #endif

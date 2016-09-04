@@ -107,12 +107,5 @@ namespace MB
   }
 
   
-  void Generator::WriteAllTextIfChanged(const Fsl::IO::Path& fileName, const std::string& content)
-  {
-    std::string currentContent;
-    // Skip the write if the file already exist and if it contains the exact same content.
-    if (IO::File::TryReadAllText(currentContent, fileName) && currentContent == content)
-      return;
-    IO::File::WriteAllText(fileName, content);
-  }
+
 }

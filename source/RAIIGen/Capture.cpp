@@ -489,10 +489,15 @@ namespace MB
         switch (m_captureInfo.back().Mode)
         {
         case CaptureMode::Struct:
+        {
           assert(m_captureStructs.size() > 0);
+          auto itrFindName = m_structs.find(m_captureStructs.back().Name);
           m_structs[m_captureStructs.back().Name] = m_captureStructs.back();
+          if(itrFindName == m_structs.end())
+            m_structsInCapturedOrder.push_back(m_captureStructs.back());
           m_captureStructs.pop_back();
           break;
+        }
         case CaptureMode::Enum:
           assert(m_captureEnums.size() > 0);
           m_enums[m_captureEnums.back().Name] = m_captureEnums.back();

@@ -22,9 +22,12 @@
 
 #include <RAIIGen/StringHelper.hpp>
 #include <RAIIGen/CaseUtil.hpp>
+#include <FslBase/Exceptions.hpp>
+#include <vector>
 
 namespace MB
 {
+  using namespace Fsl;
 
 
   std::string StringHelper::EnforceLowerCamelCaseNameStyle(const std::string& value)
@@ -58,6 +61,68 @@ namespace MB
     }
     modded.resize(dstIndex);
     return modded;
+  }
+
+
+  std::string StringHelper::EnforceUpperCamelCaseNameStyle(const std::string& value)
+  {
+    std::string modded(value.size(), ' ');
+    const auto length = value.size();
+    std::size_t dstIndex = 0;
+    bool uppercaseNextChar = true;
+    for (std::size_t srcIndex = 0; srcIndex < length; ++srcIndex)
+    {
+      if (value[srcIndex] != ' ')
+      {
+        if (value[srcIndex] == '_')
+        {
+          uppercaseNextChar = true;
+        }
+        else if (uppercaseNextChar)
+        {
+          modded[dstIndex] = CaseUtil::UpperCase(value[srcIndex]);
+          uppercaseNextChar = false;
+          ++dstIndex;
+        }
+        else
+        {
+          modded[dstIndex] = value[srcIndex];
+          ++dstIndex;
+        }
+      }
+      else
+        uppercaseNextChar = true;
+    }
+    modded.resize(dstIndex);
+    return modded;
+  }
+
+
+  std::string StringHelper::GenerateVulkanStructFlagName(const std::string structName)
+  {
+    if (structName.size() < 2 || structName[0] != 'V' || structName[1] != 'k')
+      throw NotSupportedException("the struct did not start with the expected Vk");
+
+    auto flagName = structName.substr(2);
+    std::vector<char> dst(flagName.size() * 2);
+    std::size_t dstIndex = 0;
+    bool previousCharWasUpper = true;
+    for (std::size_t i = 0; i < flagName.size(); ++i, ++dstIndex)
+    {
+      if (flagName[i] >= 'A' && flagName[i] <= 'Z')
+      {
+        if (!previousCharWasUpper)
+        {
+          dst[dstIndex] = '_';
+          ++dstIndex;
+        }
+        previousCharWasUpper = true;
+      }
+      else
+        previousCharWasUpper = false;
+      dst[dstIndex] = CaseUtil::UpperCase(flagName[i]);
+    }
+    return "VK_STRUCTURE_TYPE_" + std::string(dst.data(), dstIndex);
   }
 
 }

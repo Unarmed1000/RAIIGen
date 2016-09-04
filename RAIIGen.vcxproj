@@ -125,12 +125,15 @@
     <ClInclude Include="include\RAIIGen\Generator\MatchType.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\SimpleGeneratorConfig.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\Snippets.hpp" />
+    <ClInclude Include="include\RAIIGen\Generator\Simple\Struct\CStructToCpp.hpp" />
+    <ClInclude Include="include\RAIIGen\Generator\Simple\Struct\StructSnippets.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\UnrolledCreateMethod.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\UnrolledStruct.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\UnrolledStructMember.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\UnrollMode.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\SourceTemplateType.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\VulkanGenerator.hpp" />
+    <ClInclude Include="include\RAIIGen\IOUtil.hpp" />
     <ClInclude Include="include\RAIIGen\MemberRecord.hpp" />
     <ClInclude Include="include\RAIIGen\ParameterRecord.hpp" />
     <ClInclude Include="include\RAIIGen\ParameterType.hpp" />
@@ -201,7 +204,9 @@
     <ClCompile Include="source\RAIIGen\Generator\OpenVXGenerator.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\Simple\SimpleGenerator.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\Generator.cpp" />
+    <ClCompile Include="source\RAIIGen\Generator\Simple\Struct\CStructToCpp.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\VulkanGenerator.cpp" />
+    <ClCompile Include="source\RAIIGen\IOUtil.cpp" />
     <ClCompile Include="source\RAIIGen\Main.cpp" />
     <ClCompile Include="source\RAIIGen\StringHelper.cpp" />
   </ItemGroup>

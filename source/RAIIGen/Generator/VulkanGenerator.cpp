@@ -145,7 +145,7 @@ namespace MB
     : SimpleGenerator(capture, 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
                                             g_classFunctionAbsorbtion, g_typeDefaultValues, g_forceNullParameter, 
-                                            TYPE_NAME_PREFIX, true, true), templateRoot, dstPath)
+                                            TYPE_NAME_PREFIX, true, true, true), templateRoot, dstPath)
   {
   }
 

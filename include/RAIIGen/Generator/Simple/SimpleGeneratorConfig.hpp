@@ -38,10 +38,12 @@ namespace MB
     const std::string TypeNamePrefix;
     const bool UnrollCreateStructs;
     const bool OwnershipTransferUseClaimMode;
+    const bool IsVulkan;
 
     SimpleGeneratorConfig()
       : UnrollCreateStructs(false)
       , OwnershipTransferUseClaimMode(false)
+      , IsVulkan(false)
     {
     }
 
@@ -50,7 +52,7 @@ namespace MB
       const std::vector<RAIIClassCustomization>& raiiClassCustomizations,
       const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
       const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
-      const std::string& typeNamePrefix, const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode)
+      const std::string& typeNamePrefix, const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode, const bool isVulkan=false)
       : GeneratorConfig(config)
       , RAIIClassCustomizations(raiiClassCustomizations)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)
@@ -59,6 +61,7 @@ namespace MB
       , TypeNamePrefix(typeNamePrefix)
       , UnrollCreateStructs(unrollCreateStructs)
       , OwnershipTransferUseClaimMode(ownershipTransferUseClaimMode)
+      , IsVulkan(isVulkan)
     {
     }
 
@@ -67,7 +70,7 @@ namespace MB
                           const std::vector<RAIIClassCustomization>& raiiClassCustomizations,
                           const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
                           const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
-                          const std::string& typeNamePrefix, const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode)
+                          const std::string& typeNamePrefix, const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode, const bool isVulkan = false)
       : GeneratorConfig(basicConfig, functionPairs, manualFunctionMatches)
       , RAIIClassCustomizations(raiiClassCustomizations)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)
@@ -76,6 +79,7 @@ namespace MB
       , TypeNamePrefix(typeNamePrefix)
       , UnrollCreateStructs(unrollCreateStructs)
       , OwnershipTransferUseClaimMode(ownershipTransferUseClaimMode)
+      , IsVulkan(isVulkan)
     {
     }
   };
