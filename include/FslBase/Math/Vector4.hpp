@@ -89,7 +89,7 @@ namespace Fsl
     }
 
     //! @brief A optimization constructor that doesn't initialize the Vector4 so when this is called the content of the Vector4 in undefined!!!
-    Vector4(const OptimizationFlag::Enum flag) {};
+    Vector4(const OptimizationFlag flag) {};
 
     //! @brief Get direct access to the elements
     const float* DirectAccess() const;

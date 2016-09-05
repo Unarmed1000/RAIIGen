@@ -1,5 +1,5 @@
-#ifndef MB_ENUMMEMBERRECORD_HPP
-#define MB_ENUMMEMBERRECORD_HPP
+#ifndef MB_GENERATOR_SIMPLE_FORMAT_FORMATTOCPP_HPP
+#define MB_GENERATOR_SIMPLE_FORMAT_FORMATTOCPP_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,53 +22,16 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RAIIGen/ParameterType.hpp>
-#include <RAIIGen/TypeRecord.hpp>
-#include <string>
+#include <FslBase/IO/Path.hpp>
 
 namespace MB
 {
-  struct EnumMemberRecord
+  class Capture;
+
+  class FormatToCpp
   {
-    std::string Name;
-    uint64_t UnsignedValue;
-
-    EnumMemberRecord()
-      : Name()
-      , UnsignedValue(0)
-    {
-    }
-
-
-    EnumMemberRecord(const std::string& name, const uint64_t& value)
-      : Name(name)
-      , UnsignedValue(value)
-    {
-    }
-
-
-    void Clear()
-    {
-      *this = EnumMemberRecord();
-    }
-
-
-    bool IsValid() const
-    {
-      return Name.size() > 0;
-    }
-
-    bool operator==(const EnumMemberRecord &rhs) const
-    {
-      return Name == rhs.Name &&
-        UnsignedValue == rhs.UnsignedValue;
-    }
-
-    bool operator!=(const EnumMemberRecord &rhs) const
-    {
-      return !(*this == rhs);
-    }
-
+  public:
+    FormatToCpp(const Capture& capture, const std::string& namespaceName, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstFileName);
   };
 }
 #endif

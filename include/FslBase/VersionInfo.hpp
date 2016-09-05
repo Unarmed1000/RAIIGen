@@ -1,7 +1,7 @@
-#ifndef FSLBASE_OPTIMIZATIONFLAG_HPP
-#define FSLBASE_OPTIMIZATIONFLAG_HPP
+#ifndef FSLBASE_VERSIONINFO_HPP
+#define FSLBASE_VERSIONINFO_HPP
 /****************************************************************************************************************************************************
-* Copyright (c) 2014 Freescale Semiconductor, Inc.
+* Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -31,12 +31,28 @@
 *
 ****************************************************************************************************************************************************/
 
+#include <FslBase/BasicTypes.hpp>
+
 namespace Fsl
 {
-  enum class OptimizationFlag
+  struct VersionInfo
   {
-    NoInitialization
+    uint16_t Major;
+    uint16_t Minor;
+
+    VersionInfo()
+      : Major(0)
+      , Minor(0)
+    {
+    }
+
+    VersionInfo(const uint16_t major, const uint16_t minor)
+      : Major(major)
+      , Minor(minor)
+    {
+    }
   };
 }
 
-#endif 
+#endif
+

@@ -35,13 +35,10 @@ namespace Fsl
 {
   namespace IO
   {
-    struct SearchOptions
+    enum class SearchOptions
     {
-      enum Enum
-      {
-        AllDirectories,
-        TopDirectoryOnly,
-      };
+      AllDirectories,
+      TopDirectoryOnly,
     };
   }
 }

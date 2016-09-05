@@ -74,7 +74,7 @@ namespace Fsl
     float W;
 
     Quaternion();
-    Quaternion(const OptimizationFlag::Enum flag);
+    Quaternion(const OptimizationFlag flag);
     Quaternion(const float x, const float y, const float z, const float w);
     Quaternion(const Vector3& vectorPart, const float scalarPart);
 

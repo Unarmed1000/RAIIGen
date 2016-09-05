@@ -1,7 +1,7 @@
-#ifndef FSLBASE_OPTIMIZATIONFLAG_HPP
-#define FSLBASE_OPTIMIZATIONFLAG_HPP
+#ifndef FSLBASE_ATTRIBUTES_HPP
+#define FSLBASE_ATTRIBUTES_HPP
 /****************************************************************************************************************************************************
-* Copyright (c) 2014 Freescale Semiconductor, Inc.
+* Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -31,12 +31,21 @@
 *
 ****************************************************************************************************************************************************/
 
-namespace Fsl
-{
-  enum class OptimizationFlag
-  {
-    NoInitialization
-  };
-}
+#if defined(_MSC_VER)
+# define FSL_ATTR_DEPRECATED                  __declspec(deprecated)
+# define FSL_FUNC_POSTFIX_WARN_UNUSED_RESULT
+#elif defined(__GNUC__)
+# define FSL_ATTR_DEPRECATED
+# define FSL_FUNC_POSTFIX_WARN_UNUSED_RESULT  __attribute__((warn_unused_result))
+// __attribute__ ((deprecated)) but its a postfix thing again :(
+// So its better to wait for [[deprecated]](C++14)
+#elif defined(__QNXNTO__)
+# define FSL_ATTR_DEPRECATED
+# define FSL_FUNC_POSTFIX_WARN_UNUSED_RESULT
+#else
+# pragma message("WARNING: It would be a good idea to implement FSL_ATTR_DEPRECATED, FSL_FUNC_POSTFIX_WARN_UNUSED_RESULT for this compiler")
+# define FSL_ATTR_DEPRECATED
+# define FSL_FUNC_POSTFIX_WARN_UNUSED_RESULT
+#endif
 
-#endif 
+#endif

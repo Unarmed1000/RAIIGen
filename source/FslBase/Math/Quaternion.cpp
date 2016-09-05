@@ -77,7 +77,7 @@ namespace Fsl
 
 
 
-  Quaternion::Quaternion(const OptimizationFlag::Enum flag)
+  Quaternion::Quaternion(const OptimizationFlag flag)
   {
   }
 

@@ -47,6 +47,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <cassert>
+#include <RAIIGen/Generator/Simple/Format/FormatToCpp.hpp>
 #include <RAIIGen/Generator/Simple/Struct/CStructToCpp.hpp>
 
 
@@ -1401,6 +1402,9 @@ namespace MB
     {
       auto dstFileNameStructTypes = IO::Path::Combine(dstPath, "Vk/Types.hpp");
       CStructToCpp test(capture, config.NamespaceName, templateRoot, dstFileNameStructTypes);
+
+      //auto dstFileNameFormat = IO::Path::Combine(dstPath, "Vk/Formats.hpp");
+      //FormatToCpp test2(capture, config.NamespaceName, templateRoot, dstFileNameFormat);
     }
   }
 }

@@ -39,6 +39,12 @@ namespace Fsl
   }
 
 
+  bool StringUtil::EndsWith(const std::string& source, const std::string& value)
+  {
+    return (source.size() >= value.size() &&  source.compare(source.size() - value.size(), value.size(), value) == 0);
+  }
+
+
   int32_t StringUtil::IndexOf(const std::string& source, const char ch)
   {
     const std::size_t index = source.find(ch);

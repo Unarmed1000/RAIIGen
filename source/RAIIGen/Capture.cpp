@@ -374,7 +374,8 @@ namespace MB
     EnumMemberRecord GetEnumMember(CXCursor cursor)
     {
       const auto cursorSpelling = GetCursorSpelling(cursor);
-      return EnumMemberRecord(cursorSpelling);
+      const auto value = clang_getEnumConstantDeclUnsignedValue(cursor);
+      return EnumMemberRecord(cursorSpelling, value);
     }
 
     template<typename T>

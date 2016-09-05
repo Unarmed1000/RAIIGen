@@ -78,13 +78,13 @@ namespace Fsl
     }
 
 
-    void Directory::GetFiles(PathDeque& rResult, const Path& path, const SearchOptions::Enum searchOptions)
+    void Directory::GetFiles(PathDeque& rResult, const Path& path, const SearchOptions searchOptions)
     {
       return PlatformFileSystem::GetFiles(rResult, path, searchOptions);
     }
 
 
-    bool Directory::TryGetFiles(PathDeque& rResult, const Path& path, const SearchOptions::Enum searchOptions)
+    bool Directory::TryGetFiles(PathDeque& rResult, const Path& path, const SearchOptions searchOptions)
     {
       try
       {

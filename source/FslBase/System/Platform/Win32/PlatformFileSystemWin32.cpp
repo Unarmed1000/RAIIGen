@@ -173,7 +173,7 @@ namespace Fsl
     }
 
 
-    void PlatformFileSystem::GetFiles(PathDeque& rResult, const Path& path, const SearchOptions::Enum searchOptions)
+    void PlatformFileSystem::GetFiles(PathDeque& rResult, const Path& path, const SearchOptions searchOptions)
     {
       rResult.clear();
       FileAttributes attr;

@@ -45,6 +45,9 @@ namespace Fsl
     //! @brief Check if the 'source' string starts with the 'value'
     static bool StartsWith(const std::string& source, const std::string& value);
 
+    //! @brief Check if the 'source' string ends with the 'value'
+    static bool EndsWith(const std::string& source, const std::string& value);
+
 
     //! @brief Index of the first occurrence of the char 'ch' in 'source'
     //! @return the index or less than zero if not found
