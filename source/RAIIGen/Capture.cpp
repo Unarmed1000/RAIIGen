@@ -178,6 +178,9 @@ namespace MB
         throw std::runtime_error("GetTypeName() failed to get type name for CXType_MemberPointer");
       case CXType_Auto:
         throw std::runtime_error("GetTypeName() failed to get type name for CXType_Auto");
+      case CXType_Elaborated:
+        std::cout << "WARNING: CXType_Elaborated not properly supported\n";
+        return TypeInfo("**CXType_Elaborated**", type, originalType);
       default:
         throw std::runtime_error("GetTypeName() failed to get type name");
       }
