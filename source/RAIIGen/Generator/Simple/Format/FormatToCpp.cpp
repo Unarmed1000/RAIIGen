@@ -224,7 +224,16 @@ namespace MB
         result << " | " + pack;
       result << ",";
 
-      return result.str();
+      //return result.str();
+
+      std::stringstream result2;
+      // result2 << "static_assert( ((static_cast<uint32_t>(PixelFormat::" << newName << ") & static_cast<uint32_t>(PixelFormatFlags::BIT_MASK_FORMAT_ID)) - static_cast<uint32_t>(PixelFormat::ENUM_BEGIN_RANGE)) == " << enumMember.UnsignedValue << ", \"The index did not match our assumption\");";
+      //result2 << newName;
+      //result2 << "PixelFormat::" << newName << ",";
+      result2 << "case PixelFormat::" << newName << ":";
+      //result2 << "static_assert( ((static_cast<uint32_t>(PixelFormat::" << newName << ") & static_cast<uint32_t>(PixelFormatFlags::BIT_MASK_FORMAT_ID)) - static_cast<uint32_t>(PixelFormat::ENUM_BEGIN_RANGE)) == static_cast<uint32_t>(" << enumMember.UnsignedValue << " - VK_FORMAT_BEGIN_RANGE), \"The formatId did not match the Vulkan format\");";
+      
+      return result2.str();
     }
   }
 
@@ -241,7 +250,11 @@ namespace MB
     const auto formatRecord = itrFind->second;
 
     for (auto itr = formatRecord.Members.begin(); itr != formatRecord.Members.end(); ++itr)
+    {
+      //std::cout << itr->Name << "\n";
       std::cout << GetEncodedName(*itr) << "\n";
+    }
   }
+
 
 }

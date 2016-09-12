@@ -128,6 +128,12 @@ namespace Fsl
         return ##RESOURCE_MEMBER_NAME##;
       }
 
+      //! @brief Get a pointer to the associated resource handle
+      const ##RESOURCE_TYPE##* GetPointer() const
+      {
+        return &##RESOURCE_MEMBER_NAME##;
+      }
+      
       //! @brief Check if this object contains a valid resource
       inline bool IsValid() const
       {
