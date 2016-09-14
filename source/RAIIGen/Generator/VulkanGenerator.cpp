@@ -24,6 +24,7 @@
 #include <RAIIGen/Generator/FunctionNamePair.hpp>
 #include <RAIIGen/Generator/MatchedFunctionPair.hpp>
 #include <RAIIGen/Generator/RAIIClassCustomization.hpp>
+#include <RAIIGen/Generator/RAIIClassMethodOverrides.hpp>
 #include <RAIIGen/CaseUtil.hpp>
 #include <RAIIGen/Capture.hpp>
 #include <FslBase/Exceptions.hpp>
@@ -93,6 +94,12 @@ namespace MB
     };
 
 
+    const std::unordered_map<std::string, RAIIClassMethodOverrides> g_classMethodOverride =
+    {
+      { "SwapchainKHR", RAIIClassMethodOverrides("TemplateSnippet_ResetMemberHeader_CustomSwapchain.txt") },
+    };
+
+
     const std::vector<std::string> g_forceNullParameter
     {
       "VkAllocationCallbacks"
@@ -141,10 +148,11 @@ namespace MB
   }
 
 
+
   VulkanGenerator::VulkanGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
     : SimpleGenerator(capture, 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
-                                            g_classFunctionAbsorbtion, g_typeDefaultValues, g_forceNullParameter, 
+                                            g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
                                             TYPE_NAME_PREFIX, true, true, true), templateRoot, dstPath)
   {
   }

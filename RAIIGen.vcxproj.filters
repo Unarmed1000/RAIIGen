@@ -396,6 +396,9 @@
     <ClInclude Include="include\RAIIGen\Generator\Simple\Format\FormatToCpp.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\RAIIClassMethodOverrides.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\RAIIGen\Capture.cpp">

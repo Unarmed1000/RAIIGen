@@ -1,0 +1,26 @@
+      //! @brief Destroys any owned resources and then creates the requested one
+      //! @note  Function: ##SOURCE_FUNCTION_NAME##
+      //!        If we detect that createInfo.oldSwapchain == m_swapchain then we ensure that m_swapchain isn't destroyed before the new swapchain has been created
+      void Reset(##CREATE_METHOD_PARAMETERS##)
+      {
+#ifndef FSLGRAPHICSVULKAN_DISABLE_PARAM_VALIDATION##RESET_PARAMETER_VALIDATION##
+#else##RESET_ASSERT_VALIDATION##
+#endif
+
+        // Detect a 'special case' where we are referencing this objects resource and
+        // need it to create the new resource
+        bool delayedReset = false;
+        if (IsValid() && createInfo.oldSwapchain != m_swapchain)
+        {
+          Reset();
+          delayedReset = true;
+        }
+
+        // Since we want to ensure that the resource is left untouched on error we use a local variable as a intermediary
+        ##RESOURCE_TYPE## ##RESOURCE_INTERMEDIARY_NAME##;
+        Util::Check(##CREATE_FUNCTION##(##CREATE_FUNCTION_ARGUMENTS##), "##CREATE_FUNCTION##", __FILE__, __LINE__);
+        if (delayedReset)
+          Reset();
+
+        // Everything is ready, so assign the members##RESET_SET_MEMBERS##
+      }

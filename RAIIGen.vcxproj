@@ -104,6 +104,7 @@
     <ClInclude Include="include\RAIIGen\FunctionParameterTypeOverride.hpp" />
     <ClInclude Include="include\RAIIGen\FunctionRecord.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\ClassFunctionAbsorb.hpp" />
+    <ClInclude Include="include\RAIIGen\Generator\RAIIClassMethodOverrides.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\FunctionAnalysis.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\GeneratorConfig.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\OpenCLGenerator.hpp" />

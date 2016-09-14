@@ -92,6 +92,11 @@ namespace MB
       ClassFunctionAbsorb("Sampler", "clCreateSamplerWithProperties"),
     };
 
+
+    const std::unordered_map<std::string, RAIIClassMethodOverrides> g_classMethodOverride =
+    {
+    };
+
     // WARNING: No match found for: clCreateSubDevices
     // WARNING: No match found for: clCreateSubBuffer
     // WARNING: No match found for: clCreateKernelsInProgram
@@ -463,7 +468,7 @@ namespace MB
   OpenCLGenerator::OpenCLGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
     : SimpleGenerator(ModCapture(capture), 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
-                                           g_classFunctionAbsorbtion, g_typeDefaultValues, g_forceNullParameter, TYPE_NAME_PREFIX, 
+                                           g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter, TYPE_NAME_PREFIX,
                                            false, false), 
                       templateRoot, dstPath)
   {

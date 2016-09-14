@@ -1,5 +1,5 @@
-#ifndef MB_GENERATOR_SIMPLE_SNIPPETS_HPP
-#define MB_GENERATOR_SIMPLE_SNIPPETS_HPP
+#ifndef MB_GENERATOR_RAIICLASSMETHODOVERRIDES_HPP
+#define MB_GENERATOR_RAIICLASSMETHODOVERRIDES_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,63 +22,28 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <FslBase/IO/Path.hpp>
 #include <string>
 
 namespace MB
 {
-  struct SnippetContext
+  struct RAIIClassMethodOverrides
   {
-    std::string Complex;
-    std::string POD;
-  };
+    std::string ResetHeader;
+    std::string ResetSource;
 
-  struct Snippets
-  {
-    Fsl::IO::Path SnippetRoot;
-    SnippetContext ConstructorMemberInitialization;
-    std::string ResetAssertCommand;
-    std::string CreateConstructorHeader;
-    std::string CreateConstructorSource;
-    std::string ResetSetMemberVariable;
-    std::string ResetSetMemberVariableMove;
-    SnippetContext ResetInvalidateMemberVariable;
-    SnippetContext ResetMemberAssertCondition;
-    std::string ResetMemberHeader;
-    std::string ResetMemberSource;
-    std::string ResetMemberHeaderVector;
-    std::string ResetMemberSourceVector;
-    std::string ResetParamValidation;
-    SnippetContext ResetParamAssertCondition;
-    std::string MoveAssignmentClaimMember;
-    std::string MoveAssignmentClaimMemberMove;
-    std::string MoveAssignmentInvalidateMember;
-    std::string MoveConstructorInvalidateMember;
-    std::string MoveConstructorClaimMember;
-    std::string MoveConstructorClaimMemberMove;
-    std::string HandleClassName;
-    std::string CreateVoidConstructorHeader;
-    std::string CreateVoidConstructorSource;
-    std::string ResetVoidMemberHeader;
-    std::string ResetVoidMemberSource;
-    std::string ResetUnrollMemberHeader;
-    std::string ResetUnrollMemberSource;
-    std::string ResetUnrollStructVariable;
-    std::string DefaultValueMod;
-    std::string IncludeResetMode;
-    std::string UnrolledWrap;
-
-    std::string HeaderSnippetMemberVariable;
-    std::string HeaderSnippetMemberVariableGet;
-
-    Snippets()
+    RAIIClassMethodOverrides()
+      : ResetHeader()
+      , ResetSource()
     {
     }
 
-    Snippets(const Fsl::IO::Path& root)
-      : SnippetRoot(root)
+    RAIIClassMethodOverrides(const std::string& resetHeader,
+                             const std::string& resetSource = std::string())
+      : ResetHeader(resetHeader)
+      , ResetSource(resetSource)
     {
     }
   };
+
 }
 #endif

@@ -1236,7 +1236,7 @@ namespace MB
       const auto pathSnippetIncludeResetMode = IO::Path::Combine(templateRoot, "TemplateSnippet_IncludeResetMode.txt");
       const auto pathSnippetUnrolledWrap = IO::Path::Combine(templateRoot, "TemplateSnippet_UnrolledWrap.txt");
 
-      Snippets snippets;
+      Snippets snippets(templateRoot);
       snippets.ConstructorMemberInitialization.Complex = IO::File::ReadAllText(pathSnippetConstructorMemberInitialization);
       snippets.ConstructorMemberInitialization.POD = IO::File::ReadAllText(pathSnippetConstructorMemberInitializationPOD);
       snippets.ResetAssertCommand = IO::File::ReadAllText(pathSnippetResetAssertCommand);
@@ -1276,6 +1276,36 @@ namespace MB
       snippets.HeaderSnippetMemberVariableGet = IO::File::ReadAllText(pathHeaderSnippetMemberVariableGet);
       return snippets;
     }
+
+
+    std::string ResolveMethodOverride(const IO::Path& snippetRoot, const std::string& overrideValue, const std::string& defaultValue)
+    {
+      if(overrideValue.size() <= 0)
+        return defaultValue;
+
+      const auto fullPath = IO::Path::Combine(snippetRoot, overrideValue);
+      return IO::File::ReadAllText(fullPath);
+    }
+
+
+    RAIIClassMethodOverrides ResolveOverrides(const RAIIClassMethodOverrides& methodOverrides, const Snippets& snippets)
+    {
+      RAIIClassMethodOverrides result;
+      result.ResetHeader = ResolveMethodOverride(snippets.SnippetRoot, methodOverrides.ResetHeader, snippets.ResetMemberHeader);
+      result.ResetSource = ResolveMethodOverride(snippets.SnippetRoot, methodOverrides.ResetSource, snippets.ResetMemberSource);
+      return result;
+    }
+
+
+    std::unordered_map<std::string, RAIIClassMethodOverrides> ResolveOverrides(const std::unordered_map<std::string, RAIIClassMethodOverrides>& classMethodOverrides, const Snippets& snippets)
+    {
+      std::unordered_map<std::string, RAIIClassMethodOverrides> map;
+      for (auto& value : classMethodOverrides)
+      {
+        map[value.first] = ResolveOverrides(value.second, snippets);
+      }
+      return map;
+    }
   }
 
 
@@ -1287,6 +1317,7 @@ namespace MB
     : Generator(capture, config)
   {
     const Snippets snippets = LoadSnippets(templateRoot);
+    const auto resolvedClassMethodOverrides = ResolveOverrides(config.ClassMethodOverrides, snippets);
 
     const auto pathHeader0 = IO::Path::Combine(templateRoot, "Template_header0.hpp");
     const auto pathSource0 = IO::Path::Combine(templateRoot, "Template_source0.cpp");
@@ -1317,10 +1348,19 @@ namespace MB
 
     for (auto itr = fullAnalysis.begin(); itr != fullAnalysis.end(); ++itr)
     {
+      Snippets classSnippets(snippets);
+      // check if there is any class method overrids and apply the to the snippets if they exist
+      const auto itrFindMethodOverride = resolvedClassMethodOverrides.find(itr->Result.ClassName);
+      if (itrFindMethodOverride != resolvedClassMethodOverrides.end())
+      {
+        classSnippets.ResetMemberHeader = itrFindMethodOverride->second.ResetHeader;
+        classSnippets.ResetMemberSource = itrFindMethodOverride->second.ResetSource;
+      }
+
       assert(static_cast<std::size_t>(itr->TemplateType) < headerTemplates.size());
       const auto activeHeaderTemplate = headerTemplates[static_cast<std::size_t>(itr->TemplateType)];
       {
-        auto headerContent = GenerateContent(config, *itr, activeHeaderTemplate, &snippets.HeaderSnippetMemberVariable, &snippets.HeaderSnippetMemberVariableGet, snippets);
+        auto headerContent = GenerateContent(config, *itr, activeHeaderTemplate, &classSnippets.HeaderSnippetMemberVariable, &classSnippets.HeaderSnippetMemberVariableGet, classSnippets);
         auto fileName = IO::Path::Combine(dstPath, itr->Result.ClassName + ".hpp");
         IOUtil::WriteAllTextIfChanged(fileName, headerContent);
       }
@@ -1328,7 +1368,7 @@ namespace MB
       const auto activeSourceTemplate = sourceTemplates[static_cast<std::size_t>(itr->TemplateType)];
       if (activeSourceTemplate.size() > 0)
       {
-        auto sourceContent = GenerateContent(config, *itr, activeSourceTemplate, nullptr, nullptr, snippets);
+        auto sourceContent = GenerateContent(config, *itr, activeSourceTemplate, nullptr, nullptr, classSnippets);
         auto fileName = IO::Path::Combine(dstPath, itr->Result.ClassName + ".cpp");
         IOUtil::WriteAllTextIfChanged(fileName, sourceContent);
       }
