@@ -49,6 +49,7 @@ namespace MB
     const auto DESTROY_FUNCTION = "clRelease";
 
     const auto TYPE_NAME_PREFIX = "cl_";
+    const auto FUNCTION_NAME_PREFIX = "cl";
 
 
     const std::vector<FunctionNamePair> g_functionPairs
@@ -468,8 +469,8 @@ namespace MB
   OpenCLGenerator::OpenCLGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
     : SimpleGenerator(ModCapture(capture), 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
-                                           g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter, TYPE_NAME_PREFIX,
-                                           false, false), 
+                                           g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter, 
+                                           TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, false, false), 
                       templateRoot, dstPath)
   {
   }

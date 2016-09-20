@@ -136,14 +136,14 @@ namespace MB
     }
 
 
-    MethodArgument ToMethodArgument(const ParameterRecord& value)
+    MethodArgument ToMethodArgument(const ParameterRecord& value, const bool allowPointerToRefConvert=true)
     {
       // C++'ify the arguments
       std::string fullTypeString;
       std::string argumentName(value.ArgumentName);
       std::string parameterName(value.ArgumentName);
 
-      if (value.Type.IsConstQualified && value.Type.IsStruct && value.Type.IsPointer)
+      if (allowPointerToRefConvert && value.Type.IsConstQualified && value.Type.IsStruct && value.Type.IsPointer)
       {
         fullTypeString = "const " + value.Type.Name + "&";
         argumentName = GetResourceArgumentName(value);
@@ -399,7 +399,7 @@ namespace MB
               rResult.ResourceCountVariableName = asMember.SourceArgumentName;
               break;
             case AnalyzeMode::VectorInstance:
-              rResult.DestroyArguments.push_back(MethodArgument(asArgument.FullType, asArgument.FullTypeString, "m_" + itrCustom->ResourceName + ".size()"));
+              rResult.DestroyArguments.push_back(MethodArgument(asArgument.FullType, asArgument.FullTypeString, std::string("static_cast<") + asArgument.FullType.Name + ">(m_" + itrCustom->ResourceName + ".size())"));
               rResult.ResourceCountVariableName = asMember.SourceArgumentName;
               break;
             default:
@@ -456,20 +456,50 @@ namespace MB
     }
 
 
-    void FindObjectFunctions(const FunctionAnalysis& functionAnalysis, const std::deque<FullAnalysis>& managed, const AnalysisResult& result)
+    void FindObjectFunctions(const SimpleGeneratorConfig& config, const FunctionAnalysis& functionAnalysis, std::deque<FullAnalysis>& managed, FullAnalysis& rResult)
     {
-      std::cout << "Matching functions to " << result.ClassName << "\n";
+      std::cout << "Matching functions to " << rResult.Result.ClassName << "\n";
 
       for (auto itr = functionAnalysis.Unmatched.begin(); itr != functionAnalysis.Unmatched.end(); ++itr)
       {
         // 1. The start parameter types and order must be exactly the same as this objects member variables
         // 2. Any following parameter must not be of a 'managed' type (one that we generate a object for)
-        if (IsExactStartParameterMatch(result.AllMemberVariables, *itr) )
+        if (IsExactStartParameterMatch(rResult.Result.AllMemberVariables, *itr) )
         {
-          const std::size_t numMembers = result.AllMemberVariables.size();
+          const std::size_t numMembers = rResult.Result.AllMemberVariables.size();
           if (itr->Parameters.size() <= numMembers || !IsManagedType(managed, itr->Parameters[numMembers]))
           {
             std::cout << "+ " << itr->Name << "\n";
+            std::string methodName = itr->Name;
+            if (StringUtil::StartsWith(methodName, config.FunctionNamePrefix))
+              methodName = methodName.substr(config.FunctionNamePrefix.size());
+
+            ClassMethod classMethod;
+            classMethod.SourceFunction = *itr;
+            classMethod.Name = methodName;
+            classMethod.ReturnType = CPPifyArgument(itr->ReturnType, "Return", false);
+
+            // Convert all the method arguments
+            for (auto &param : itr->Parameters)
+              classMethod.OriginalMethodArguments.push_back(ToMethodArgument(param, false));
+
+
+            // Add the starting params (the members)
+            for (std::size_t paramIndex = 0; paramIndex < rResult.Result.AllMemberVariables.size(); ++paramIndex)
+            {
+              auto argument = ToMethodArgument(rResult.Result.AllMemberVariables[paramIndex]);
+              argument.ParameterValue = rResult.Result.AllMemberVariables[paramIndex].Name;
+              classMethod.CombinedMethodArguments.push_back(argument);
+            }
+            // Add the following params (non members)
+            for (std::size_t paramIndex = rResult.Result.AllMemberVariables.size(); paramIndex < itr->Parameters.size(); ++paramIndex)
+            {
+              const auto argument = ToMethodArgument(itr->Parameters[paramIndex], false);
+              classMethod.MethodArguments.push_back(argument);
+              classMethod.CombinedMethodArguments.push_back(argument);
+            }
+
+            rResult.ClassMethods.push_back(classMethod);
           }
         }
       }
@@ -845,7 +875,7 @@ namespace MB
 
       for (auto itr = managed.begin(); itr != managed.end(); ++itr)
       {
-        FindObjectFunctions(functionAnalysis, managed, itr->Result);
+        FindObjectFunctions(config, functionAnalysis, managed, *itr);
       }
 
       return managed;

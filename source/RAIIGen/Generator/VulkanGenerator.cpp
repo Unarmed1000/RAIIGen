@@ -58,6 +58,7 @@ namespace MB
     const auto FREE_FUNCTION = "vkFree";
 
     const auto TYPE_NAME_PREFIX = "Vk";
+    const auto FUNCTION_NAME_PREFIX = "vk";
 
     const auto DEFAULT_VALUE = "VK_NULL_HANDLE";
 
@@ -153,7 +154,7 @@ namespace MB
     : SimpleGenerator(capture, 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
-                                            TYPE_NAME_PREFIX, true, true, true), templateRoot, dstPath)
+                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, true, true, true), templateRoot, dstPath)
   {
   }
 

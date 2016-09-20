@@ -47,6 +47,7 @@ namespace MB
     const auto DESTROY_FUNCTION = "glDelete";
 
     const auto TYPE_NAME_PREFIX = "GL";
+    const auto FUNCTION_NAME_PREFIX = "gl";
 
     const auto DEFAULT_VALUE = "VK_NULL_HANDLE";
 
@@ -130,8 +131,8 @@ namespace MB
   OpenGLESGenerator::OpenGLESGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
     : SimpleGenerator(capture, 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
-                                            g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter, TYPE_NAME_PREFIX,
-                                            false, false), 
+                                            g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter, 
+                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, false, false), 
                       templateRoot, dstPath)
   {
   }

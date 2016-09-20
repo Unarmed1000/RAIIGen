@@ -1,5 +1,5 @@
-#ifndef MB_GENERATOR_SIMPLE_FULLANALYSIS_HPP
-#define MB_GENERATOR_SIMPLE_FULLANALYSIS_HPP
+#ifndef MB_GENERATOR_SIMPLE_CLASSMETHOD_HPP
+#define MB_GENERATOR_SIMPLE_CLASSMETHOD_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,57 +22,28 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RAIIGen/Generator/Simple/AnalyzeMode.hpp>
-#include <RAIIGen/Generator/Simple/AnalysisResult.hpp>
-#include <RAIIGen/Generator/Simple/ClassMethod.hpp>
-#include <RAIIGen/Generator/MatchedFunctionPair.hpp>
-#include <RAIIGen/Generator/SourceTemplateType.hpp>
+#include <RAIIGen/Generator/Simple/MethodArgument.hpp>
+#include <RAIIGen/FunctionRecord.hpp>
 #include <deque>
-#include <memory>
+#include <string>
 
 namespace MB
 {
-  class FullAnalysis
+  struct ClassMethod
   {
-  public:
-    MatchedFunctionPair Pair;
-    AnalysisResult      Result;
-    AnalyzeMode         Mode;
-    SourceTemplateType  TemplateType;
+    FunctionRecord SourceFunction;
 
-    std::shared_ptr<std::deque<FullAnalysis> > AbsorbedFunctions;
-    std::deque<ClassMethod> ClassMethods;
+    std::string Name;
+    std::deque<MethodArgument> MethodArguments;
+    std::deque<MethodArgument> OriginalMethodArguments;
+    std::deque<MethodArgument> CombinedMethodArguments;
+    MethodArgument ReturnType;
 
-    FullAnalysis()
-      : Pair()
-      , Result()
-      , AbsorbedFunctions()
-      , Mode(AnalyzeMode::Normal)
-      , TemplateType(SourceTemplateType::NormalResource)
+    ClassMethod()
+      : Name()
+      , MethodArguments()
+      , OriginalMethodArguments()
     {
-    }
-
-    FullAnalysis(const MatchedFunctionPair pair, const AnalysisResult& result, const AnalyzeMode mode, const SourceTemplateType sourceTemplateType)
-      : Pair(pair)
-      , Result(result)
-      , AbsorbedFunctions()
-      , Mode(mode)
-      , TemplateType(sourceTemplateType)
-    {
-    }
-
-    bool operator==(const FullAnalysis &rhs) const
-    {
-      return Pair == rhs.Pair &&
-        Result == rhs.Result &&
-        Mode == rhs.Mode &&
-        TemplateType == rhs.TemplateType &&
-        ((AbsorbedFunctions && rhs.AbsorbedFunctions && *AbsorbedFunctions == *rhs.AbsorbedFunctions) || (AbsorbedFunctions == rhs.AbsorbedFunctions));
-    }
-
-    bool operator!=(const FullAnalysis &rhs) const
-    {
-      return !(*this == rhs);
     }
   };
 }
