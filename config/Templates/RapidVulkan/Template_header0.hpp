@@ -125,7 +125,7 @@ namespace RapidVulkan
     inline bool IsValid() const
     {
       return ##RESOURCE_MEMBER_NAME## != ##DEFAULT_VALUE##;
-    }
+    }##ADDITIONAL_METHODS_HEADER##
   };
 }
 

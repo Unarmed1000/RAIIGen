@@ -33,10 +33,19 @@ namespace MB
     std::string POD;
   };
 
+  struct SnippetMethodContext
+  {
+    std::string VoidReturn;
+    std::string TypeReturn;
+    std::string ErrorReturn;
+  };
+
   struct Snippets
   {
     Fsl::IO::Path SnippetRoot;
     SnippetContext ConstructorMemberInitialization;
+    SnippetMethodContext AdditionalMethodHeader;
+    SnippetMethodContext AdditionalMethodSource;
     std::string ResetAssertCommand;
     std::string CreateConstructorHeader;
     std::string CreateConstructorSource;

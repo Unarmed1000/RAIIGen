@@ -51,6 +51,9 @@ namespace MB
     const auto TYPE_NAME_PREFIX = "cl_";
     const auto FUNCTION_NAME_PREFIX = "cl";
 
+    // cl_int, not good
+    const auto ERRORCODE_TYPE_NAME = "";
+
 
     const std::vector<FunctionNamePair> g_functionPairs
     {
@@ -470,7 +473,7 @@ namespace MB
     : SimpleGenerator(ModCapture(capture), 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
                                            g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter, 
-                                           TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, false, false), 
+                                           TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false),
                       templateRoot, dstPath)
   {
   }

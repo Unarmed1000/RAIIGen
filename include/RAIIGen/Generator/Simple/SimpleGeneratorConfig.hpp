@@ -39,6 +39,7 @@ namespace MB
     const std::vector<std::string> ForceNullParameter;
     const std::string TypeNamePrefix;
     const std::string FunctionNamePrefix;
+    const std::string ErrorCodeTypeName;
     const bool UnrollCreateStructs;
     const bool OwnershipTransferUseClaimMode;
     const bool IsVulkan;
@@ -56,7 +57,7 @@ namespace MB
       const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
       const std::unordered_map<std::string, RAIIClassMethodOverrides> classMethodOverrides,
       const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
-      const std::string& typeNamePrefix, const std::string& functionNamePrefix, const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode, const bool isVulkan=false)
+      const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode, const bool isVulkan=false)
       : GeneratorConfig(config)
       , RAIIClassCustomizations(raiiClassCustomizations)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)
@@ -65,6 +66,7 @@ namespace MB
       , ForceNullParameter(forceNullParameter)
       , TypeNamePrefix(typeNamePrefix)
       , FunctionNamePrefix(functionNamePrefix)
+      , ErrorCodeTypeName(errorCodeTypeName)
       , UnrollCreateStructs(unrollCreateStructs)
       , OwnershipTransferUseClaimMode(ownershipTransferUseClaimMode)
       , IsVulkan(isVulkan)
@@ -77,7 +79,7 @@ namespace MB
                           const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
                           const std::unordered_map<std::string, RAIIClassMethodOverrides> classMethodOverrides,
                           const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
-                          const std::string& typeNamePrefix, const std::string& functionNamePrefix, const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode, const bool isVulkan = false)
+                          const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode, const bool isVulkan = false)
       : GeneratorConfig(basicConfig, functionPairs, manualFunctionMatches)
       , RAIIClassCustomizations(raiiClassCustomizations)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)
@@ -86,6 +88,7 @@ namespace MB
       , ForceNullParameter(forceNullParameter)
       , TypeNamePrefix(typeNamePrefix)
       , FunctionNamePrefix(functionNamePrefix)
+      , ErrorCodeTypeName(errorCodeTypeName)
       , UnrollCreateStructs(unrollCreateStructs)
       , OwnershipTransferUseClaimMode(ownershipTransferUseClaimMode)
       , IsVulkan(isVulkan)

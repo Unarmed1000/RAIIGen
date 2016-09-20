@@ -1,0 +1,5 @@
+    //! @note  Function: ##SOURCE_FUNCTION_NAME##
+    void ##METHOD_NAME##(##METHOD_PARAMETERS##)
+    {
+      ##SOURCE_FUNCTION_NAME##(##FUNCTION_ARGUMENTS##);
+    }

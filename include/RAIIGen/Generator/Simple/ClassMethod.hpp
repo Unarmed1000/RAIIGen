@@ -31,6 +31,14 @@ namespace MB
 {
   struct ClassMethod
   {
+    enum class TemplateType
+    {
+      Error,
+      Type,
+      Void
+    };
+
+    TemplateType Template;
     FunctionRecord SourceFunction;
 
     std::string Name;
@@ -40,7 +48,8 @@ namespace MB
     MethodArgument ReturnType;
 
     ClassMethod()
-      : Name()
+      : Template(TemplateType::Void)
+      , Name()
       , MethodArguments()
       , OriginalMethodArguments()
     {

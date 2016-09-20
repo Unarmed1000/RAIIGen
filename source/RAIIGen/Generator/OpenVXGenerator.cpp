@@ -51,6 +51,7 @@ namespace MB
     const auto TYPE_NAME_PREFIX = "vx_";
     const auto FUNCTION_NAME_PREFIX = "vx";
 
+    const auto ERRORCODE_TYPE_NAME = "vx_status";
 
     const std::vector<FunctionNamePair> g_functionPairs
     {
@@ -120,7 +121,7 @@ namespace MB
     : SimpleGenerator(capture, 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
-                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, false, false), 
+                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false),
                       templateRoot, dstPath)
   {
   }

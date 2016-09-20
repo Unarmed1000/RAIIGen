@@ -1,0 +1,5 @@
+      //! @note  Function: ##SOURCE_FUNCTION_NAME##
+      ##METHOD_RETURN_TYPE## ##METHOD_NAME##(##METHOD_PARAMETERS##)
+      {
+        return ##SOURCE_FUNCTION_NAME##(##FUNCTION_ARGUMENTS##);
+      }

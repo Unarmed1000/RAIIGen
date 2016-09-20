@@ -104,7 +104,7 @@ namespace MB
     }
 
 
-    MethodArgument CPPifyArgument(const TypeRecord& type, const std::string& argumentName, const bool allowPointerToReferenceConversion)
+    MethodArgument CPPifyArgument(const TypeRecord& type, const std::string& argumentName, const bool allowPointerToReferenceConversion, const bool allowConstAdd=true)
     {
       MethodArgument result;
       result.FullType = type;
@@ -128,7 +128,7 @@ namespace MB
       }
       else if (type.IsConstQualified)
         result.FullTypeString = type.FullTypeString;
-      else if (!type.IsPointer)
+      else if (allowConstAdd && !type.IsPointer)
         result.FullTypeString = "const " + type.FullTypeString;
       else
         result.FullTypeString = type.FullTypeString;
@@ -477,7 +477,16 @@ namespace MB
             ClassMethod classMethod;
             classMethod.SourceFunction = *itr;
             classMethod.Name = methodName;
-            classMethod.ReturnType = CPPifyArgument(itr->ReturnType, "Return", false);
+
+            if (itr->ReturnType.Name == "void")
+              classMethod.Template = ClassMethod::TemplateType::Void;
+            else if (itr->ReturnType.Name == config.ErrorCodeTypeName)
+              classMethod.Template = ClassMethod::TemplateType::Error;
+            else
+            {
+              classMethod.Template = ClassMethod::TemplateType::Type;
+              classMethod.ReturnType = CPPifyArgument(itr->ReturnType, "Return", false, false);
+            }
 
             // Convert all the method arguments
             for (auto &param : itr->Parameters)
@@ -498,7 +507,6 @@ namespace MB
               classMethod.MethodArguments.push_back(argument);
               classMethod.CombinedMethodArguments.push_back(argument);
             }
-
             rResult.ClassMethods.push_back(classMethod);
           }
         }
@@ -1106,6 +1114,45 @@ namespace MB
     }
 
 
+    std::string GenerateAdditionalMethods(const SimpleGeneratorConfig& config, const FullAnalysis& fullAnalysis, const SnippetMethodContext& snippets)
+    {
+      std::string res;
+      for (auto& method : fullAnalysis.ClassMethods)
+      {
+        const std::string methodParameters = GenerateParameterList(method.MethodArguments);
+        const std::string functionArguments = GenerateExpandedParameterNameList(method.CombinedMethodArguments);
+
+        std::string methodCode = method.SourceFunction.Name;
+        std::string methodReturnType;
+
+        std::string content;
+        switch (method.Template)
+        {
+        case ClassMethod::TemplateType::Type:
+          content = snippets.TypeReturn;
+          methodReturnType = method.ReturnType.FullTypeString;
+          break;
+        case ClassMethod::TemplateType::Error:
+          content = snippets.ErrorReturn;
+          break;
+        case ClassMethod::TemplateType::Void:
+          content = snippets.VoidReturn;
+          break;
+        default:
+          throw NotSupportedException("Unknown template type");
+        }
+
+        StringUtil::Replace(content, "##SOURCE_FUNCTION_NAME##", method.SourceFunction.Name);
+        StringUtil::Replace(content, "##METHOD_RETURN_TYPE##", methodReturnType);
+        StringUtil::Replace(content, "##METHOD_NAME##", method.Name);
+        StringUtil::Replace(content, "##METHOD_PARAMETERS##", methodParameters);
+        StringUtil::Replace(content, "##FUNCTION_ARGUMENTS##", functionArguments);
+        res += END_OF_LINE + END_OF_LINE + content;
+      }
+      return res;
+    }
+
+
     std::string GenerateContent(const SimpleGeneratorConfig& config, const FullAnalysis& fullAnalysis, const std::string& contentTemplate, const std::string*const pSnippetMemberVariable,
                                 const std::string*const pSnippetMemberVariableGet, const Snippets& snippets)
     {
@@ -1151,6 +1198,8 @@ namespace MB
         break;
       }
 
+      const std::string additionalMethodsHeader = GenerateAdditionalMethods(config, fullAnalysis, snippets.AdditionalMethodHeader);
+      const std::string additionalMethodsSource = GenerateAdditionalMethods(config, fullAnalysis, snippets.AdditionalMethodSource);
 
       const auto resourceAsArgument = ToMethodArgument(fullAnalysis.Result.ResourceMemberVariable);
 
@@ -1222,6 +1271,9 @@ namespace MB
       StringUtil::Replace(content, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
       StringUtil::Replace(content, "##HANDLE_CLASS_NAME##", snippets.HandleClassName);
       StringUtil::Replace(content, "##RESOURCE_COUNT##", fullAnalysis.Result.ResourceCountVariableName);
+
+      StringUtil::Replace(content, "##ADDITIONAL_METHODS_HEADER##", additionalMethodsHeader);
+      StringUtil::Replace(content, "##ADDITIONAL_METHODS_SOURCE##", additionalMethodsSource);
       return content;
     }
 
@@ -1233,6 +1285,12 @@ namespace MB
       const auto pathSnippetResetAssertCommand = IO::Path::Combine(templateRoot, "TemplateSnippet_AssertCommand.txt");
       const auto pathSnippetConstructorMemberInitialization = IO::Path::Combine(templateRoot, "TemplateSnippet_ConstructorMemberInitialization.txt");
       const auto pathSnippetConstructorMemberInitializationPOD = IO::Path::Combine(templateRoot, "TemplateSnippet_ConstructorMemberInitializationPOD.txt");
+      const auto pathSnippetAdditionalErrorMethodHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_AdditionalErrorMethodHeader.txt");
+      const auto pathSnippetAdditionalErrorMethodSource = IO::Path::Combine(templateRoot, "TemplateSnippet_AdditionalErrorMethodSource.txt");
+      const auto pathSnippetAdditionalTypeMethodHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_AdditionalTypeMethodHeader.txt");
+      const auto pathSnippetAdditionalTypeMethodSource = IO::Path::Combine(templateRoot, "TemplateSnippet_AdditionalTypeMethodSource.txt");
+      const auto pathSnippetAdditionalVoidMethodHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_AdditionalVoidMethodHeader.txt");
+      const auto pathSnippetAdditionalVoidMethodSource = IO::Path::Combine(templateRoot, "TemplateSnippet_AdditionalVoidMethodSource.txt");
       const auto pathSnippetCreateConstructorHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateConstructorHeader.txt");
       const auto pathSnippetCreateConstructorSource = IO::Path::Combine(templateRoot, "TemplateSnippet_CreateConstructorSource.txt");
       const auto pathSnippetResetSetMemberVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetSetMemberVariable.txt");
@@ -1269,6 +1327,17 @@ namespace MB
       Snippets snippets(templateRoot);
       snippets.ConstructorMemberInitialization.Complex = IO::File::ReadAllText(pathSnippetConstructorMemberInitialization);
       snippets.ConstructorMemberInitialization.POD = IO::File::ReadAllText(pathSnippetConstructorMemberInitializationPOD);
+
+      SnippetMethodContext additionalMethodHeader;
+      additionalMethodHeader.ErrorReturn = IO::File::ReadAllText(pathSnippetAdditionalErrorMethodHeader);
+      additionalMethodHeader.TypeReturn = IO::File::ReadAllText(pathSnippetAdditionalTypeMethodHeader);
+      additionalMethodHeader.VoidReturn = IO::File::ReadAllText(pathSnippetAdditionalVoidMethodHeader);
+      SnippetMethodContext additionalMethodSource;
+      additionalMethodSource.ErrorReturn = IO::File::ReadAllText(pathSnippetAdditionalErrorMethodSource);
+      additionalMethodSource.TypeReturn = IO::File::ReadAllText(pathSnippetAdditionalTypeMethodSource);
+      additionalMethodSource.VoidReturn = IO::File::ReadAllText(pathSnippetAdditionalVoidMethodSource);
+      snippets.AdditionalMethodHeader = additionalMethodHeader;
+      snippets.AdditionalMethodSource = additionalMethodSource;
       snippets.ResetAssertCommand = IO::File::ReadAllText(pathSnippetResetAssertCommand);
       snippets.CreateConstructorHeader = IO::File::ReadAllText(pathSnippetCreateConstructorHeader);
       snippets.CreateConstructorSource = IO::File::ReadAllText(pathSnippetCreateConstructorSource);
