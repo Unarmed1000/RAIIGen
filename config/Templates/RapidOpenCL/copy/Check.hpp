@@ -1,5 +1,5 @@
-#ifndef RAPIDOPENCL_CHECK_HPP
-#define RAPIDOPENCL_CHECK_HPP
+#ifndef RAPID##NAMESPACE_NAME!##_CHECK_HPP
+#define RAPID##NAMESPACE_NAME!##_CHECK_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*

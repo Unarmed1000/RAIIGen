@@ -1,5 +1,5 @@
-#ifndef RAPIDOPENCL_##CLASS_NAME!##_HPP
-#define RAPIDOPENCL_##CLASS_NAME!##_HPP
+#ifndef RAPID##NAMESPACE_NAME!##_##CLASS_NAME!##_HPP
+#define RAPID##NAMESPACE_NAME!##_##CLASS_NAME!##_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -24,6 +24,7 @@
 
 // ##AG_TOOL_STATEMENT##
 
+#include <RapidOpenCL/Config.hpp>
 #include <RapidOpenCL/CustomTypes.hpp>
 #include <RapidOpenCL/Util.hpp>##ADDITIONAL_INCLUDES##
 #include <CL/cl.h>
@@ -84,7 +85,7 @@ namespace RapidOpenCL
     }
 
     //! @brief returns the managed handle and releases the ownership.
-    std::vector<##RESOURCE_TYPE##> Release()
+    std::vector<##RESOURCE_TYPE##> Release() RAPIDOPENCL_FUNC_POSTFIX_WARN_UNUSED_RESULT
     {
       auto resource = std::move(##RESOURCE_MEMBER_NAME##); ##RESET_INVALIDATE_MEMBERS##
       return resource;

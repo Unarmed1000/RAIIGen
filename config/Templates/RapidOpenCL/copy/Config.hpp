@@ -1,5 +1,5 @@
-#ifndef RAPID##NAMESPACE_NAME!##_DEBUGSTRINGS_HPP
-#define RAPID##NAMESPACE_NAME!##_DEBUGSTRINGS_HPP
+#ifndef RAPID##NAMESPACE_NAME!##_CONFIG_HPP
+#define RAPID##NAMESPACE_NAME!##_CONFIG_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,21 +22,14 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <CL/cl.h>
+#ifdef _MSC_VER
+  #define RAPIDOPENCL_FUNC_POSTFIX_WARN_UNUSED_RESULT
+#elif defined(__GNUC__)
+  #define RAPIDOPENCL_FUNC_POSTFIX_WARN_UNUSED_RESULT  __attribute__((warn_unused_result))
+#else
+  #pragma message("RAPIDOPENCL_FUNC_POSTFIX_WARN_UNUSED_RESULT not implemented for this compiler")
+  #define RAPIDOPENCL_FUNC_POSTFIX_WARN_UNUSED_RESULT
+#endif
 
-namespace RapidOpenCL
-{
-  //! Extend the debug namespace with 'convenience' methods.
-  //! This file adds conversion methods that helps transform various things to a nice string representation.
-  //! WARNING: this requires you to compile the CPP file.
-  namespace Debug
-  {
-    //! @brief Convert the error code to a string
-    extern const char* ErrorCodeToString(const cl_int errorCode);
-
-    //! @brief Convert the device type to a string
-    extern const char* DeviceTypeTostring(const cl_device_type deviceType);
-  }
-}
 
 #endif

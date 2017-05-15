@@ -1,5 +1,5 @@
-#ifndef RAPIDOPENCL_CUSTOMTYPES_HPP
-#define RAPIDOPENCL_CUSTOMTYPES_HPP
+#ifndef RAPID##NAMESPACE_NAME!##_CUSTOMTYPES_HPP
+#define RAPID##NAMESPACE_NAME!##_CUSTOMTYPES_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*

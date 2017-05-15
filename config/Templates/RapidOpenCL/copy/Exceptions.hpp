@@ -1,5 +1,5 @@
-#ifndef RAPIDOPENCL_EXCEPTIONS_HPP
-#define RAPIDOPENCL_EXCEPTIONS_HPP
+#ifndef RAPID##NAMESPACE_NAME!##_EXCEPTIONS_HPP
+#define RAPID##NAMESPACE_NAME!##_EXCEPTIONS_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
