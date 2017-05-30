@@ -1623,7 +1623,7 @@ namespace MB
 
     const auto copyRoot = IO::Path::Combine(templateRoot, "copy");
     IO::PathDeque files;
-    if (IO::Directory::TryGetFiles(files, copyRoot, IO::SearchOptions::TopDirectoryOnly))
+    if (IO::Directory::TryGetFiles(files, copyRoot, IO::SearchOptions::AllDirectories))
     {
       if (files.size() > 0)
       {
@@ -1639,7 +1639,10 @@ namespace MB
           StringUtil::Replace(content, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
           StringUtil::Replace(content, "##AG_TOOL_STATEMENT##", config.ToolStatement);
 
-          auto dstFileName = IO::Path::Combine(dstPath, IO::Path::GetFileName(**itr));
+          auto relativeName = (*itr)->ToUTF8String().erase(0, copyRoot.GetByteSize() + 1);
+          auto dstDirectory = IO::Path::Combine(dstPath, IO::Path::GetDirectoryName(relativeName));
+          auto dstFileName = IO::Path::Combine(dstDirectory, IO::Path::GetFileName(**itr));
+          IO::Directory::CreateDirectory(dstDirectory);
           IOUtil::WriteAllTextIfChanged(dstFileName, content);
         }
       }

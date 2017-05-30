@@ -25,7 +25,7 @@
         if (index >= m_commandBuffers.size() || m_commandBuffers[index] == VK_NULL_HANDLE)
           throw UsageErrorException("Index must be valid and/or can not call Begin on a NULL handle");
 
-        Fsl::Vulkan::Util::Check(vkBeginCommandBuffer(m_commandBuffers[index], &commandBufferBeginInfo), "vkBeginCommandBuffer", __FILE__, __LINE__);
+        Util::Check(vkBeginCommandBuffer(m_commandBuffers[index], &commandBufferBeginInfo), "vkBeginCommandBuffer", __FILE__, __LINE__);
       }
 
       void End(const std::size_t index)
@@ -33,7 +33,7 @@
         if (index >= m_commandBuffers.size() || m_commandBuffers[index] == VK_NULL_HANDLE)
           throw UsageErrorException("Index must be valid and/or can not call End on a NULL handle");
 
-        Fsl::Vulkan::Util::Check(vkEndCommandBuffer(m_commandBuffers[index]), "vkEndCommandBuffer", __FILE__, __LINE__);
+        Util::Check(vkEndCommandBuffer(m_commandBuffers[index]), "vkEndCommandBuffer", __FILE__, __LINE__);
       }
 
       void CmdBeginRenderPass(const std::size_t index, const VkRenderPassBeginInfo* pRenderPassBeginInfo, const VkSubpassContents contents)

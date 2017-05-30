@@ -8,7 +8,7 @@
 
       void WaitForFence(const uint64_t timeout)
       {
-        Fsl::Vulkan::Util::Check(vkWaitForFences(m_device, 1, &m_fence, VK_TRUE, timeout), "vkWaitForFences", __FILE__, __LINE__);
+        Util::Check(vkWaitForFences(m_device, 1, &m_fence, VK_TRUE, timeout), "vkWaitForFences", __FILE__, __LINE__);
       }
 
 
@@ -20,5 +20,5 @@
 
       void ResetFence()
       {
-        Fsl::Vulkan::Util::Check(vkResetFences(m_device, 1, &m_fence), "vkResetFences", __FILE__, __LINE__);
+        Util::Check(vkResetFences(m_device, 1, &m_fence), "vkResetFences", __FILE__, __LINE__);
       }

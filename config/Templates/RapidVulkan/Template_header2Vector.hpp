@@ -122,11 +122,27 @@ namespace RapidVulkan
       return ##RESOURCE_MEMBER_NAME##.size();
     }
 
+
+    //! @brief Get direct access to the vector content
+    const ##RESOURCE_TYPE##* Data() const
+    {
+      return ##RESOURCE_MEMBER_NAME##.data();
+    }
+
+
     //! @brief Get the associated resource handles
     const std::vector<##RESOURCE_TYPE##>& Get() const
     {
       return ##RESOURCE_MEMBER_NAME##;
     }
+
+
+    ##RESOURCE_TYPE## Get(const std::size_t arrayIndex) const
+    {
+      assert(arrayIndex < ##RESOURCE_MEMBER_NAME##.size());
+      return ##RESOURCE_MEMBER_NAME##[arrayIndex];
+    }
+
 
     //! @brief Access the resource at a given index
     ##RESOURCE_TYPE## operator[] (const std::size_t arrayIndex) const
