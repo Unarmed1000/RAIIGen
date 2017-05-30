@@ -31,7 +31,7 @@
 
 // Based on RapidVulkan https://github.com/Unarmed1000/RapidVulkan with permission.
 
-#include <FslGraphics##NAMESPACE_NAME##/DebugStrings.hpp>
+#include <FslUtil/##NAMESPACE_NAME##/DebugStrings.hpp>
 
 namespace Fsl
 {

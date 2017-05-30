@@ -1,5 +1,3 @@
-#ifndef FSLGRAPHICS##NAMESPACE_NAME!##_CLAIMMODE_HPP
-#define FSLGRAPHICS##NAMESPACE_NAME!##_CLAIMMODE_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
@@ -31,19 +29,27 @@
 *
 ****************************************************************************************************************************************************/
 
-// ##AG_TOOL_STATEMENT##
-// Auto generation template based on RapidVulkan https://github.com/Unarmed1000/RapidVulkan with permission.
+#include <FslUtil/##NAMESPACE_NAME##/Util.hpp>
+#include <FslUtil/##NAMESPACE_NAME##/DebugStrings.hpp>
+#include <sstream>
 
 namespace Fsl
 {
   namespace Vulkan
   {
-    enum class ClaimMode
+    std::string Util::ToNiceMessage(const std::string& message, const VkResult errorCode)
     {
-      //! This just exist to prevent collisions with the unrolled methods
-      Claim
-    };
+      std::stringstream stream;
+      stream << message << " failed with error code " << Debug::ErrorCodeToString(errorCode) << " (" << errorCode <<")";
+      return stream.str();
+    }
+
+
+    std::string Util::ToNiceMessage(const std::string& message, const VkResult errorCode, const std::string& fileName, const int lineNumber)
+    {
+      std::stringstream stream;
+      stream << message << " failed with error code " << Debug::ErrorCodeToString(errorCode) << " (" << errorCode <<") at " << fileName << "(" << lineNumber << ")";
+      return stream.str();
+    }
   }
 }
-
-#endif

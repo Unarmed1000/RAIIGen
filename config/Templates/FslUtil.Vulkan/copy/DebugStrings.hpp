@@ -1,5 +1,5 @@
-#ifndef FSLGRAPHICS##NAMESPACE_NAME!##_DEBUGSTRINGS_HPP
-#define FSLGRAPHICS##NAMESPACE_NAME!##_DEBUGSTRINGS_HPP
+#ifndef FSLUTIL_##NAMESPACE_NAME!##_DEBUGSTRINGS_HPP
+#define FSLUTIL_##NAMESPACE_NAME!##_DEBUGSTRINGS_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
@@ -34,7 +34,7 @@
 // Based on RapidVulkan https://github.com/Unarmed1000/RapidVulkan with permission.
 
 // Make sure Common.hpp is the first include file (to make the error message as helpful as possible when disabled)
-#include <FslGraphics##NAMESPACE_NAME##/Common.hpp>
+#include <FslUtil/##NAMESPACE_NAME##/Common.hpp>
 #include <vulkan/vulkan.h>
 
 namespace Fsl

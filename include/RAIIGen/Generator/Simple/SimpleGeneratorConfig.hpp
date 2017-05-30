@@ -37,6 +37,7 @@ namespace MB
     const std::unordered_map<std::string, RAIIClassMethodOverrides> ClassMethodOverrides;
     const std::unordered_map<std::string, std::string> TypeDefaultValues;
     const std::vector<std::string> ForceNullParameter;
+    const std::vector<std::string> FunctionNamePostfixBlacklist;
     const std::string TypeNamePrefix;
     const std::string FunctionNamePrefix;
     const std::string ErrorCodeTypeName;
@@ -57,13 +58,16 @@ namespace MB
       const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
       const std::unordered_map<std::string, RAIIClassMethodOverrides> classMethodOverrides,
       const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
-      const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode, const bool isVulkan=false)
+      const std::vector<std::string>& functionNamePostfixBlacklist,
+      const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, const bool unrollCreateStructs, 
+      const bool ownershipTransferUseClaimMode, const bool isVulkan=false)
       : GeneratorConfig(config)
       , RAIIClassCustomizations(raiiClassCustomizations)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)
       , ClassMethodOverrides(classMethodOverrides)
       , TypeDefaultValues(typeDefaultValues)
       , ForceNullParameter(forceNullParameter)
+      , FunctionNamePostfixBlacklist(functionNamePostfixBlacklist)
       , TypeNamePrefix(typeNamePrefix)
       , FunctionNamePrefix(functionNamePrefix)
       , ErrorCodeTypeName(errorCodeTypeName)
@@ -79,13 +83,16 @@ namespace MB
                           const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
                           const std::unordered_map<std::string, RAIIClassMethodOverrides> classMethodOverrides,
                           const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
-                          const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode, const bool isVulkan = false)
+                          const std::vector<std::string>& functionNamePostfixBlacklist,
+                          const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, 
+                          const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode, const bool isVulkan = false)
       : GeneratorConfig(basicConfig, functionPairs, manualFunctionMatches)
       , RAIIClassCustomizations(raiiClassCustomizations)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)
       , ClassMethodOverrides(classMethodOverrides)
       , TypeDefaultValues(typeDefaultValues)
       , ForceNullParameter(forceNullParameter)
+      , FunctionNamePostfixBlacklist(functionNamePostfixBlacklist)
       , TypeNamePrefix(typeNamePrefix)
       , FunctionNamePrefix(functionNamePrefix)
       , ErrorCodeTypeName(errorCodeTypeName)

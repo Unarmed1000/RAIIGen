@@ -108,6 +108,15 @@ namespace MB
     };
 
 
+    const std::vector<std::string> g_functionNamePostfixBlacklist
+    {
+      "EXT",
+      "GOOGLE",
+      "KHR",
+      "KHX"
+    };
+
+
     //! Not necessary for the Vulkan header as it was properly constructed!
     const std::vector<FunctionParameterNameOverride> g_functionParameterNameOverride
     {
@@ -155,6 +164,7 @@ namespace MB
     : SimpleGenerator(capture, 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
+                                            g_functionNamePostfixBlacklist,
                                             TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, true, true, true), templateRoot, dstPath)
   {
   }

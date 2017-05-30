@@ -456,6 +456,17 @@ namespace MB
     }
 
 
+    bool HasPostfix(const std::string& str, const std::vector<std::string>& postfixes)
+    {
+      for (const auto& entry : postfixes)
+      {
+        if (StringUtil::EndsWith(str, entry))
+          return true;
+      }
+      return false;
+    }
+
+
     void FindObjectFunctions(const SimpleGeneratorConfig& config, const FunctionAnalysis& functionAnalysis, std::deque<FullAnalysis>& managed, FullAnalysis& rResult)
     {
       std::cout << "Matching functions to " << rResult.Result.ClassName << "\n";
@@ -474,40 +485,44 @@ namespace MB
             if (StringUtil::StartsWith(methodName, config.FunctionNamePrefix))
               methodName = methodName.substr(config.FunctionNamePrefix.size());
 
-            ClassMethod classMethod;
-            classMethod.SourceFunction = *itr;
-            classMethod.Name = methodName;
-
-            if (itr->ReturnType.Name == "void")
-              classMethod.Template = ClassMethod::TemplateType::Void;
-            else if (itr->ReturnType.Name == config.ErrorCodeTypeName)
-              classMethod.Template = ClassMethod::TemplateType::Error;
-            else
+            if (! HasPostfix(methodName, config.FunctionNamePostfixBlacklist))
             {
-              classMethod.Template = ClassMethod::TemplateType::Type;
-              classMethod.ReturnType = CPPifyArgument(itr->ReturnType, "Return", false, false);
-            }
 
-            // Convert all the method arguments
-            for (auto &param : itr->Parameters)
-              classMethod.OriginalMethodArguments.push_back(ToMethodArgument(param, false));
+              ClassMethod classMethod;
+              classMethod.SourceFunction = *itr;
+              classMethod.Name = methodName;
+
+              if (itr->ReturnType.Name == "void")
+                classMethod.Template = ClassMethod::TemplateType::Void;
+              else if (itr->ReturnType.Name == config.ErrorCodeTypeName)
+                classMethod.Template = ClassMethod::TemplateType::Error;
+              else
+              {
+                classMethod.Template = ClassMethod::TemplateType::Type;
+                classMethod.ReturnType = CPPifyArgument(itr->ReturnType, "Return", false, false);
+              }
+
+              // Convert all the method arguments
+              for (auto &param : itr->Parameters)
+                classMethod.OriginalMethodArguments.push_back(ToMethodArgument(param, false));
 
 
-            // Add the starting params (the members)
-            for (std::size_t paramIndex = 0; paramIndex < rResult.Result.AllMemberVariables.size(); ++paramIndex)
-            {
-              auto argument = ToMethodArgument(rResult.Result.AllMemberVariables[paramIndex]);
-              argument.ParameterValue = rResult.Result.AllMemberVariables[paramIndex].Name;
-              classMethod.CombinedMethodArguments.push_back(argument);
+              // Add the starting params (the members)
+              for (std::size_t paramIndex = 0; paramIndex < rResult.Result.AllMemberVariables.size(); ++paramIndex)
+              {
+                auto argument = ToMethodArgument(rResult.Result.AllMemberVariables[paramIndex]);
+                argument.ParameterValue = rResult.Result.AllMemberVariables[paramIndex].Name;
+                classMethod.CombinedMethodArguments.push_back(argument);
+              }
+              // Add the following params (non members)
+              for (std::size_t paramIndex = rResult.Result.AllMemberVariables.size(); paramIndex < itr->Parameters.size(); ++paramIndex)
+              {
+                const auto argument = ToMethodArgument(itr->Parameters[paramIndex], false);
+                classMethod.MethodArguments.push_back(argument);
+                classMethod.CombinedMethodArguments.push_back(argument);
+              }
+              rResult.ClassMethods.push_back(classMethod);
             }
-            // Add the following params (non members)
-            for (std::size_t paramIndex = rResult.Result.AllMemberVariables.size(); paramIndex < itr->Parameters.size(); ++paramIndex)
-            {
-              const auto argument = ToMethodArgument(itr->Parameters[paramIndex], false);
-              classMethod.MethodArguments.push_back(argument);
-              classMethod.CombinedMethodArguments.push_back(argument);
-            }
-            rResult.ClassMethods.push_back(classMethod);
           }
         }
       }

@@ -1,3 +1,5 @@
+#ifndef FSLUTIL_##NAMESPACE_NAME!##_COMMON_HPP
+#define FSLUTIL_##NAMESPACE_NAME!##_COMMON_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
@@ -29,27 +31,8 @@
 *
 ****************************************************************************************************************************************************/
 
-#include <FslGraphics##NAMESPACE_NAME##/Util.hpp>
-#include <FslGraphics##NAMESPACE_NAME##/DebugStrings.hpp>
-#include <sstream>
+#ifndef FSL_FEATURE_##NAMESPACE_NAME!##
+#error ##API_NAME## ##API_VERSION## support has not been enabled (define FSL_FEATURE_##NAMESPACE_NAME!##) to enable it
+#endif
 
-namespace Fsl
-{
-  namespace Vulkan
-  {
-    std::string Util::ToNiceMessage(const std::string& message, const VkResult errorCode)
-    {
-      std::stringstream stream;
-      stream << message << " failed with error code " << Debug::ErrorCodeToString(errorCode) << " (" << errorCode <<")";
-      return stream.str();
-    }
-
-
-    std::string Util::ToNiceMessage(const std::string& message, const VkResult errorCode, const std::string& fileName, const int lineNumber)
-    {
-      std::stringstream stream;
-      stream << message << " failed with error code " << Debug::ErrorCodeToString(errorCode) << " (" << errorCode <<") at " << fileName << "(" << lineNumber << ")";
-      return stream.str();
-    }
-  }
-}
+#endif

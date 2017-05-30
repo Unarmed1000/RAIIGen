@@ -1,5 +1,5 @@
-#ifndef FSLGRAPHICS##NAMESPACE_NAME!##_UTIL_HPP
-#define FSLGRAPHICS##NAMESPACE_NAME!##_UTIL_HPP
+#ifndef FSLUTIL_##NAMESPACE_NAME!##_UTIL_HPP
+#define FSLUTIL_##NAMESPACE_NAME!##_UTIL_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
@@ -34,7 +34,7 @@
 // ##AG_TOOL_STATEMENT##
 // Auto generation template based on RapidVulkan https://github.com/Unarmed1000/RapidVulkan with permission.
 
-#include <FslGraphics##NAMESPACE_NAME##/Exceptions.hpp>
+#include <FslUtil/##NAMESPACE_NAME##/Exceptions.hpp>
 #include <cassert>
 #include <string>
 #include <vulkan/vulkan.h>

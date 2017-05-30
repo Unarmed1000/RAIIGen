@@ -1,5 +1,5 @@
-#ifndef FSLGRAPHICS##NAMESPACE_NAME!##_COMMON_HPP
-#define FSLGRAPHICS##NAMESPACE_NAME!##_COMMON_HPP
+#ifndef FSLUTIL_##NAMESPACE_NAME!##_RESETMODE_HPP
+#define FSLUTIL_##NAMESPACE_NAME!##_RESETMODE_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
@@ -31,8 +31,22 @@
 *
 ****************************************************************************************************************************************************/
 
-#ifndef FSL_FEATURE_##NAMESPACE_NAME!##
-#error ##API_NAME## ##API_VERSION## support has not been enabled (define FSL_FEATURE_##NAMESPACE_NAME!##) to enable it
-#endif
+// ##AG_TOOL_STATEMENT##
+// Auto generation template based on RapidVulkan https://github.com/Unarmed1000/RapidVulkan with permission.
+
+namespace Fsl
+{
+  namespace Vulkan
+  {
+    enum class ResetMode
+    {
+      //! Destroys any allocated resource
+      Destroy,
+      //! Destroys any owned resources and then creates the requested one
+      Create
+    };
+  }
+}
+
 
 #endif

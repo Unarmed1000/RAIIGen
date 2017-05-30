@@ -1,5 +1,5 @@
-#ifndef FSLGRAPHICS##NAMESPACE_NAME!##_EXCEPTIONS_HPP
-#define FSLGRAPHICS##NAMESPACE_NAME!##_EXCEPTIONS_HPP
+#ifndef FSLUTIL_##NAMESPACE_NAME!##_VK_TYPES_HPP
+#define FSLUTIL_##NAMESPACE_NAME!##_VK_TYPES_HPP
 /****************************************************************************************************************************************************
 * Copyright (c) 2016 Freescale Semiconductor, Inc.
 * All rights reserved.
@@ -34,87 +34,16 @@
 // ##AG_TOOL_STATEMENT##
 // Auto generation template based on RapidVulkan https://github.com/Unarmed1000/RapidVulkan with permission.
 
-#include <FslGraphics/Exceptions.hpp>
-#include <string>
 #include <vulkan/vulkan.h>
 
 namespace Fsl
 {
   namespace Vulkan
   {
-    class VulkanException : public std::runtime_error
-    {
-      std::string m_fileName;
-      int m_lineNumber;
-    public:
-      explicit VulkanException(const std::string& whatArg)
-        : std::runtime_error(whatArg)
-        , m_fileName()
-        , m_lineNumber(0)
-      {
-      }
 
-      explicit VulkanException(const std::string& whatArg, const std::string& fileName, const int lineNumber)
-        : std::runtime_error(whatArg)
-        , m_fileName(fileName)
-        , m_lineNumber(lineNumber)
-      {
-      }
-
-
-      std::string GetFileName() const
-      {
-        return m_fileName;
-      }
-
-
-      int GetLineNumber() const
-      {
-        return m_lineNumber;
-      }
-    };
-
-
-
-    class VulkanErrorException : public VulkanException
-    {
-      VkResult m_result;
-    public:
-      explicit VulkanErrorException(const std::string& whatArg, const VkResult result)
-        : VulkanException(whatArg)
-        , m_result(result)
-      {
-      }
-
-      explicit VulkanErrorException(const std::string& whatArg, const VkResult result, const std::string& fileName, const int lineNumber)
-        : VulkanException(whatArg, fileName, lineNumber)
-        , m_result(result)
-      {
-      }
-
-      VkResult GetResult() const
-      {
-        return m_result;
-      }
-    };
-    
-    class UnsupportedVulkanPixelFormatException : public VulkanException
-    {
-      VkFormat m_pixelFormat;
-    public:
-      UnsupportedVulkanPixelFormatException(const std::string& str, const VkFormat pixelFormat)
-        : VulkanException(str)
-        , m_pixelFormat(pixelFormat)
-      {
-      }
-
-      UnsupportedVulkanPixelFormatException(const VkFormat pixelFormat)
-        : VulkanException("Unsupported pixel format")
-        , m_pixelFormat(pixelFormat)
-      {
-      }
-    };
-    
+    namespace Vk
+    {##ALL_TYPES##
+    }
   }
 }
 
