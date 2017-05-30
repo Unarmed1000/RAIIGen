@@ -26,6 +26,7 @@
 
 #include <RapidVulkan/ClaimMode.hpp>
 #include <RapidVulkan/Util.hpp>##ADDITIONAL_INCLUDES##
+#include <RapidVulkan/System/Attributes.hpp>
 #include <vulkan/vulkan.h>
 #include <cassert>
 
@@ -82,7 +83,7 @@ namespace RapidVulkan
     }
 
     //! @brief returns the managed handle and releases the ownership.
-    ##RESOURCE_TYPE## Release()
+    ##RESOURCE_TYPE## Release() RAPIDVULKAN_FUNC_POSTFIX_WARN_UNUSED_RESULT
     {
       const auto resource = ##RESOURCE_MEMBER_NAME##;##RESET_INVALIDATE_MEMBERS##
       return resource;
