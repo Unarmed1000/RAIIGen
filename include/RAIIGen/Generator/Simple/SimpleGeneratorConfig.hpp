@@ -25,6 +25,7 @@
 #include <RAIIGen/Generator/GeneratorConfig.hpp>
 #include <RAIIGen/Generator/BlackListEntry.hpp>
 #include <RAIIGen/Generator/ClassFunctionAbsorb.hpp>
+#include <RAIIGen/Generator/FunctionGuard.hpp>
 #include <RAIIGen/Generator/RAIIClassCustomization.hpp>
 #include <RAIIGen/Generator/RAIIClassMethodOverrides.hpp>
 #include <unordered_map>
@@ -38,6 +39,7 @@ namespace MB
     const std::unordered_map<std::string, RAIIClassMethodOverrides> ClassMethodOverrides;
     const std::unordered_map<std::string, std::string> TypeDefaultValues;
     const std::vector<std::string> ForceNullParameter;
+    const std::vector<FunctionGuard> FunctionGuards;
     const std::vector<BlackListEntry> FunctionNameBlacklist;
     const std::vector<BlackListEntry> FunctionNamePostfixBlacklist;
     const std::string TypeNamePrefix;
@@ -60,6 +62,7 @@ namespace MB
       const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
       const std::unordered_map<std::string, RAIIClassMethodOverrides> classMethodOverrides,
       const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
+      const std::vector<FunctionGuard>& functionGuards,
       const std::vector<BlackListEntry>& functionNameBlacklist,
       const std::vector<BlackListEntry>& functionNamePostfixBlacklist,
       const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, const bool unrollCreateStructs, 
@@ -70,6 +73,7 @@ namespace MB
       , ClassMethodOverrides(classMethodOverrides)
       , TypeDefaultValues(typeDefaultValues)
       , ForceNullParameter(forceNullParameter)
+      , FunctionGuards(functionGuards)
       , FunctionNameBlacklist(functionNameBlacklist)
       , FunctionNamePostfixBlacklist(functionNamePostfixBlacklist)
       , TypeNamePrefix(typeNamePrefix)
@@ -87,6 +91,7 @@ namespace MB
                           const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
                           const std::unordered_map<std::string, RAIIClassMethodOverrides> classMethodOverrides,
                           const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
+                          const std::vector<FunctionGuard>& functionGuards,
                           const std::vector<BlackListEntry>& functionNameBlacklist,
                           const std::vector<BlackListEntry>& functionNamePostfixBlacklist,
                           const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, 
@@ -97,6 +102,7 @@ namespace MB
       , ClassMethodOverrides(classMethodOverrides)
       , TypeDefaultValues(typeDefaultValues)
       , ForceNullParameter(forceNullParameter)
+      , FunctionGuards(functionGuards)
       , FunctionNameBlacklist(functionNameBlacklist)
       , FunctionNamePostfixBlacklist(functionNamePostfixBlacklist)
       , TypeNamePrefix(typeNamePrefix)

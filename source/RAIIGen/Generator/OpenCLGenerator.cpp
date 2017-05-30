@@ -110,6 +110,11 @@ namespace MB
     };
 
 
+    const std::vector<FunctionGuard> g_functionGuards
+    {
+    };
+
+
     const std::vector<BlackListEntry> g_functionNameBlacklist
     {
     };
@@ -483,7 +488,7 @@ namespace MB
     : SimpleGenerator(ModCapture(capture), 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter, 
-                                            g_functionNameBlacklist, g_functionNamePostfixBlacklist,
+                                            g_functionGuards, g_functionNameBlacklist, g_functionNamePostfixBlacklist,
                                             TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false),
                       templateRoot, dstPath)
   {

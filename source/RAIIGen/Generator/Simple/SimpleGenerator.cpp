@@ -511,6 +511,16 @@ namespace MB
     }
 
 
+    void AddFunctionGuard(ClassMethod& rClassMethod, const std::vector<FunctionGuard>& functionGuards)
+    {
+      const auto itrFind = std::find_if(functionGuards.begin(), functionGuards.end(), [rClassMethod](const FunctionGuard& entry) { return entry.Name == rClassMethod.SourceFunction.Name; });
+      if (itrFind == functionGuards.end())
+        return;
+
+      rClassMethod.GuardFunction = itrFind->DefineContent;
+    }
+
+
     void FindObjectFunctions(const SimpleGeneratorConfig& config, const FunctionAnalysis& functionAnalysis, std::deque<FullAnalysis>& managed, FullAnalysis& rResult)
     {
       std::cout << "Matching functions to " << rResult.Result.ClassName << "\n";
@@ -537,6 +547,8 @@ namespace MB
               ClassMethod classMethod;
               classMethod.SourceFunction = *itr;
               classMethod.Name = methodName;
+
+              AddFunctionGuard(classMethod, config.FunctionGuards);
 
               if (itr->ReturnType.Name == "void")
                 classMethod.Template = ClassMethod::TemplateType::Void;
@@ -1213,6 +1225,10 @@ namespace MB
         StringUtil::Replace(content, "##METHOD_NAME##", method.Name);
         StringUtil::Replace(content, "##METHOD_PARAMETERS##", methodParameters);
         StringUtil::Replace(content, "##FUNCTION_ARGUMENTS##", functionArguments);
+
+        if (method.GuardFunction.size() > 0)
+          content = "#if " + method.GuardFunction + END_OF_LINE + content + END_OF_LINE + "#endif";
+
         res += END_OF_LINE + END_OF_LINE + content;
       }
       return res;
