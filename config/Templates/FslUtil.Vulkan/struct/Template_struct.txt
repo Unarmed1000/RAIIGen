@@ -4,17 +4,17 @@
           : ##C_TYPE_NAME##{}
         {##PARENT_TYPE_FLAG_INITIALIZATION##
         }
-      
-##CLASS_EXTRA_CONSTRUCTORS_HEADER##  
-    
+
+##CLASS_EXTRA_CONSTRUCTORS_HEADER##
+
         ##CPP_TYPE_NAME##(const ##C_TYPE_NAME##& value)
         {
           *reinterpret_cast<##C_TYPE_NAME##*>(this) = value;
         }
-    
+
         ##CPP_TYPE_NAME##& operator=(const ##C_TYPE_NAME##& rhs)
         {
           *reinterpret_cast<##C_TYPE_NAME##*>(this) = rhs;
           return *this;
         }
-      };  
+      };

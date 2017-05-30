@@ -40,7 +40,6 @@ namespace Fsl
 {
   namespace Vulkan
   {
-
     namespace Vk
     {##ALL_TYPES##
     }
