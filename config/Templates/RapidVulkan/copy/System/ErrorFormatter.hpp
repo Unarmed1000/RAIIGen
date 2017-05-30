@@ -1,5 +1,5 @@
-#ifndef RAPIDVULKAN_SYSTEM_ATTRIBUTES_HPP
-#define RAPIDVULKAN_SYSTEM_ATTRIBUTES_HPP
+#ifndef RAPIDVULKAN_SYSTEM_ERRORFORMATTER_HPP
+#define RAPIDVULKAN_SYSTEM_ERRORFORMATTER_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,28 +22,35 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#ifdef __GNUC__
+#include <RapidVulkan/System/Macro.hpp>
+#include <string>
+#include <vulkan/vulkan.h>
 
-  // GCC
-  #if __cplusplus > 201103 // Check if its C++14
-    #define RAPIDVULKAN_ATTR_DEPRECATED                        [[deprecated]]
-  #else
-    #define RAPIDVULKAN_ATTR_DEPRECATED
-  #endif
-  #define RAPIDVULKAN_FUNC_POSTFIX_WARN_UNUSED_RESULT          __attribute__((warn_unused_result))
-
-#elif defined(_MSC_VER)
-
-  // Visual studio
-  #define RAPIDVULKAN_ATTR_DEPRECATED                          __declspec(deprecated)
-  #define RAPIDVULKAN_FUNC_POSTFIX_WARN_UNUSED_RESULT
-
+namespace RapidVulkan
+{
+  namespace ErrorFormatter
+  {
+#ifdef RAPIDVULKAN_ERRORFORMATTER_EXTERN
+    extern std::string Format(const std::string& message, const VkResult errorCode);
+    extern std::string Format(const std::string& message, const VkResult errorCode, const std::string& fileName, const int lineNumber);
 #else
 
-  #pragma message("WARNING: RAPIDVULKAN_ATTR_DEPRECATED, RAPIDVULKAN_FUNC_POSTFIX_WARN_UNUSED_RESULT not implemented for this compiler")
-  #define RAPIDVULKAN_ATTR_DEPRECATED
-  #define RAPIDVULKAN_FUNC_POSTFIX_WARN_UNUSED_RESULT
+    inline std::string Format(const std::string& message, const VkResult errorCode)
+    {
+      RAPIDVULKAN_PARAM_NOT_USED(errorCode);
+      return message;
+    }
 
-#endif
+    inline std::string Format(const std::string& message, const VkResult errorCode, const std::string& fileName, const int lineNumber)
+    {
+      RAPIDVULKAN_PARAM_NOT_USED(errorCode);
+      RAPIDVULKAN_PARAM_NOT_USED(fileName);
+      RAPIDVULKAN_PARAM_NOT_USED(lineNumber);
+      return message;
+    }      
+
+    #endif
+  }
+}
 
 #endif

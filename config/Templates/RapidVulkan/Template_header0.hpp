@@ -26,7 +26,7 @@
 
 #include <RapidVulkan/ClaimMode.hpp>
 #include <RapidVulkan/Util.hpp>##ADDITIONAL_INCLUDES##
-#include <RapidVulkan/System/Attributes.hpp>
+#include <RapidVulkan/System/Macro.hpp>
 #include <vulkan/vulkan.h>
 #include <cassert>
 
