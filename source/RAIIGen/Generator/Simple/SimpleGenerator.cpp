@@ -59,7 +59,15 @@ namespace MB
   namespace
   {
     const auto DEFAULT_VALUE_NOT_FOUND = "FIX_DEFAULT_FOR_TYPE_NOT_DEFINED";
+    typedef std::unordered_map<std::string, std::string> AddtionalContentMap;
 
+    struct AdditionalContent
+    {
+      std::string Headers;
+      std::string Methods;
+    };
+
+    typedef std::unordered_map<std::string, AdditionalContent> AddtionalFileContentMap;
 
     bool IsIgnoreParameter(const ParameterRecord& param, const std::vector<std::string>& forceNullParameter)
     {
@@ -456,11 +464,47 @@ namespace MB
     }
 
 
-    bool HasPostfix(const std::string& str, const std::vector<std::string>& postfixes)
+    struct CurrentEntityInfo
+    {
+      std::string ClassName;
+
+      CurrentEntityInfo(const std::string& className)
+        : ClassName(className)
+      {
+      }
+    };
+
+
+    bool CheckMatchRequirement(const BlackListEntry entry, const CurrentEntityInfo& currentEntityInfo)
+    {
+      switch (entry.MatchRequirement)
+      {
+      case BlackListMatch::Always:
+        return true;
+      case BlackListMatch::NotPostfixClassName:
+        return ! StringUtil::EndsWith(currentEntityInfo.ClassName, entry.Name);
+      default:
+        throw NotSupportedException("BlackListMatch type not supported");
+      }
+    }
+
+
+    bool HasPostfix(const std::string& str, const std::vector<BlackListEntry>& postfixes, const CurrentEntityInfo& currentEntityInfo)
     {
       for (const auto& entry : postfixes)
       {
-        if (StringUtil::EndsWith(str, entry))
+        if (StringUtil::EndsWith(str, entry.Name) && CheckMatchRequirement(entry, currentEntityInfo) )
+          return true;
+      }
+      return false;
+    }
+
+
+    bool HasEntry(const std::string& str, const std::vector<BlackListEntry>& postfixes, const CurrentEntityInfo& currentEntityInfo)
+    {
+      for (const auto& entry : postfixes)
+      {
+        if (str == entry.Name && CheckMatchRequirement(entry, currentEntityInfo))
           return true;
       }
       return false;
@@ -470,6 +514,8 @@ namespace MB
     void FindObjectFunctions(const SimpleGeneratorConfig& config, const FunctionAnalysis& functionAnalysis, std::deque<FullAnalysis>& managed, FullAnalysis& rResult)
     {
       std::cout << "Matching functions to " << rResult.Result.ClassName << "\n";
+
+      CurrentEntityInfo currentEntityInfo(rResult.Result.ClassName);
 
       for (auto itr = functionAnalysis.Unmatched.begin(); itr != functionAnalysis.Unmatched.end(); ++itr)
       {
@@ -485,7 +531,7 @@ namespace MB
             if (StringUtil::StartsWith(methodName, config.FunctionNamePrefix))
               methodName = methodName.substr(config.FunctionNamePrefix.size());
 
-            if (! HasPostfix(methodName, config.FunctionNamePostfixBlacklist))
+            if (! HasPostfix(methodName, config.FunctionNamePostfixBlacklist, currentEntityInfo) && !HasEntry(methodName, config.FunctionNameBlacklist, currentEntityInfo))
             {
 
               ClassMethod classMethod;
@@ -1121,11 +1167,16 @@ namespace MB
     }
 
 
-    std::string GenerateAdditionalIncludes(const SimpleGeneratorConfig& config, const Snippets& snippets, const FullAnalysis& fullAnalysis)
+    std::string GenerateAdditionalIncludes(const SimpleGeneratorConfig& config, const Snippets& snippets, const FullAnalysis& fullAnalysis, const std::string& additionalHeaders)
     {
-      if (!IsResetModeRequired(fullAnalysis))
-        return std::string();
-      return END_OF_LINE + snippets.IncludeResetMode;
+      std::string result;
+
+      if (IsResetModeRequired(fullAnalysis))
+        result += END_OF_LINE + snippets.IncludeResetMode;
+
+      if (additionalHeaders.size() > 0)
+        result += END_OF_LINE + additionalHeaders;
+      return result;
     }
 
 
@@ -1169,7 +1220,7 @@ namespace MB
 
 
     std::string GenerateContent(const SimpleGeneratorConfig& config, const FullAnalysis& fullAnalysis, const std::string& contentTemplate, const std::string*const pSnippetMemberVariable,
-                                const std::string*const pSnippetMemberVariableGet, const Snippets& snippets)
+                                const std::string*const pSnippetMemberVariableGet, const Snippets& snippets, const AdditionalContent& additionalContent)
     {
       // Generate the RAII resource class header file
       std::string content = contentTemplate;
@@ -1213,8 +1264,13 @@ namespace MB
         break;
       }
 
-      const std::string additionalMethodsHeader = GenerateAdditionalMethods(config, fullAnalysis, snippets.AdditionalMethodHeader);
+      std::string additionalMethodsHeader = GenerateAdditionalMethods(config, fullAnalysis, snippets.AdditionalMethodHeader);
       const std::string additionalMethodsSource = GenerateAdditionalMethods(config, fullAnalysis, snippets.AdditionalMethodSource);
+
+      if (additionalContent.Methods.size() > 0)
+      {
+        additionalMethodsHeader += END_OF_LINE + END_OF_LINE + END_OF_LINE + additionalContent.Methods;
+      }
 
       const auto resourceAsArgument = ToMethodArgument(fullAnalysis.Result.ResourceMemberVariable);
 
@@ -1248,7 +1304,7 @@ namespace MB
         classExtraResetMethods += classUnrolledResetMethods;
       }
 
-      const std::string additionalIncludes = GenerateAdditionalIncludes(config, snippets, fullAnalysis);
+      const std::string additionalIncludes = GenerateAdditionalIncludes(config, snippets, fullAnalysis, additionalContent.Headers);
 
       StringUtil::Replace(content, "##ADDITIONAL_INCLUDES##", additionalIncludes);
       StringUtil::Replace(content, "##CLASS_EXTRA_CONSTRUCTORS_HEADER##", classExtraConstructors.Header);
@@ -1289,6 +1345,55 @@ namespace MB
 
       StringUtil::Replace(content, "##ADDITIONAL_METHODS_HEADER##", additionalMethodsHeader);
       StringUtil::Replace(content, "##ADDITIONAL_METHODS_SOURCE##", additionalMethodsSource);
+      return content;
+    }
+
+
+    AddtionalContentMap LoadAdditional(const IO::Path& templateRoot, const std::string& dirName)
+    {
+      const auto pathDir = IO::Path::Combine(templateRoot, dirName);
+      if (!IO::Directory::Exists(pathDir))
+        return AddtionalContentMap();
+
+      IO::PathDeque files;
+      IO::Directory::GetFiles(files, pathDir, IO::SearchOptions::TopDirectoryOnly);
+      if( files.size() <= 0 )
+        return AddtionalContentMap();
+
+      AddtionalContentMap map;
+
+      for (auto& entry : files)
+      {
+        const auto content = IO::File::ReadAllText(*entry);
+        const auto filename = IO::Path::GetFileName(*entry);
+        map[filename.ToUTF8String()] = content;
+      }
+      return map;
+    }
+
+    void AddDummyEntries(AddtionalFileContentMap& rDst, const AddtionalContentMap& srcMap)
+    {
+      for (auto& entry : srcMap)
+      {
+        auto itrFind = rDst.find(entry.first);
+        if (itrFind == rDst.end())
+          rDst[entry.first] = AdditionalContent();
+      }
+    }
+
+    AddtionalFileContentMap LoadAdditionalContent(const IO::Path& templateRoot)
+    {
+      auto methods = LoadAdditional(templateRoot, "AddMethods");
+      auto headers = LoadAdditional(templateRoot, "AddHeaders");
+
+      AddtionalFileContentMap content;
+      AddDummyEntries(content, methods);
+      AddDummyEntries(content, headers);
+
+      for (auto& entry : methods)
+        content[entry.first].Methods = entry.second;
+      for (auto& entry : headers)
+        content[entry.first].Headers = entry.second;
       return content;
     }
 
@@ -1420,6 +1525,13 @@ namespace MB
       }
       return map;
     }
+
+
+    AdditionalContent GetAdditionalContent(const AddtionalFileContentMap& additionalFileContent, const IO::Path& fileName)
+    {
+      const auto itrFind = additionalFileContent.find(IO::Path::GetFileName(fileName).ToUTF8String());
+      return itrFind != additionalFileContent.end() ? itrFind->second : AdditionalContent();
+    }
   }
 
 
@@ -1430,6 +1542,8 @@ namespace MB
   SimpleGenerator::SimpleGenerator(const Capture& capture, const SimpleGeneratorConfig& config, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
     : Generator(capture, config)
   {
+    const auto additionalFileContent = LoadAdditionalContent(templateRoot);
+
     const Snippets snippets = LoadSnippets(templateRoot);
     const auto resolvedClassMethodOverrides = ResolveOverrides(config.ClassMethodOverrides, snippets);
 
@@ -1474,16 +1588,19 @@ namespace MB
       assert(static_cast<std::size_t>(itr->TemplateType) < headerTemplates.size());
       const auto activeHeaderTemplate = headerTemplates[static_cast<std::size_t>(itr->TemplateType)];
       {
-        auto headerContent = GenerateContent(config, *itr, activeHeaderTemplate, &classSnippets.HeaderSnippetMemberVariable, &classSnippets.HeaderSnippetMemberVariableGet, classSnippets);
         auto fileName = IO::Path::Combine(dstPath, itr->Result.ClassName + ".hpp");
+        
+        const auto additionalContent = GetAdditionalContent(additionalFileContent, fileName);
+        auto headerContent = GenerateContent(config, *itr, activeHeaderTemplate, &classSnippets.HeaderSnippetMemberVariable, &classSnippets.HeaderSnippetMemberVariableGet, classSnippets, additionalContent);
         IOUtil::WriteAllTextIfChanged(fileName, headerContent);
       }
       assert(static_cast<std::size_t>(itr->TemplateType) < sourceTemplates.size());
       const auto activeSourceTemplate = sourceTemplates[static_cast<std::size_t>(itr->TemplateType)];
       if (activeSourceTemplate.size() > 0)
       {
-        auto sourceContent = GenerateContent(config, *itr, activeSourceTemplate, nullptr, nullptr, classSnippets);
         auto fileName = IO::Path::Combine(dstPath, itr->Result.ClassName + ".cpp");
+        const auto additionalContent = GetAdditionalContent(additionalFileContent, fileName);
+        auto sourceContent = GenerateContent(config, *itr, activeSourceTemplate, nullptr, nullptr, classSnippets, additionalContent);
         IOUtil::WriteAllTextIfChanged(fileName, sourceContent);
       }
     }

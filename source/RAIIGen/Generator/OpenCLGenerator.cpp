@@ -110,7 +110,12 @@ namespace MB
     };
 
 
-    const std::vector<std::string> g_functionNamePostfixBlacklist
+    const std::vector<BlackListEntry> g_functionNameBlacklist
+    {
+    };
+
+
+    const std::vector<BlackListEntry> g_functionNamePostfixBlacklist
     {
     };
 
@@ -477,9 +482,9 @@ namespace MB
   OpenCLGenerator::OpenCLGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
     : SimpleGenerator(ModCapture(capture), 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
-                                           g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter, 
-                                           g_functionNamePostfixBlacklist,
-                                           TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false),
+                                            g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter, 
+                                            g_functionNameBlacklist, g_functionNamePostfixBlacklist,
+                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false),
                       templateRoot, dstPath)
   {
   }

@@ -23,6 +23,7 @@
 //***************************************************************************************************************************************************
 
 #include <RAIIGen/Generator/GeneratorConfig.hpp>
+#include <RAIIGen/Generator/BlackListEntry.hpp>
 #include <RAIIGen/Generator/ClassFunctionAbsorb.hpp>
 #include <RAIIGen/Generator/RAIIClassCustomization.hpp>
 #include <RAIIGen/Generator/RAIIClassMethodOverrides.hpp>
@@ -37,7 +38,8 @@ namespace MB
     const std::unordered_map<std::string, RAIIClassMethodOverrides> ClassMethodOverrides;
     const std::unordered_map<std::string, std::string> TypeDefaultValues;
     const std::vector<std::string> ForceNullParameter;
-    const std::vector<std::string> FunctionNamePostfixBlacklist;
+    const std::vector<BlackListEntry> FunctionNameBlacklist;
+    const std::vector<BlackListEntry> FunctionNamePostfixBlacklist;
     const std::string TypeNamePrefix;
     const std::string FunctionNamePrefix;
     const std::string ErrorCodeTypeName;
@@ -58,7 +60,8 @@ namespace MB
       const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
       const std::unordered_map<std::string, RAIIClassMethodOverrides> classMethodOverrides,
       const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
-      const std::vector<std::string>& functionNamePostfixBlacklist,
+      const std::vector<BlackListEntry>& functionNameBlacklist,
+      const std::vector<BlackListEntry>& functionNamePostfixBlacklist,
       const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, const bool unrollCreateStructs, 
       const bool ownershipTransferUseClaimMode, const bool isVulkan=false)
       : GeneratorConfig(config)
@@ -67,6 +70,7 @@ namespace MB
       , ClassMethodOverrides(classMethodOverrides)
       , TypeDefaultValues(typeDefaultValues)
       , ForceNullParameter(forceNullParameter)
+      , FunctionNameBlacklist(functionNameBlacklist)
       , FunctionNamePostfixBlacklist(functionNamePostfixBlacklist)
       , TypeNamePrefix(typeNamePrefix)
       , FunctionNamePrefix(functionNamePrefix)
@@ -83,7 +87,8 @@ namespace MB
                           const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
                           const std::unordered_map<std::string, RAIIClassMethodOverrides> classMethodOverrides,
                           const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
-                          const std::vector<std::string>& functionNamePostfixBlacklist,
+                          const std::vector<BlackListEntry>& functionNameBlacklist,
+                          const std::vector<BlackListEntry>& functionNamePostfixBlacklist,
                           const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, 
                           const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode, const bool isVulkan = false)
       : GeneratorConfig(basicConfig, functionPairs, manualFunctionMatches)
@@ -92,6 +97,7 @@ namespace MB
       , ClassMethodOverrides(classMethodOverrides)
       , TypeDefaultValues(typeDefaultValues)
       , ForceNullParameter(forceNullParameter)
+      , FunctionNameBlacklist(functionNameBlacklist)
       , FunctionNamePostfixBlacklist(functionNamePostfixBlacklist)
       , TypeNamePrefix(typeNamePrefix)
       , FunctionNamePrefix(functionNamePrefix)

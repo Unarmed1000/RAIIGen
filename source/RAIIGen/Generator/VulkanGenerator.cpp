@@ -108,12 +108,19 @@ namespace MB
     };
 
 
-    const std::vector<std::string> g_functionNamePostfixBlacklist
+
+    const std::vector<BlackListEntry> g_functionNameBlacklist
     {
-      "EXT",
-      "GOOGLE",
-      "KHR",
-      "KHX"
+      BlackListEntry("GetFenceStatus")
+    };
+
+
+    const std::vector<BlackListEntry> g_functionNamePostfixBlacklist
+    {
+      BlackListEntry("EXT", BlackListMatch::NotPostfixClassName),
+      BlackListEntry("GOOGLE", BlackListMatch::NotPostfixClassName),
+      BlackListEntry("KHR", BlackListMatch::NotPostfixClassName),
+      BlackListEntry("KHX", BlackListMatch::NotPostfixClassName)
     };
 
 
@@ -164,8 +171,9 @@ namespace MB
     : SimpleGenerator(capture, 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
-                                            g_functionNamePostfixBlacklist,
-                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, true, true, true), templateRoot, dstPath)
+                                            g_functionNameBlacklist, g_functionNamePostfixBlacklist,
+                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, true, true, true), 
+                      templateRoot, dstPath)
   {
   }
 

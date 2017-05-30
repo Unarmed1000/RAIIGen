@@ -97,7 +97,7 @@ namespace Fsl
         return m_result;
       }
     };
-    
+
     class UnsupportedVulkanPixelFormatException : public VulkanException
     {
       VkFormat m_pixelFormat;
@@ -114,7 +114,7 @@ namespace Fsl
       {
       }
     };
-    
+
   }
 }
 
