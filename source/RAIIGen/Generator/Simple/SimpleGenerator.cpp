@@ -1350,8 +1350,8 @@ namespace MB
       std::string strVersinGuardEnd;
       if (config.VersionGuard.IsValid && version != VersionRecord())
       {
-        strVersinGuardBegin = fmt::format("\n#if {0}", config.VersionGuard.ToGuardString(version));
-        strVersinGuardEnd = "\n#endif";
+        strVersinGuardBegin = fmt::format(END_OF_LINE + "#if {0}", config.VersionGuard.ToGuardString(version));
+        strVersinGuardEnd = END_OF_LINE + "#endif";
       }
       StringUtil::Replace(content, "##VERSION_GUARD_BEGIN##", strVersinGuardBegin);
       StringUtil::Replace(content, "##VERSION_GUARD_END##", strVersinGuardEnd);

@@ -83,7 +83,7 @@ namespace MB
 
       if (versionGuard.IsValid && enumMember.Version != VersionRecord())
       {
-        content = fmt::format("#if {0}\n{1}\n#endif", versionGuard.ToGuardString(enumMember.Version), content);
+        content = fmt::format("#if {0}{1}{2}{1}#endif", versionGuard.ToGuardString(enumMember.Version), END_OF_LINE, content);
       }
       return content;
     }
@@ -98,8 +98,8 @@ namespace MB
 
       if (config.VersionGuard.IsValid && version != VersionRecord())
       {
-        strVersinGuardBegin = fmt::format("\n#if {0}", config.VersionGuard.ToGuardString(version));
-        strVersinGuardEnd = "\n#endif";
+        strVersinGuardBegin = fmt::format(END_OF_LINE + "#if {0}", config.VersionGuard.ToGuardString(version));
+        strVersinGuardEnd = END_OF_LINE + "#endif";
       }
 
       std::string headerContent = snippetHeader;
@@ -158,7 +158,7 @@ namespace MB
             std::string methodContent = snippets.Method;
             if (config.VersionGuard.IsValid && itrFind->second.Version != VersionRecord())
             {
-              methodContent = fmt::format("#if {0}\n{1}\n#endif", config.VersionGuard.ToGuardString(itrFind->second.Version), methodContent);
+              methodContent = fmt::format("#if {0}{1}{2}{1}#endif", config.VersionGuard.ToGuardString(itrFind->second.Version), END_OF_LINE, methodContent);
             }
 
             StringUtil::Replace(methodContent, "##C_TYPE_NAME##", itrFind->second.Name);
