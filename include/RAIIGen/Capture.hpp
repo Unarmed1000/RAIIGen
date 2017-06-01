@@ -35,6 +35,8 @@
 
 namespace MB
 {
+  class CustomLog;
+
   class Capture
   {
     enum class CaptureMode
@@ -71,8 +73,10 @@ namespace MB
     std::deque<CaptureInfo> m_captureInfo;
     std::deque<StructRecord> m_captureStructs;
     std::deque<EnumRecord> m_captureEnums;
+    std::shared_ptr<CustomLog> m_log;
   public:
-    Capture(const CaptureConfig& config, CXCursor rootCursor);
+    Capture(const CaptureConfig& config, CXCursor rootCursor, const std::shared_ptr<CustomLog>& log);
+    ~Capture();
     CXChildVisitResult OnVisit(CXCursor cursor, CXCursor parent);
 
     void Dump();
@@ -82,26 +86,45 @@ namespace MB
       return m_structs;
     }
 
+
+    std::unordered_map<std::string, StructRecord>& DirectAccessStructDict()
+    {
+      return m_structs;
+    }
+
+
     const std::unordered_map<std::string, EnumRecord>& GetEnumDict() const
     {
       return m_enums;
     }
+
+    std::unordered_map<std::string, EnumRecord>& DirectAccessEnumDict()
+    {
+      return m_enums;
+    }
+
 
     const std::deque<FunctionRecord>& GetFunctions() const
     {
       return m_records;
     }
 
+    std::deque<FunctionRecord>& DirectAccessFunctions()
+    {
+      return m_records;
+    }
+
+
     const std::deque<StructRecord>& GetStructs() const
     {
       return m_structsInCapturedOrder;
     }
 
-
-    std::deque<FunctionRecord>& DirectFunctions()
+    std::deque<StructRecord>& DirectAccessStructs()
     {
-      return m_records;
+      return m_structsInCapturedOrder;
     }
+
 
     static CXChildVisitResult VistorForwarder(CXCursor cursor, CXCursor parent, CXClientData clientData);
   private:

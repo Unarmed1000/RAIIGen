@@ -31,6 +31,7 @@
 #include <vector>
 #include <FslBase/Exceptions.hpp>
 #include <FslBase/String/StringUtil.hpp>
+#include <RAIIGen/CustomLog.hpp>
 #include <RAIIGen/Capture.hpp>
 #include <RAIIGen/CaseUtil.hpp>
 #include <RAIIGen/ClangUtil.hpp>
@@ -71,14 +72,15 @@ namespace MB
     };
 
 
-    TypeInfo GetTypeInfo(const CXType type, CXType originalType)
+    TypeInfo GetTypeInfo(const CXType type, CXType originalType, const std::shared_ptr<CustomLog>& log)
     {
       switch (type.kind)
       {
       case CXType_Invalid:
         throw std::runtime_error("GetTypeName() failed to get type name for CXType_Invalid");
       case CXType_Unexposed:
-        std::cout << "WARNING: CXType_Unexposed not properly supported\n";
+        if(log)
+          log->Print("WARNING: CXType_Unexposed not properly supported");
         return TypeInfo(GetTypeSpelling(type), type, originalType);
       case CXType_Void:
         return TypeInfo("void", type, originalType);
@@ -133,7 +135,7 @@ namespace MB
       case CXType_Complex:
         throw std::runtime_error("GetTypeName() failed to get type name CXType_Complex");
       case CXType_Pointer:
-        return GetTypeInfo(clang_getPointeeType(type), originalType);
+        return GetTypeInfo(clang_getPointeeType(type), originalType, log);
       case CXType_BlockPointer:
         throw std::runtime_error("GetTypeName() failed to get type name for CXType_BlockPointer");
       case CXType_LValueReference:
@@ -159,16 +161,20 @@ namespace MB
       case CXType_FunctionNoProto:
         throw std::runtime_error("GetTypeName() failed to get type name for CXType_FunctionNoProto");
       case CXType_FunctionProto:
-        std::cout << "WARNING: CXType_FunctionProto not properly supported\n";
+        if (log)
+          log->Print("WARNING: CXType_FunctionProto not properly supported");
         return TypeInfo("**CXType_FunctionProto**", type, originalType);
       case CXType_ConstantArray:
-        std::cout << "WARNING: CXType_ConstantArray not properly supported\n";
+        if (log)
+          log->Print("WARNING: CXType_ConstantArray not properly supported");
         return TypeInfo("**CXType_ConstantArray**", type, originalType);
       case CXType_Vector:
-        std::cout << "WARNING: CXType_Vector not properly supported\n";
+        if (log)
+          log->Print("WARNING: CXType_Vector not properly supported");
         return TypeInfo("**CXType_Vector**", type, originalType);
       case CXType_IncompleteArray:
-        std::cout << "WARNING: CXType_IncompleteArray not properly supported\n";
+        if (log)
+          log->Print("WARNING: CXType_IncompleteArray not properly supported");
         return TypeInfo("**CXType_IncompleteArray**", type, originalType);
       case CXType_VariableArray:
         throw std::runtime_error("GetTypeName() failed to get type name for CXType_VariableArray");
@@ -179,7 +185,8 @@ namespace MB
       case CXType_Auto:
         throw std::runtime_error("GetTypeName() failed to get type name for CXType_Auto");
       case CXType_Elaborated:
-        std::cout << "WARNING: CXType_Elaborated not properly supported\n";
+        if (log)
+          log->Print("WARNING: CXType_Elaborated not properly supported");
         return TypeInfo("**CXType_Elaborated**", type, originalType);
       default:
         throw std::runtime_error("GetTypeName() failed to get type name");
@@ -187,19 +194,19 @@ namespace MB
     }
 
 
-    TypeInfo GetTypeInfo(const CXType type)
+    TypeInfo GetTypeInfo(const CXType type, const std::shared_ptr<CustomLog>& pLog)
     {
-      return GetTypeInfo(type, type);
+      return GetTypeInfo(type, type, pLog);
     }
 
 
-    TypeRecord GetType(const CXType type)
+    TypeRecord GetType(const CXType type, const std::shared_ptr<CustomLog>& pLog)
     {
 
       TypeRecord typeRecord;
       typeRecord.FullTypeString = GetTypeSpelling(type);
 
-      const auto typeInfo = GetTypeInfo(type);
+      const auto typeInfo = GetTypeInfo(type, pLog);
       typeRecord.Name = typeInfo.Name;
       typeRecord.IsConstQualified = clang_isConstQualifiedType(typeInfo.Type) != 0;
 
@@ -229,9 +236,9 @@ namespace MB
     }
 
 
-    TypeRecord GetType(const CXCursor cursor)
+    TypeRecord GetType(const CXCursor cursor, const std::shared_ptr<CustomLog>& pLog)
     {
-      return GetType(clang_getCursorType(cursor));
+      return GetType(clang_getCursorType(cursor), pLog);
     }
 
 
@@ -267,11 +274,11 @@ namespace MB
     }
 
 
-    ParameterRecord GetParameter(const CXCursor cursor, const std::string& typeNamePrefix, const std::vector<FunctionParameterTypeOverride>& functionParameterTypeOverrides)
+    ParameterRecord GetParameter(const CXCursor cursor, const std::string& typeNamePrefix, const std::vector<FunctionParameterTypeOverride>& functionParameterTypeOverrides, const std::shared_ptr<CustomLog>& pLog)
     {
       ParameterRecord param;
       param.Name = StringHelper::EnforceLowerCamelCaseNameStyle(GetCursorSpelling(cursor));
-      param.Type = GetType(cursor);
+      param.Type = GetType(cursor, pLog);
       param.ArgumentName = StringHelper::EnforceLowerCamelCaseNameStyle(GetCursorDisplayName(cursor));
       
       if (param.Name.size() <= 0)
@@ -319,7 +326,7 @@ namespace MB
     }
 
 
-    FunctionRecord GetFunction(const CaptureConfig& config, const CXCursor& cursor, const CXCursorKind cursorKind, const std::size_t currentLevel, FunctionErrors& rFuncErrors)
+    FunctionRecord GetFunction(const CaptureConfig& config, const CXCursor& cursor, const CXCursorKind cursorKind, const std::size_t currentLevel, FunctionErrors& rFuncErrors, const std::shared_ptr<CustomLog>& pLog)
     {
       FunctionRecord currentFunction;
 
@@ -328,7 +335,7 @@ namespace MB
       // Extract return type
       {
         const CXType returnType = clang_getCursorResultType(cursor);
-        currentFunction.ReturnType = GetType(returnType);
+        currentFunction.ReturnType = GetType(returnType, pLog);
       }
 
       // Extract parameters
@@ -339,7 +346,7 @@ namespace MB
         {
           const CXCursor argCursor = clang_Cursor_getArgument(cursor, i);
 
-          auto param = GetParameter(argCursor, config.TypeNamePrefix, config.FunctionParameterTypeOverrides);
+          auto param = GetParameter(argCursor, config.TypeNamePrefix, config.FunctionParameterTypeOverrides, pLog);
           HandleParamNameOverride(param, config.FunctionParameterNameOverrides, currentFunction.Name, i);
           HandleParamTypeOverride(param, config.FunctionParameterTypeOverrides, currentFunction.Name, i);
 
@@ -366,9 +373,9 @@ namespace MB
     }
 
     
-    MemberRecord GetMember(CXCursor cursor)
+    MemberRecord GetMember(CXCursor cursor, const std::shared_ptr<CustomLog>& pLog)
     {
-      auto fieldType = GetType(cursor);
+      auto fieldType = GetType(cursor, pLog);
       const auto cursorSpelling = GetCursorSpelling(cursor);
       return MemberRecord(fieldType, cursorSpelling);
     }
@@ -398,13 +405,12 @@ namespace MB
   }
 
 
-  Capture::Capture(const CaptureConfig& config, CXCursor rootCursor)
+  Capture::Capture(const CaptureConfig& config, CXCursor rootCursor, const std::shared_ptr<CustomLog>& log)
     : m_config(config)
     , m_level(0)
     , m_records()
+    , m_log(log)
   {
-
-
     // WARNING: This should be called once the object is fully constructed
     clang_visitChildren(rootCursor, Capture::VistorForwarder, this);
 
@@ -421,7 +427,12 @@ namespace MB
     throw std::runtime_error("Duplicated parameter names found");
   }
 
- 
+
+  Capture::~Capture()
+  {
+  }
+
+
   CXChildVisitResult Capture::OnVisit(CXCursor cursor, CXCursor parent)
   {
     CXSourceLocation location = clang_getCursorLocation(cursor);
@@ -440,7 +451,7 @@ namespace MB
         {
           //std::cout << std::string(m_level, '-') << " " << GetCursorKindName(cursorKind) << " ('" << typeSpelling << "' '" << cursorSpelling << "')\n";
 
-          m_captureStructs.back().Members.push_back(GetMember(cursor));
+          m_captureStructs.back().Members.push_back(GetMember(cursor, m_log));
         }
       }
       else if (captureInfo.Mode == CaptureMode::Enum)
@@ -462,7 +473,7 @@ namespace MB
       {
         // Extract basic information
         FunctionErrors funcErrors;
-        m_records.push_back(GetFunction(m_config, cursor, cursorKind, m_level, funcErrors));
+        m_records.push_back(GetFunction(m_config, cursor, cursorKind, m_level, funcErrors, m_log));
         if (funcErrors.DuplicatedParameterNames.size() > 0)
           m_functionErrors.push_back(funcErrors);
       }

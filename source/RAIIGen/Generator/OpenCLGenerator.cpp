@@ -469,7 +469,7 @@ namespace MB
     Capture ModCapture(const Capture& capture)
     {
       Capture moddedCapture(capture);
-      auto& functions = moddedCapture.DirectFunctions();
+      auto& functions = moddedCapture.DirectAccessFunctions();
       for (auto itr = functions.begin(); itr != functions.end(); ++itr)
       {
         if (itr->Name.find(CREATE_FUNCTION) == 0 && itr->Parameters.size() > 0)

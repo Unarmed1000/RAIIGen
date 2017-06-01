@@ -24,6 +24,7 @@
 
 #include <RAIIGen/TypeRecord.hpp>
 #include <RAIIGen/MemberRecord.hpp>
+#include <RAIIGen/VersionRecord.hpp>
 #include <deque>
 #include <string>
 
@@ -33,16 +34,19 @@ namespace MB
   {
     std::string Name;
     std::deque<MemberRecord> Members;
+    VersionRecord Version;
 
     StructRecord()
       : Name()
       , Members()
+      , Version()
     {
     }
 
     StructRecord(const std::string& name)
       : Name(name)
       , Members()
+      , Version()
     {
     }
 
@@ -50,12 +54,13 @@ namespace MB
     {
       Name.clear();
       Members.clear();
+      Version.Clear();
     }
 
 
     bool operator==(const StructRecord &rhs) const
     {
-      return Name == rhs.Name && Members == rhs.Members;
+      return Name == rhs.Name && Members == rhs.Members && Version == rhs.Version;
     }
 
     bool operator!=(const StructRecord &rhs) const

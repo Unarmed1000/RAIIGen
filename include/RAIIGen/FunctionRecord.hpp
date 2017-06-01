@@ -24,6 +24,7 @@
 
 #include <RAIIGen/TypeRecord.hpp>
 #include <RAIIGen/ParameterRecord.hpp>
+#include <RAIIGen/VersionRecord.hpp>
 #include <deque>
 #include <string>
 
@@ -34,18 +35,20 @@ namespace MB
     TypeRecord ReturnType;
     std::string Name;
     std::deque<ParameterRecord> Parameters;
+    VersionRecord Version;
 
     void Clear()
     {
       ReturnType.Clear();
       Name.clear();
       Parameters.clear();
+      Version.Clear();
     }
 
 
     bool operator==(const FunctionRecord &rhs) const
     {
-      return ReturnType == rhs.ReturnType && Name == rhs.Name && Parameters == rhs.Parameters;
+      return ReturnType == rhs.ReturnType && Name == rhs.Name && Parameters == rhs.Parameters && Version == rhs.Version;
     }
 
     bool operator!=(const FunctionRecord &rhs) const

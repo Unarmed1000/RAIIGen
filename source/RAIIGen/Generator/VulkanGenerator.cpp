@@ -110,7 +110,7 @@ namespace MB
 
     const std::vector<FunctionGuard> g_functionGuards
     {
-      FunctionGuard("vkGetSwapchainStatusKHR", "VK_HEADER_VERSION >= 50")
+      // FunctionGuard("vkGetSwapchainStatusKHR", "VK_HEADER_VERSION >= 50")
     };
 
 

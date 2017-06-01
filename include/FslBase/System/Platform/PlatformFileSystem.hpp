@@ -63,9 +63,8 @@ namespace Fsl
       //! @note Experimental interface, might change.
       static bool CheckPathForChanges(const std::shared_ptr<PlatformPathMonitorToken>& token);
 
-
       //! @brief Get the files under the path directory
-      static void GetFiles(PathDeque& rResult, const Path& path, const SearchOptions searchOptions);
+      static void GetContent(PathDeque& rResult, const Path& path, const SearchOptions searchOptions, const FileAttributes& attributeFilter);
 
       //! @brief Create the directory (is not recursive, so its allowed to fail if the parent directory doesn't exist)
       //! @note  However it's perfectly valid for the directory to already exist, this should be silently ignored.

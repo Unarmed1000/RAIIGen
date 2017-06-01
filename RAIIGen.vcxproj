@@ -93,8 +93,12 @@
     <ClInclude Include="include\FslBase\Transition\TransitionVector2.hpp" />
     <ClInclude Include="include\RAIIGen\Capture.hpp" />
     <ClInclude Include="include\RAIIGen\CaptureConfig.hpp" />
+    <ClInclude Include="include\RAIIGen\CapturedData.hpp" />
+    <ClInclude Include="include\RAIIGen\ClangFileData.hpp" />
     <ClInclude Include="include\RAIIGen\ClangInfoDump.hpp" />
     <ClInclude Include="include\RAIIGen\ClangUtil.hpp" />
+    <ClInclude Include="include\RAIIGen\CustomLog.hpp" />
+    <ClInclude Include="include\RAIIGen\CustomLogConsole.hpp" />
     <ClInclude Include="include\RAIIGen\DuplicatedParameterName.hpp" />
     <ClInclude Include="include\RAIIGen\CaseUtil.hpp" />
     <ClInclude Include="include\RAIIGen\EnumMemberRecord.hpp" />
@@ -149,6 +153,7 @@
     <ClInclude Include="include\RAIIGen\StringHelper.hpp" />
     <ClInclude Include="include\RAIIGen\StructRecord.hpp" />
     <ClInclude Include="include\RAIIGen\TypeRecord.hpp" />
+    <ClInclude Include="include\RAIIGen\VersionRecord.hpp" />
     <ClInclude Include="source\FslBase\Math\Matrix3Fields.hpp" />
     <ClInclude Include="source\FslBase\Math\MatrixFields.hpp" />
     <ClInclude Include="source\FslBase\Math\MatrixInternals.hpp" />

@@ -1,9 +1,9 @@
-#ifndef MB_GENERATOR_SIMPLE_CLASSMETHOD_HPP
-#define MB_GENERATOR_SIMPLE_CLASSMETHOD_HPP
+#ifndef MB_CAPTUREDDATA_HPP
+#define MB_CAPTUREDDATA_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
-//* Copyright (c) 2016, Rene Thrane
+//* Copyright (c) 2017, Rene Thrane
 //* All rights reserved.
 //* 
 //* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,40 +22,29 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RAIIGen/Generator/Simple/MethodArgument.hpp>
-#include <RAIIGen/FunctionRecord.hpp>
-#include <deque>
-#include <string>
+#include <RAIIGen/Capture.hpp>
+#include <RAIIGen/ClangFileData.hpp>
+#include <RAIIGen/VersionRecord.hpp>
+#include <memory>
 
 namespace MB
 {
-  struct ClassMethod
+  class CapturedData
   {
-    enum class TemplateType
-    {
-      Error,
-      Type,
-      Void
-    };
 
-    TemplateType Template;
-    FunctionRecord SourceFunction;
+  public:
+    ClangFileData FileData;
+    Capture TheCapture;
+    VersionRecord Version;
 
-    std::string Name;
-    std::deque<MethodArgument> MethodArguments;
-    std::deque<MethodArgument> OriginalMethodArguments;
-    std::deque<MethodArgument> CombinedMethodArguments;
-    MethodArgument ReturnType;
-    std::deque<std::string> GuardFunctions;
-
-    ClassMethod()
-      : Template(TemplateType::Void)
-      , Name()
-      , MethodArguments()
-      , OriginalMethodArguments()
-      , GuardFunctions()
+    CapturedData(const BasicConfig& basicConfig, const Fsl::IO::Path& filename, const std::vector<Fsl::IO::Path>& includePaths,
+      const MB::CaptureConfig& captureConfig, const std::shared_ptr<CustomLog>& customLog, const VersionRecord& version)
+      : FileData(basicConfig, filename, includePaths)
+      , TheCapture(captureConfig, FileData.GetRootCursor(), customLog)
+      , Version(version)
     {
     }
   };
 }
+
 #endif

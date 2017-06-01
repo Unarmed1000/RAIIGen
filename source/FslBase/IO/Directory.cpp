@@ -80,7 +80,7 @@ namespace Fsl
 
     void Directory::GetFiles(PathDeque& rResult, const Path& path, const SearchOptions searchOptions)
     {
-      return PlatformFileSystem::GetFiles(rResult, path, searchOptions);
+      return PlatformFileSystem::GetContent(rResult, path, searchOptions, FileAttributes::File);
     }
 
 
@@ -89,6 +89,25 @@ namespace Fsl
       try
       {
         GetFiles(rResult, path, searchOptions);
+        return true;
+      }
+      catch (const std::exception&)
+      {
+        return false;
+      }
+    }
+
+    void Directory::GetDirectories(PathDeque& rResult, const Path& path, const SearchOptions searchOptions)
+    {
+      return PlatformFileSystem::GetContent(rResult, path, searchOptions, FileAttributes::Directory);
+    }
+
+
+    bool Directory::TryGetDirectories(PathDeque& rResult, const Path& path, const SearchOptions searchOptions)
+    {
+      try
+      {
+        GetDirectories(rResult, path, searchOptions);
         return true;
       }
       catch (const std::exception&)

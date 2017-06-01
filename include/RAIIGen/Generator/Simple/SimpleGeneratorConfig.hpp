@@ -59,16 +59,17 @@ namespace MB
 
 
     SimpleGeneratorConfig(const GeneratorConfig& config,
-      const std::vector<RAIIClassCustomization>& raiiClassCustomizations,
-      const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
-      const std::unordered_map<std::string, RAIIClassMethodOverrides> classMethodOverrides,
-      const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
-      const std::vector<FunctionGuard>& functionGuards,
-      const std::vector<BlackListEntry>& functionNameBlacklist,
-      const std::vector<BlackListEntry>& enumNameBlacklist,
-      const std::vector<BlackListEntry>& enumMemberBlacklist,
-      const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, const bool unrollCreateStructs,
-      const bool ownershipTransferUseClaimMode, const bool isVulkan=false)
+                          const std::vector<RAIIClassCustomization>& raiiClassCustomizations,
+                          const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion,
+                          const std::unordered_map<std::string, RAIIClassMethodOverrides> classMethodOverrides,
+                          const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
+                          const std::vector<FunctionGuard>& functionGuards,
+                          const std::vector<BlackListEntry>& functionNameBlacklist,
+                          const std::vector<BlackListEntry>& enumNameBlacklist,
+                          const std::vector<BlackListEntry>& enumMemberBlacklist,
+                          const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, 
+                          const bool unrollCreateStructs,
+                          const bool ownershipTransferUseClaimMode, const bool isVulkan=false)
       : GeneratorConfig(config)
       , RAIIClassCustomizations(raiiClassCustomizations)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)

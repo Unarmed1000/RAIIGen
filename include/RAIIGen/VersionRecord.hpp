@@ -1,9 +1,9 @@
-#ifndef MB_GENERATOR_SIMPLE_CLASSMETHOD_HPP
-#define MB_GENERATOR_SIMPLE_CLASSMETHOD_HPP
+#ifndef MB_VERSIONRECORD_HPP
+#define MB_VERSIONRECORD_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
-//* Copyright (c) 2016, Rene Thrane
+//* Copyright (c) 2017, Rene Thrane
 //* All rights reserved.
 //* 
 //* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,39 +22,62 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RAIIGen/Generator/Simple/MethodArgument.hpp>
-#include <RAIIGen/FunctionRecord.hpp>
-#include <deque>
 #include <string>
+#include <FslBase/String/StringParseUtil.hpp>
+#include <FslBase/String/StringUtil.hpp>
 
 namespace MB
 {
-  struct ClassMethod
+  struct VersionRecord
   {
-    enum class TemplateType
+    uint32_t Major;
+    uint32_t Minor;
+    uint32_t Build;
+
+    VersionRecord()
+      : Major(0)
+      , Minor(0)
+      , Build(0)
     {
-      Error,
-      Type,
-      Void
-    };
+    }
 
-    TemplateType Template;
-    FunctionRecord SourceFunction;
-
-    std::string Name;
-    std::deque<MethodArgument> MethodArguments;
-    std::deque<MethodArgument> OriginalMethodArguments;
-    std::deque<MethodArgument> CombinedMethodArguments;
-    MethodArgument ReturnType;
-    std::deque<std::string> GuardFunctions;
-
-    ClassMethod()
-      : Template(TemplateType::Void)
-      , Name()
-      , MethodArguments()
-      , OriginalMethodArguments()
-      , GuardFunctions()
+    explicit VersionRecord(const std::string& version)
+      : Major(0)
+      , Minor(0)
+      , Build(0)
     {
+      using namespace Fsl;
+      const auto indexFirstDot = StringUtil::IndexOf(version, '.');
+      if (indexFirstDot < 0)
+        throw std::invalid_argument("Version format is incorrect");
+      const auto indexSecondDot = StringUtil::IndexOf(version, '.', indexFirstDot + 1);
+      if (indexSecondDot < 0)
+        throw std::invalid_argument("Version format is incorrect");
+      if (StringUtil::IndexOf(version, '.', indexSecondDot + 1) >= 0)
+        throw std::invalid_argument("Version format is incorrect");
+
+      const auto stringLength = static_cast<int>(version.size());
+
+      StringParseUtil::Parse(Major, version.c_str(), 0, indexFirstDot);
+      StringParseUtil::Parse(Minor, version.c_str(), indexFirstDot + 1, (indexSecondDot - indexFirstDot - 1));
+      StringParseUtil::Parse(Build, version.c_str(), indexSecondDot + 1, (stringLength - indexSecondDot - 1));
+    }
+
+
+    void Clear()
+    {
+      *this = VersionRecord();
+    }
+
+
+    bool operator==(const VersionRecord& rhs) const
+    {
+      return Major == rhs.Major && Minor == rhs.Minor && Build == rhs.Build;
+    }
+
+    bool operator!=(const VersionRecord& rhs) const
+    {
+      return !(*this == rhs);
     }
   };
 }

@@ -60,6 +60,11 @@ namespace Fsl
       static void GetFiles(PathDeque& rResult, const Path& path, const SearchOptions searchOptions);
 
       static bool TryGetFiles(PathDeque& rResult, const Path& path, const SearchOptions searchOptions);
+
+      //! @brief Get the files under the path directory
+      static void GetDirectories(PathDeque& rResult, const Path& path, const SearchOptions searchOptions);
+
+      static bool TryGetDirectories(PathDeque& rResult, const Path& path, const SearchOptions searchOptions);
     };
   }
 }

@@ -1,9 +1,9 @@
-#ifndef MB_GENERATOR_SIMPLE_CLASSMETHOD_HPP
-#define MB_GENERATOR_SIMPLE_CLASSMETHOD_HPP
+#ifndef MB_CUSTOMLOGCONSOLE_HPP
+#define MB_CUSTOMLOGCONSOLE_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
-//* Copyright (c) 2016, Rene Thrane
+//* Copyright (c) 2017, Rene Thrane
 //* All rights reserved.
 //* 
 //* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,39 +22,17 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RAIIGen/Generator/Simple/MethodArgument.hpp>
-#include <RAIIGen/FunctionRecord.hpp>
-#include <deque>
-#include <string>
+#include <RAIIGen/CustomLog.hpp>
+#include <iostream>
 
 namespace MB
 {
-  struct ClassMethod
+  class CustomLogConsole : public CustomLog
   {
-    enum class TemplateType
+  public:
+    virtual void Print(const std::string& str) const override
     {
-      Error,
-      Type,
-      Void
-    };
-
-    TemplateType Template;
-    FunctionRecord SourceFunction;
-
-    std::string Name;
-    std::deque<MethodArgument> MethodArguments;
-    std::deque<MethodArgument> OriginalMethodArguments;
-    std::deque<MethodArgument> CombinedMethodArguments;
-    MethodArgument ReturnType;
-    std::deque<std::string> GuardFunctions;
-
-    ClassMethod()
-      : Template(TemplateType::Void)
-      , Name()
-      , MethodArguments()
-      , OriginalMethodArguments()
-      , GuardFunctions()
-    {
+      std::cout << str << "\n";
     }
   };
 }

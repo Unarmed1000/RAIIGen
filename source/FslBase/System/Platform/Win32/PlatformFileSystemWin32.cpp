@@ -91,8 +91,21 @@ namespace Fsl
       }
 
 
+      inline void AppendEntry(PathDeque& rResult, const IO::Path& path, const WIN32_FIND_DATA& fd)
+      {
+        const std::string strFilename(PlatformWin32::Narrow(std::wstring(fd.cFileName)));
+        rResult.push_back(std::make_shared<Path>(Path::Combine(path, strFilename)));
+      }
 
-      void GetFilesInDirectory(PathDeque& rResult, const IO::Path& path, const bool includeSubdirectories)
+
+      inline bool IsSpecialDirectory(const WIN32_FIND_DATA& fd)
+      {
+        return (fd.cFileName[0] == L'.' && fd.cFileName[1] == 0) ||
+               (fd.cFileName[0] == L'.' && fd.cFileName[1] == L'.' && fd.cFileName[2] == 0);
+      }
+
+
+      void GetContentInDirectory(PathDeque& rResult, const IO::Path& path, const bool includeSubdirectories, const FileAttributes& attributeFilter)
       {
         const std::wstring searchPath = path.ToWString() + L"/*";
 
@@ -106,16 +119,21 @@ namespace Fsl
             {
               // read all (real) files in current folder
               // , delete '!' read other 2 default folder . and ..
-              if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+              const bool isDirectory = (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+              if (!isDirectory && attributeFilter.HasFlag(FileAttributes::File))
               {
-                const std::string strFilename(PlatformWin32::Narrow(std::wstring(fd.cFileName)));
-                rResult.push_back(std::make_shared<Path>(Path::Combine(path, strFilename)));
+                AppendEntry(rResult, path, fd);
               }
-              else if (includeSubdirectories && !(fd.cFileName[0] == L'.' && fd.cFileName[1] == 0) && !(fd.cFileName[0] == L'.' && fd.cFileName[1] == L'.' && fd.cFileName[2] == 0))
+              else if (attributeFilter.HasFlag(FileAttributes::Directory) && !IsSpecialDirectory(fd))
+              {
+                AppendEntry(rResult, path, fd);
+              }
+
+              if (isDirectory && includeSubdirectories && ! IsSpecialDirectory(fd))
               {
                 const std::string strFilename(PlatformWin32::Narrow(std::wstring(fd.cFileName)));
                 const Path subDir = Path::Combine(path, strFilename);
-                GetFilesInDirectory(rResult, subDir, true);
+                GetContentInDirectory(rResult, subDir, true, attributeFilter);
               }
             } while (::FindNextFile(hFind, &fd));
             ::FindClose(hFind);
@@ -173,7 +191,7 @@ namespace Fsl
     }
 
 
-    void PlatformFileSystem::GetFiles(PathDeque& rResult, const Path& path, const SearchOptions searchOptions)
+    void PlatformFileSystem::GetContent(PathDeque& rResult, const Path& path, const SearchOptions searchOptions, const FileAttributes& attributeFilter)
     {
       rResult.clear();
       FileAttributes attr;
@@ -183,10 +201,10 @@ namespace Fsl
       switch (searchOptions)
       {
       case SearchOptions::TopDirectoryOnly:
-        GetFilesInDirectory(rResult, path, false);
+        GetContentInDirectory(rResult, path, false, attributeFilter);
         break;
       case SearchOptions::AllDirectories:
-        GetFilesInDirectory(rResult, path, true);
+        GetContentInDirectory(rResult, path, true, attributeFilter);
         break;
       default:
         throw NotSupportedException("Unknown search option");

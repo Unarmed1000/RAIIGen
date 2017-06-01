@@ -24,6 +24,7 @@
 
 #include <RAIIGen/ParameterType.hpp>
 #include <RAIIGen/TypeRecord.hpp>
+#include <RAIIGen/VersionRecord.hpp>
 #include <string>
 
 namespace MB
@@ -32,10 +33,12 @@ namespace MB
   {
     std::string Name;
     uint64_t UnsignedValue;
+    VersionRecord Version;
 
     EnumMemberRecord()
       : Name()
       , UnsignedValue(0)
+      , Version()
     {
     }
 
@@ -43,6 +46,7 @@ namespace MB
     EnumMemberRecord(const std::string& name, const uint64_t& value)
       : Name(name)
       , UnsignedValue(value)
+      , Version()
     {
     }
 
@@ -61,7 +65,8 @@ namespace MB
     bool operator==(const EnumMemberRecord &rhs) const
     {
       return Name == rhs.Name &&
-        UnsignedValue == rhs.UnsignedValue;
+             UnsignedValue == rhs.UnsignedValue &&
+             Version == rhs.Version;
     }
 
     bool operator!=(const EnumMemberRecord &rhs) const

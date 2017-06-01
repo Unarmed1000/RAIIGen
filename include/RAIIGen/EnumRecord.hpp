@@ -23,6 +23,7 @@
 //***************************************************************************************************************************************************
 
 #include <RAIIGen/EnumMemberRecord.hpp>
+#include <RAIIGen/VersionRecord.hpp>
 #include <deque>
 #include <string>
 
@@ -32,16 +33,19 @@ namespace MB
   {
     std::string Name;
     std::deque<EnumMemberRecord> Members;
+    VersionRecord Version;
 
     EnumRecord()
       : Name()
       , Members()
+      , Version()
     {
     }
 
     EnumRecord(const std::string& name)
       : Name(name)
       , Members()
+      , Version()
     {
     }
 
@@ -49,13 +53,15 @@ namespace MB
     {
       Name.clear();
       Members.clear();
+      Version.Clear();
     }
 
 
     bool operator==(const EnumRecord &rhs) const
     {
-      return Name == rhs.Name && Members == rhs.Members;
+      return Name == rhs.Name && Members == rhs.Members && Version == rhs.Version;
     }
+
 
     bool operator!=(const EnumRecord &rhs) const
     {

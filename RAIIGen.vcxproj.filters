@@ -417,6 +417,21 @@
     <ClInclude Include="include\RAIIGen\Generator\ConfigUtil.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\RAIIGen\CustomLog.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\CustomLogConsole.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\ClangFileData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\CapturedData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\VersionRecord.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\RAIIGen\Capture.cpp">

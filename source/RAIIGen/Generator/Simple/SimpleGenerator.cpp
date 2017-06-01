@@ -473,8 +473,19 @@ namespace MB
       if (itrFind == functionGuards.end())
         return;
 
-      rClassMethod.GuardFunction = itrFind->DefineContent;
+      rClassMethod.GuardFunctions.push_back(itrFind->DefineContent);
     }
+
+
+    void AddFunctionVersionGuard(ClassMethod& rClassMethod, const SimpleGeneratorConfig& config)
+    {
+      if (rClassMethod.SourceFunction.Version == VersionRecord() && config.IsVulkan)
+        return;
+
+      std::string strGuardFunction = std::string("VK_HEADER_VERSION >= ") + std::to_string(rClassMethod.SourceFunction.Version.Build);
+      rClassMethod.GuardFunctions.push_back(strGuardFunction);
+    }
+
 
 
     void FindObjectFunctions(const SimpleGeneratorConfig& config, const FunctionAnalysis& functionAnalysis, std::deque<FullAnalysis>& managed, FullAnalysis& rResult)
@@ -505,6 +516,7 @@ namespace MB
               classMethod.Name = methodName;
 
               AddFunctionGuard(classMethod, config.FunctionGuards);
+              AddFunctionVersionGuard(classMethod, config);
 
               if (itr->ReturnType.Name == "void")
                 classMethod.Template = ClassMethod::TemplateType::Void;
@@ -1148,6 +1160,22 @@ namespace MB
     }
 
 
+    std::string AddContentGuards(const std::string& content, const std::deque<std::string>& guardFunctions)
+    {
+      if (guardFunctions.size() <= 0)
+        return content;
+
+      std::string newContent;
+      for (const auto& guardFunction : guardFunctions)
+        newContent += END_OF_LINE + "#if " + guardFunction;
+
+      newContent += END_OF_LINE + content;
+
+      for (const auto& guardFunction : guardFunctions)
+        newContent += END_OF_LINE + "#endif";
+      return newContent;
+    }
+
     std::string GenerateAdditionalMethods(const SimpleGeneratorConfig& config, const FullAnalysis& fullAnalysis, const SnippetMethodContext& snippets)
     {
       std::string res;
@@ -1182,8 +1210,7 @@ namespace MB
         StringUtil::Replace(content, "##METHOD_PARAMETERS##", methodParameters);
         StringUtil::Replace(content, "##FUNCTION_ARGUMENTS##", functionArguments);
 
-        if (method.GuardFunction.size() > 0)
-          content = "#if " + method.GuardFunction + END_OF_LINE + content + END_OF_LINE + "#endif";
+        content = AddContentGuards(content, method.GuardFunctions);
 
         res += END_OF_LINE + END_OF_LINE + content;
       }
