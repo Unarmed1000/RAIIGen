@@ -122,22 +122,22 @@ namespace MB
 
     const std::vector<BlackListEntry> g_functionNamePostfixBlacklist
     {
-      BlackListEntry("EXT", BlackListMatch::NotPostfixClassName),
-      BlackListEntry("GOOGLE", BlackListMatch::NotPostfixClassName),
-      BlackListEntry("KHR", BlackListMatch::NotPostfixClassName),
-      BlackListEntry("KHX", BlackListMatch::NotPostfixClassName)
+      BlackListEntry("EXT", BlackListMatch::NotPostfixEntityName),
+      BlackListEntry("GOOGLE", BlackListMatch::NotPostfixEntityName),
+      BlackListEntry("KHR", BlackListMatch::NotPostfixEntityName),
+      BlackListEntry("KHX", BlackListMatch::NotPostfixEntityName)
     };
 
 
     const std::vector<BlackListEntry> g_enumNamePostfixBlacklist
     {
-      BlackListEntry("AMD", BlackListMatch::Always),
-      BlackListEntry("EXT", BlackListMatch::Always),
-      BlackListEntry("GOOGLE", BlackListMatch::Always),
-      BlackListEntry("KHR", BlackListMatch::Always),
-      BlackListEntry("KHX", BlackListMatch::Always),
-      BlackListEntry("NV", BlackListMatch::Always),
-      BlackListEntry("NVX", BlackListMatch::Always),
+      //BlackListEntry("AMD", BlackListMatch::Always),
+      //BlackListEntry("EXT", BlackListMatch::Always),
+      //BlackListEntry("GOOGLE", BlackListMatch::Always),
+      //BlackListEntry("KHR", BlackListMatch::Always),
+      //BlackListEntry("KHX", BlackListMatch::Always),
+      //BlackListEntry("NV", BlackListMatch::Always),
+      //BlackListEntry("NVX", BlackListMatch::Always),
     };
 
 
@@ -148,13 +148,13 @@ namespace MB
       BlackListEntry("_RANGE_SIZE", BlackListMatch::Always),
       BlackListEntry("_MAX_ENUM", BlackListMatch::Always),
 
-      BlackListEntry("_AMD", BlackListMatch::Always),
-      BlackListEntry("_EXT", BlackListMatch::Always),
-      BlackListEntry("_GOOGLE", BlackListMatch::Always),
-      BlackListEntry("_KHR", BlackListMatch::Always),
-      BlackListEntry("_KHX", BlackListMatch::Always),
-      BlackListEntry("_NV", BlackListMatch::Always),
-      BlackListEntry("_NVX", BlackListMatch::Always),
+      BlackListEntry("_AMD", "AMD", BlackListMatch::NotPostfixEntityNameEx),
+      BlackListEntry("_EXT", "EXT", BlackListMatch::NotPostfixEntityNameEx),
+      BlackListEntry("_GOOGLE", "GOOGLE", BlackListMatch::NotPostfixEntityNameEx),
+      BlackListEntry("_KHR", "KHR", BlackListMatch::NotPostfixEntityNameEx),
+      BlackListEntry("_KHX", "KHX", BlackListMatch::NotPostfixEntityNameEx),
+      BlackListEntry("_NV", "NV", BlackListMatch::NotPostfixEntityNameEx),
+      BlackListEntry("_NVX", "NVX", BlackListMatch::NotPostfixEntityNameEx),
     };
 
 

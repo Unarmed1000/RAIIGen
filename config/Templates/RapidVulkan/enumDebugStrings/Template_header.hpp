@@ -1,5 +1,5 @@
-#ifndef RAPIDVULKAN_DEBUGSTRINGS_HPP
-#define RAPIDVULKAN_DEBUGSTRINGS_HPP
+#ifndef RAPIDVULKAN_##RELATIVE_INCLUDE_GUARD##
+#define RAPIDVULKAN_##RELATIVE_INCLUDE_GUARD##
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*

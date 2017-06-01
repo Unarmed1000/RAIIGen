@@ -47,8 +47,10 @@ namespace MB
       {
       case BlackListMatch::Always:
         return true;
-      case BlackListMatch::NotPostfixClassName:
+      case BlackListMatch::NotPostfixEntityName:
         return ! Fsl::StringUtil::EndsWith(currentEntityInfo.ClassName, entry.Name);
+      case BlackListMatch::NotPostfixEntityNameEx:
+        return !Fsl::StringUtil::EndsWith(currentEntityInfo.ClassName, entry.Value);
       default:
         throw Fsl::NotSupportedException("BlackListMatch type not supported");
       }

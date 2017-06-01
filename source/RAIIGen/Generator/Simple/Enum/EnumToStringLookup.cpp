@@ -41,6 +41,13 @@ namespace MB
 
   namespace
   {
+    std::string GetRelativeIncludeGuard(const IO::Path& rootPath, const IO::Path& dstFilename)
+    {
+      assert(StringUtil::StartsWith(dstFilename.ToUTF8String(), rootPath.ToUTF8String()));
+
+      return std::string();
+    }
+
     EnumToStringSnippets LoadSnippets(const IO::Path& templateRoot)
     {
       EnumToStringSnippets snippets;
@@ -53,62 +60,119 @@ namespace MB
       snippets.CaseEntry = IO::File::ReadAllText(pathCaseEntry);
       return snippets;
     }
-  }
 
 
-
-  EnumToStringLookup::EnumToStringLookup(const Capture& capture, const SimpleGeneratorConfig& config, const IO::Path& templateRoot, const IO::Path& dstFileName)
-  {
-    EnumToStringSnippets snippets = LoadSnippets(templateRoot);
-
-    std::string content;
-
-    auto enumDict = capture.GetEnumDict();
-    bool isFirst = true;
-
-    const std::string endOfLine3 = END_OF_LINE + END_OF_LINE + END_OF_LINE;
-
-    for (const auto& entry : enumDict)
+    void ProcessOneFile(const EnumToStringSnippets& snippets, const Capture& capture, const SimpleGeneratorConfig& config, const IO::Path& dstRootPath, const IO::Path& dstFileName, const bool useSeperateFiles)
     {
-      std::size_t caseCount = 0;
-      ConfigUtil::CurrentEntityInfo currentEntityInfo("**NO_CLASS**");
-      if (!ConfigUtil::HasPostfix(entry.first, config.EnumNamePostfixBlacklist, currentEntityInfo))
-      {
-        std::string switchCaseContent;
-        for (const auto& enumMember : entry.second.Members)
-        {
-          if (!ConfigUtil::HasPostfix(enumMember.Name, config.EnumMemberPostfixBlacklist, currentEntityInfo))
-          {
-            std::string caseContent = snippets.CaseEntry;
-            StringUtil::Replace(caseContent, "##ENUM_MEMBER_NAME##", enumMember.Name);
+      std::string content;
 
-            switchCaseContent += END_OF_LINE + caseContent;
-            ++caseCount;
+      auto enumDict = capture.GetEnumDict();
+      bool isFirst = true;
+
+      const std::string endOfLine3 = END_OF_LINE + END_OF_LINE + END_OF_LINE;
+
+      for (const auto& entry : enumDict)
+      {
+        std::size_t caseCount = 0;
+        ConfigUtil::CurrentEntityInfo currentEnumEntityInfo(entry.first);
+        if (!ConfigUtil::HasPostfix(entry.first, config.EnumNamePostfixBlacklist, currentEnumEntityInfo))
+        {
+          std::string switchCaseContent;
+          for (const auto& enumMember : entry.second.Members)
+          {
+            if (!ConfigUtil::HasPostfix(enumMember.Name, config.EnumMemberPostfixBlacklist, currentEnumEntityInfo))
+            {
+              std::string caseContent = snippets.CaseEntry;
+              StringUtil::Replace(caseContent, "##ENUM_MEMBER_NAME##", enumMember.Name);
+
+              switchCaseContent += END_OF_LINE + caseContent;
+              ++caseCount;
+            }
+          }
+          if (caseCount > 0)
+          {
+            std::string methodContent = snippets.Method;
+            StringUtil::Replace(methodContent, "##C_TYPE_NAME##", entry.second.Name);
+            StringUtil::Replace(methodContent, "##CASE_ENTRIES##", switchCaseContent);
+            content += (!isFirst ? endOfLine3 : END_OF_LINE) + methodContent;
+            isFirst = false;
           }
         }
-        if (caseCount > 0)
+      }
+
+
+      std::string headerContent = snippets.Header;
+      StringUtil::Replace(headerContent, "##METHODS##", content);
+      StringUtil::Replace(headerContent, "##NAMESPACE_NAME##", config.NamespaceName);
+      StringUtil::Replace(headerContent, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
+      StringUtil::Replace(headerContent, "##AG_TOOL_STATEMENT##", config.ToolStatement);
+      StringUtil::Replace(headerContent, "##RELATIVE_INCLUDE_GUARD##", GetRelativeIncludeGuard(dstRootPath, dstFileName));
+
+
+      auto dirName = IO::Path::GetDirectoryName(dstFileName);
+      IO::Directory::CreateDirectory(dirName);
+
+      IOUtil::WriteAllTextIfChanged(dstFileName, headerContent);
+    }
+
+
+    void ProcessMultipleFile(const EnumToStringSnippets& snippets, const Capture& capture, const SimpleGeneratorConfig& config, const IO::Path& dstRootPath, const IO::Path& dstFilePath, const bool useSeperateFiles)
+    {
+      IO::Directory::CreateDirectory(dstFilePath);
+
+      auto enumDict = capture.GetEnumDict();
+
+      for (const auto& entry : enumDict)
+      {
+        std::size_t caseCount = 0;
+        ConfigUtil::CurrentEntityInfo currentEnumEntityInfo(entry.first);
+        if (!ConfigUtil::HasPostfix(entry.first, config.EnumNamePostfixBlacklist, currentEnumEntityInfo))
         {
-          std::string methodContent = snippets.Method;
-          StringUtil::Replace(methodContent, "##C_TYPE_NAME##", entry.second.Name);
-          StringUtil::Replace(methodContent, "##CASE_ENTRIES##", switchCaseContent);
-          content += (!isFirst ? endOfLine3 : END_OF_LINE) + methodContent;
-          isFirst = false;
+          std::string switchCaseContent;
+          for (const auto& enumMember : entry.second.Members)
+          {
+            if (!ConfigUtil::HasPostfix(enumMember.Name, config.EnumMemberPostfixBlacklist, currentEnumEntityInfo))
+            {
+              std::string caseContent = snippets.CaseEntry;
+              StringUtil::Replace(caseContent, "##ENUM_MEMBER_NAME##", enumMember.Name);
+
+              switchCaseContent += END_OF_LINE + caseContent;
+              ++caseCount;
+            }
+          }
+          if (caseCount > 0)
+          {
+            std::string methodContent = END_OF_LINE + snippets.Method;
+            StringUtil::Replace(methodContent, "##C_TYPE_NAME##", entry.second.Name);
+            StringUtil::Replace(methodContent, "##CASE_ENTRIES##", switchCaseContent);
+
+            std::string headerContent = snippets.Header;
+            StringUtil::Replace(headerContent, "##METHODS##", methodContent);
+            StringUtil::Replace(headerContent, "##NAMESPACE_NAME##", config.NamespaceName);
+            StringUtil::Replace(headerContent, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
+            StringUtil::Replace(headerContent, "##AG_TOOL_STATEMENT##", config.ToolStatement);
+
+            auto dstFileName = IO::Path::Combine(dstFilePath, entry.first + ".hpp");
+            StringUtil::Replace(headerContent, "##RELATIVE_INCLUDE_GUARD##", GetRelativeIncludeGuard(dstRootPath, dstFileName));
+
+            IOUtil::WriteAllTextIfChanged(dstFileName, headerContent);
+          }
         }
       }
     }
 
-
-    std::string headerContent = snippets.Header;
-    StringUtil::Replace(headerContent, "##METHODS##", content);
-    StringUtil::Replace(headerContent, "##NAMESPACE_NAME##", config.NamespaceName);
-    StringUtil::Replace(headerContent, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
-    StringUtil::Replace(headerContent, "##AG_TOOL_STATEMENT##", config.ToolStatement);
+  }
 
 
-    auto dirName = IO::Path::GetDirectoryName(dstFileName);
-    IO::Directory::CreateDirectory(dirName);
 
-    IOUtil::WriteAllTextIfChanged(dstFileName, headerContent);
+  void EnumToStringLookup::Process(const Capture& capture, const SimpleGeneratorConfig& config, const IO::Path& templateRoot, const IO::Path& dstRootPath, const IO::Path& dstFileName, const bool useSeperateFiles)
+  {
+    EnumToStringSnippets snippets = LoadSnippets(templateRoot);
+
+    if (!useSeperateFiles)
+      ProcessOneFile(snippets, capture, config, dstRootPath, dstFileName, useSeperateFiles);
+    else
+      ProcessMultipleFile(snippets, capture, config, dstRootPath, dstFileName, useSeperateFiles);
   }
 
 }
