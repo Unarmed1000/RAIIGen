@@ -19,6 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\fmt\format.h" />
+    <ClInclude Include="include\fmt\ostream.h" />
+    <ClInclude Include="include\fmt\posix.h" />
+    <ClInclude Include="include\fmt\time.h" />
     <ClInclude Include="include\FslBase\BasicTypes.hpp" />
     <ClInclude Include="include\FslBase\Bits\BitsUtil.hpp" />
     <ClInclude Include="include\FslBase\Bits\ByteArrayUtil.hpp" />
@@ -143,6 +147,7 @@
     <ClInclude Include="include\RAIIGen\Generator\Simple\UnrolledStruct.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\UnrolledStructMember.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\UnrollMode.hpp" />
+    <ClInclude Include="include\RAIIGen\Generator\Simple\VersionGuardConfig.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\SourceTemplateType.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\VulkanGenerator.hpp" />
     <ClInclude Include="include\RAIIGen\IOUtil.hpp" />
@@ -160,6 +165,8 @@
     <ClInclude Include="source\FslBase\System\Platform\Platform.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\fmt\format.cc" />
+    <ClCompile Include="source\fmt\ostream.cc" />
     <ClCompile Include="source\FslBase\Bits\ByteArrayUtil.cpp" />
     <ClCompile Include="source\FslBase\Compression\ValueCompression.cpp" />
     <ClCompile Include="source\FslBase\IO\Directory.cpp" />

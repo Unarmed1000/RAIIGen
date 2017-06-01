@@ -1,5 +1,5 @@
 #ifndef RAPIDVULKAN_##RELATIVE_INCLUDE_GUARD##
-#define RAPIDVULKAN_##RELATIVE_INCLUDE_GUARD##
+#define RAPIDVULKAN_##RELATIVE_INCLUDE_GUARD####VERSION_GUARD_BEGIN##
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -34,5 +34,5 @@ namespace RapidVulkan
   {##METHODS##
   }
 }
-
+##VERSION_GUARD_END##
 #endif

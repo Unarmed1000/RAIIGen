@@ -479,10 +479,10 @@ namespace MB
 
     void AddFunctionVersionGuard(ClassMethod& rClassMethod, const SimpleGeneratorConfig& config)
     {
-      if (rClassMethod.SourceFunction.Version == VersionRecord() && config.IsVulkan)
+      if (rClassMethod.SourceFunction.Version == VersionRecord() && config.VersionGuard.IsValid)
         return;
 
-      std::string strGuardFunction = std::string("VK_HEADER_VERSION >= ") + std::to_string(rClassMethod.SourceFunction.Version.Build);
+      std::string strGuardFunction = config.VersionGuard.ToGuardString(rClassMethod.SourceFunction.Version);
       rClassMethod.GuardFunctions.push_back(strGuardFunction);
     }
 

@@ -35,6 +35,7 @@
 #include <algorithm>
 #include <algorithm>
 #include <iostream>
+#include <fmt/format.h>
 
 namespace MB
 {
@@ -74,8 +75,48 @@ namespace MB
       return snippets;
     }
 
+    std::string GenerateEnumMember(const VersionGuardConfig& versionGuard, const std::string& snippet, const EnumMemberRecord& enumMember)
+    {
+      //guardConfig.ToGuardString(version);
+      std::string content(snippet);
+      StringUtil::Replace(content, "##ENUM_MEMBER_NAME##", enumMember.Name);
 
-    void ProcessOneFile(const EnumToStringSnippets& snippets, const Capture& capture, const SimpleGeneratorConfig& config, const IO::Path& dstRootPath, const IO::Path& dstFileName, const bool useSeperateFiles)
+      if (versionGuard.IsValid && enumMember.Version != VersionRecord())
+      {
+        content = fmt::format("#if {0}\n{1}\n#endif", versionGuard.ToGuardString(enumMember.Version), content);
+      }
+      return content;
+    }
+
+
+    std::string GenerateHeaderFile(const SimpleGeneratorConfig& config, const std::string& snippetHeader, const IO::Path& dstRootPath, 
+                                   const IO::Path& dstFileName, const std::string& content, const VersionRecord& version = VersionRecord())
+    {
+      std::string strVersinGuardBegin;
+      std::string strVersinGuardEnd;
+
+
+      if (config.VersionGuard.IsValid && version != VersionRecord())
+      {
+        strVersinGuardBegin = fmt::format("\n#if {0}", config.VersionGuard.ToGuardString(version));
+        strVersinGuardEnd = "\n#endif";
+      }
+
+      std::string headerContent = snippetHeader;
+      StringUtil::Replace(headerContent, "##METHODS##", content);
+      StringUtil::Replace(headerContent, "##NAMESPACE_NAME##", config.NamespaceName);
+      StringUtil::Replace(headerContent, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
+      StringUtil::Replace(headerContent, "##AG_TOOL_STATEMENT##", config.ToolStatement);
+      StringUtil::Replace(headerContent, "##RELATIVE_INCLUDE_GUARD##", GetRelativeIncludeGuard(dstRootPath, dstFileName));
+
+      StringUtil::Replace(headerContent, "##VERSION_GUARD_BEGIN##", strVersinGuardBegin);
+      StringUtil::Replace(headerContent, "##VERSION_GUARD_END##", strVersinGuardEnd);
+      return headerContent;
+    }
+
+
+    void ProcessOneFile(const EnumToStringSnippets& snippets, const Capture& capture, const SimpleGeneratorConfig& config, 
+                        const IO::Path& dstRootPath, const IO::Path& dstFileName, const bool useSeperateFiles)
     {
       std::string content;
 
@@ -83,44 +124,54 @@ namespace MB
       bool isFirst = true;
 
       const std::string endOfLine3 = END_OF_LINE + END_OF_LINE + END_OF_LINE;
+     
+      std::vector<std::string> sortedNames(enumDict.size());
+      {
+        std::size_t index = 0;
+        for (const auto& entry : enumDict)
+        {
+          sortedNames[index] = entry.first;
+          ++index;
+        }
+        std::sort(sortedNames.begin(), sortedNames.end());
+      }
 
-      for (const auto& entry : enumDict)
+
+      for (const auto& entryName : sortedNames)
       {
         std::size_t caseCount = 0;
-        ConfigUtil::CurrentEntityInfo currentEnumEntityInfo(entry.first);
-        if (!ConfigUtil::HasMatchingEntry(entry.first, config.EnumNameBlacklist, currentEnumEntityInfo))
+        ConfigUtil::CurrentEntityInfo currentEnumEntityInfo(entryName);
+        if (!ConfigUtil::HasMatchingEntry(entryName, config.EnumNameBlacklist, currentEnumEntityInfo))
         {
+          const auto itrFind = enumDict.find(entryName);
           std::string switchCaseContent;
-          for (const auto& enumMember : entry.second.Members)
+          for (const auto& enumMember : itrFind->second.Members)
           {
             if (!ConfigUtil::HasMatchingEntry(enumMember.Name, config.EnumMemberBlacklist, currentEnumEntityInfo))
             {
-              std::string caseContent = snippets.CaseEntry;
-              StringUtil::Replace(caseContent, "##ENUM_MEMBER_NAME##", enumMember.Name);
-
-              switchCaseContent += END_OF_LINE + caseContent;
+              switchCaseContent += END_OF_LINE + GenerateEnumMember(config.VersionGuard, snippets.CaseEntry, enumMember);
               ++caseCount;
             }
           }
           if (caseCount > 0)
           {
             std::string methodContent = snippets.Method;
-            StringUtil::Replace(methodContent, "##C_TYPE_NAME##", entry.second.Name);
+            if (config.VersionGuard.IsValid && itrFind->second.Version != VersionRecord())
+            {
+              methodContent = fmt::format("#if {0}\n{1}\n#endif", config.VersionGuard.ToGuardString(itrFind->second.Version), methodContent);
+            }
+
+            StringUtil::Replace(methodContent, "##C_TYPE_NAME##", itrFind->second.Name);
             StringUtil::Replace(methodContent, "##CASE_ENTRIES##", switchCaseContent);
             content += (!isFirst ? endOfLine3 : END_OF_LINE) + methodContent;
+
+ 
             isFirst = false;
           }
         }
       }
 
-
-      std::string headerContent = snippets.Header;
-      StringUtil::Replace(headerContent, "##METHODS##", content);
-      StringUtil::Replace(headerContent, "##NAMESPACE_NAME##", config.NamespaceName);
-      StringUtil::Replace(headerContent, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
-      StringUtil::Replace(headerContent, "##AG_TOOL_STATEMENT##", config.ToolStatement);
-      StringUtil::Replace(headerContent, "##RELATIVE_INCLUDE_GUARD##", GetRelativeIncludeGuard(dstRootPath, dstFileName));
-
+      std::string headerContent = GenerateHeaderFile(config, snippets.Header, dstRootPath, dstFileName, content);
 
       auto dirName = IO::Path::GetDirectoryName(dstFileName);
       IO::Directory::CreateDirectory(dirName);
@@ -146,10 +197,7 @@ namespace MB
           {
             if (!ConfigUtil::HasMatchingEntry(enumMember.Name, config.EnumMemberBlacklist, currentEnumEntityInfo))
             {
-              std::string caseContent = snippets.CaseEntry;
-              StringUtil::Replace(caseContent, "##ENUM_MEMBER_NAME##", enumMember.Name);
-
-              switchCaseContent += END_OF_LINE + caseContent;
+              switchCaseContent += END_OF_LINE + GenerateEnumMember(config.VersionGuard, snippets.CaseEntry, enumMember);
               ++caseCount;
             }
           }
@@ -159,14 +207,8 @@ namespace MB
             StringUtil::Replace(methodContent, "##C_TYPE_NAME##", entry.second.Name);
             StringUtil::Replace(methodContent, "##CASE_ENTRIES##", switchCaseContent);
 
-            std::string headerContent = snippets.Header;
-            StringUtil::Replace(headerContent, "##METHODS##", methodContent);
-            StringUtil::Replace(headerContent, "##NAMESPACE_NAME##", config.NamespaceName);
-            StringUtil::Replace(headerContent, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
-            StringUtil::Replace(headerContent, "##AG_TOOL_STATEMENT##", config.ToolStatement);
-
             auto dstFileName = IO::Path::Combine(dstFilePath, entry.first + ".hpp");
-            StringUtil::Replace(headerContent, "##RELATIVE_INCLUDE_GUARD##", GetRelativeIncludeGuard(dstRootPath, dstFileName));
+            std::string headerContent = GenerateHeaderFile(config, snippets.Header, dstRootPath, dstFileName, methodContent, entry.second.Version);
 
             IOUtil::WriteAllTextIfChanged(dstFileName, headerContent);
           }

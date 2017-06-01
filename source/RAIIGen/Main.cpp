@@ -71,7 +71,7 @@ namespace MB
     };
 
 
-    std::deque<std::shared_ptr<CapturedData> > RunCaptureHistory(const BasicConfig& basicConfig, const IO::Path& filename, const IO::Path& historyPath, const MB::CaptureConfig& captureConfig)
+    std::deque<std::shared_ptr<CapturedData> > RunCaptureHistory(const BasicConfig& basicConfig, const IO::Path& relativeFilename, const IO::Path& historyPath, const MB::CaptureConfig& captureConfig)
     {
       using namespace MB;
 
@@ -95,13 +95,13 @@ namespace MB
         {
           std::cout << "- '" << dirName.ToUTF8String() << "'\n";
 
-          const auto srcFile = IO::Path::Combine(*entry, filename);
+          const auto srcFile = IO::Path::Combine(*entry, relativeFilename);
 
           VersionRecord version(dirName.ToUTF8String());
 
           // Create the history
           const std::vector<IO::Path> includePaths = { *entry };
-          history.push_back(std::make_shared<CapturedData>(basicConfig, filename, includePaths, captureConfig, customLog, version));
+          history.push_back(std::make_shared<CapturedData>(basicConfig, srcFile, includePaths, captureConfig, customLog, version));
         }
       }
       
@@ -247,7 +247,7 @@ namespace MB
 
 
     template<typename TGenerator>
-    void Run(const BasicConfig& basicConfig, const IO::Path& filename, const IO::Path& templatePath, const IO::Path& apiHistoryPath, const IO::Path& dstPath, const std::vector<IO::Path>& includePaths, const bool useAPIHistory)
+    void Run(const BasicConfig& basicConfig, const IO::Path& filename, const IO::Path& relativeFilename, const IO::Path& templatePath, const IO::Path& apiHistoryPath, const IO::Path& dstPath, const std::vector<IO::Path>& includePaths, const bool useAPIHistory)
     {
       using namespace MB;
 
@@ -263,7 +263,7 @@ namespace MB
 
       if (useAPIHistory)
       {
-        auto history = RunCaptureHistory(basicConfig, filename, apiHistoryPath, captureConfig);
+        auto history = RunCaptureHistory(basicConfig, relativeFilename, apiHistoryPath, captureConfig);
         if (history.size() > 0)
         {
           std::cout << "Version tagging elements using history\n";
@@ -301,7 +301,7 @@ namespace MB
 
       BasicConfig basicConfig(programInfo, toolStatement, namespaceName, baseApiName, apiVersion);
 
-      Run<TGenerator>(basicConfig, srcFile, templatePath, apiHistoryPath, dstPath, includePaths, useAPIHistory);
+      Run<TGenerator>(basicConfig, srcFile, filename, templatePath, apiHistoryPath, dstPath, includePaths, useAPIHistory);
     } 
 
 

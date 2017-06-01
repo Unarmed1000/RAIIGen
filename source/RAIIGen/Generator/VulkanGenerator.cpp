@@ -110,7 +110,7 @@ namespace MB
 
     const std::vector<FunctionGuard> g_functionGuards
     {
-      // FunctionGuard("vkGetSwapchainStatusKHR", "VK_HEADER_VERSION >= 50")
+      // FunctionGuard("vkGetSwapchainStatusKHR", "VK_HEADER_VERSION >= 49")
     };
 
 
@@ -201,14 +201,14 @@ namespace MB
   }
 
 
-
   VulkanGenerator::VulkanGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
     : SimpleGenerator(capture, 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
                                             g_functionGuards, g_functionNameBlacklist, 
                                             g_enumNameBlacklist, g_enumMemberBlacklist,
-                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, true, true, true), 
+                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, true, true, 
+                                            VersionGuardConfig("VK_HEADER_VERSION >= {2}"),  true), 
                       templateRoot, dstPath)
   {
   }

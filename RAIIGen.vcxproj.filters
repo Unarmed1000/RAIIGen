@@ -432,6 +432,21 @@
     <ClInclude Include="include\RAIIGen\VersionRecord.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\fmt\format.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\ostream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\posix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RAIIGen\Generator\Simple\VersionGuardConfig.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\RAIIGen\Capture.cpp">
@@ -624,6 +639,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\RAIIGen\Generator\Simple\Enum\EnumToStringLookup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\fmt\format.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\fmt\ostream.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

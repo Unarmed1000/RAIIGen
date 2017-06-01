@@ -28,6 +28,7 @@
 #include <RAIIGen/Generator/FunctionGuard.hpp>
 #include <RAIIGen/Generator/RAIIClassCustomization.hpp>
 #include <RAIIGen/Generator/RAIIClassMethodOverrides.hpp>
+#include <RAIIGen/Generator/Simple/VersionGuardConfig.hpp>
 #include <unordered_map>
 
 namespace MB
@@ -48,12 +49,14 @@ namespace MB
     const std::string ErrorCodeTypeName;
     const bool UnrollCreateStructs;
     const bool OwnershipTransferUseClaimMode;
+    const VersionGuardConfig VersionGuard;
     const bool IsVulkan;
 
     SimpleGeneratorConfig()
       : UnrollCreateStructs(false)
       , OwnershipTransferUseClaimMode(false)
       , IsVulkan(false)
+      , VersionGuard()
     {
     }
 
@@ -69,7 +72,9 @@ namespace MB
                           const std::vector<BlackListEntry>& enumMemberBlacklist,
                           const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, 
                           const bool unrollCreateStructs,
-                          const bool ownershipTransferUseClaimMode, const bool isVulkan=false)
+                          const bool ownershipTransferUseClaimMode, 
+                          const VersionGuardConfig versionGuard = VersionGuardConfig(), 
+                          const bool isVulkan=false)
       : GeneratorConfig(config)
       , RAIIClassCustomizations(raiiClassCustomizations)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)
@@ -85,6 +90,7 @@ namespace MB
       , ErrorCodeTypeName(errorCodeTypeName)
       , UnrollCreateStructs(unrollCreateStructs)
       , OwnershipTransferUseClaimMode(ownershipTransferUseClaimMode)
+      , VersionGuard(versionGuard)
       , IsVulkan(isVulkan)
     {
     }
@@ -100,7 +106,9 @@ namespace MB
                           const std::vector<BlackListEntry>& enumNameBlacklist,
                           const std::vector<BlackListEntry>& enumMemberBlacklist,
                           const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, 
-                          const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode, const bool isVulkan = false)
+                          const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode, 
+                          const VersionGuardConfig versionGuard = VersionGuardConfig(), 
+                          const bool isVulkan = false)
       : GeneratorConfig(basicConfig, functionPairs, manualFunctionMatches)
       , RAIIClassCustomizations(raiiClassCustomizations)
       , ClassFunctionAbsorbtion(classFunctionAbsorbtion)
@@ -116,6 +124,7 @@ namespace MB
       , ErrorCodeTypeName(errorCodeTypeName)
       , UnrollCreateStructs(unrollCreateStructs)
       , OwnershipTransferUseClaimMode(ownershipTransferUseClaimMode)
+      , VersionGuard(versionGuard)
       , IsVulkan(isVulkan)
     {
     }
