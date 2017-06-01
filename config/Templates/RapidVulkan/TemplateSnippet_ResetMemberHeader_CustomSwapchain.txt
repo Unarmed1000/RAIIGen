@@ -18,7 +18,7 @@
 
       // Since we want to ensure that the resource is left untouched on error we use a local variable as a intermediary
       ##RESOURCE_TYPE## ##RESOURCE_INTERMEDIARY_NAME##;
-      Util::Check(##CREATE_FUNCTION##(##CREATE_FUNCTION_ARGUMENTS##), "##CREATE_FUNCTION##", __FILE__, __LINE__);
+      CheckError(##CREATE_FUNCTION##(##CREATE_FUNCTION_ARGUMENTS##), "##CREATE_FUNCTION##", __FILE__, __LINE__);
       if (delayedReset)
         Reset();
 

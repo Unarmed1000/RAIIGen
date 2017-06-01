@@ -1,4 +1,4 @@
-    const char* ToString(const ##C_TYPE_NAME##& value)
+    inline const char* ToString(const ##C_TYPE_NAME##& value)
     {
       switch(value)
       {##CASE_ENTRIES##

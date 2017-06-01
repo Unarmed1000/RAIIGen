@@ -8,7 +8,7 @@
 
     void WaitForFence(const uint64_t timeout)
     {
-      Util::Check(vkWaitForFences(m_device, 1, &m_fence, VK_TRUE, timeout), "vkWaitForFences", __FILE__, __LINE__);
+      CheckError(vkWaitForFences(m_device, 1, &m_fence, VK_TRUE, timeout), "vkWaitForFences", __FILE__, __LINE__);
     }
 
 
@@ -20,5 +20,5 @@
 
     void ResetFence()
     {
-      Util::Check(vkResetFences(m_device, 1, &m_fence), "vkResetFences", __FILE__, __LINE__);
+      CheckError(vkResetFences(m_device, 1, &m_fence), "vkResetFences", __FILE__, __LINE__);
     }

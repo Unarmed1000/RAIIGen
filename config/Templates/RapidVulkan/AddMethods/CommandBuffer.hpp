@@ -25,7 +25,7 @@
       if (m_commandBuffers == VK_NULL_HANDLE)
         throw VulkanUsageErrorException("Can not call Begin on a NULL handle");
 
-      Util::Check(vkBeginCommandBuffer(m_commandBuffers, &commandBufferBeginInfo), "vkBeginCommandBuffer", __FILE__, __LINE__);
+      CheckError(vkBeginCommandBuffer(m_commandBuffers, &commandBufferBeginInfo), "vkBeginCommandBuffer", __FILE__, __LINE__);
     }
 
 
@@ -34,7 +34,7 @@
       if (m_commandBuffers == VK_NULL_HANDLE)
         throw VulkanUsageErrorException("Can not call End on a NULL handle");
 
-      Util::Check(vkEndCommandBuffer(m_commandBuffers), "vkEndCommandBuffer", __FILE__, __LINE__);
+      CheckError(vkEndCommandBuffer(m_commandBuffers), "vkEndCommandBuffer", __FILE__, __LINE__);
     }
 
 

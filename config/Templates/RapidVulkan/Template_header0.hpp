@@ -25,7 +25,7 @@
 // ##AG_TOOL_STATEMENT##
 
 #include <RapidVulkan/ClaimMode.hpp>
-#include <RapidVulkan/Util.hpp>##ADDITIONAL_INCLUDES##
+#include <RapidVulkan/CheckError.hpp>##ADDITIONAL_INCLUDES##
 #include <RapidVulkan/System/Macro.hpp>
 #include <vulkan/vulkan.h>
 #include <cassert>
