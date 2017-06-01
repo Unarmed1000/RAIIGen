@@ -33,6 +33,7 @@
 #include <FslBase/IO/Path.hpp>
 #include <FslBase/String/StringUtil.hpp>
 #include <algorithm>
+#include <algorithm>
 #include <iostream>
 
 namespace MB
@@ -43,9 +44,21 @@ namespace MB
   {
     std::string GetRelativeIncludeGuard(const IO::Path& rootPath, const IO::Path& dstFilename)
     {
-      assert(StringUtil::StartsWith(dstFilename.ToUTF8String(), rootPath.ToUTF8String()));
+      auto filename = dstFilename.ToUTF8String();
+      auto root = rootPath.ToUTF8String();
 
-      return std::string();
+      if (!StringUtil::EndsWith(root, "/"))
+        root += "/";
+
+      if (!StringUtil::StartsWith(filename, root))
+        throw UsageErrorException("The dstFile name was not based on the given root path");
+
+      if (root.size() > 0)
+        filename.erase(0, root.size());
+
+      StringUtil::Replace(filename, "/", "_");
+      StringUtil::Replace(filename, ".", "_");
+      return CaseUtil::UpperCase(filename);
     }
 
     EnumToStringSnippets LoadSnippets(const IO::Path& templateRoot)
@@ -75,12 +88,12 @@ namespace MB
       {
         std::size_t caseCount = 0;
         ConfigUtil::CurrentEntityInfo currentEnumEntityInfo(entry.first);
-        if (!ConfigUtil::HasPostfix(entry.first, config.EnumNamePostfixBlacklist, currentEnumEntityInfo))
+        if (!ConfigUtil::HasMatchingEntry(entry.first, config.EnumNameBlacklist, currentEnumEntityInfo))
         {
           std::string switchCaseContent;
           for (const auto& enumMember : entry.second.Members)
           {
-            if (!ConfigUtil::HasPostfix(enumMember.Name, config.EnumMemberPostfixBlacklist, currentEnumEntityInfo))
+            if (!ConfigUtil::HasMatchingEntry(enumMember.Name, config.EnumMemberBlacklist, currentEnumEntityInfo))
             {
               std::string caseContent = snippets.CaseEntry;
               StringUtil::Replace(caseContent, "##ENUM_MEMBER_NAME##", enumMember.Name);
@@ -126,12 +139,12 @@ namespace MB
       {
         std::size_t caseCount = 0;
         ConfigUtil::CurrentEntityInfo currentEnumEntityInfo(entry.first);
-        if (!ConfigUtil::HasPostfix(entry.first, config.EnumNamePostfixBlacklist, currentEnumEntityInfo))
+        if (!ConfigUtil::HasMatchingEntry(entry.first, config.EnumNameBlacklist, currentEnumEntityInfo))
         {
           std::string switchCaseContent;
           for (const auto& enumMember : entry.second.Members)
           {
-            if (!ConfigUtil::HasPostfix(enumMember.Name, config.EnumMemberPostfixBlacklist, currentEnumEntityInfo))
+            if (!ConfigUtil::HasMatchingEntry(enumMember.Name, config.EnumMemberBlacklist, currentEnumEntityInfo))
             {
               std::string caseContent = snippets.CaseEntry;
               StringUtil::Replace(caseContent, "##ENUM_MEMBER_NAME##", enumMember.Name);

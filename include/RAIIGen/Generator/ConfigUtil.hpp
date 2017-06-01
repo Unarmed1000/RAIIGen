@@ -41,38 +41,31 @@ namespace MB
     };
 
 
-    inline bool CheckMatchRequirement(const BlackListEntry& entry, const CurrentEntityInfo& currentEntityInfo)
+    inline bool CheckMatchRequirement(const std::string& str, const BlackListEntry& entry, const CurrentEntityInfo& currentEntityInfo)
     {
       switch (entry.MatchRequirement)
       {
-      case BlackListMatch::Always:
-        return true;
-      case BlackListMatch::NotPostfixEntityName:
-        return ! Fsl::StringUtil::EndsWith(currentEntityInfo.ClassName, entry.Name);
-      case BlackListMatch::NotPostfixEntityNameEx:
-        return !Fsl::StringUtil::EndsWith(currentEntityInfo.ClassName, entry.Value);
+      case BlackListMatch::Exact:
+        return str == entry.Name;
+      case BlackListMatch::Contains:
+        return (str.find(entry.Name) != std::string::npos);
+      case BlackListMatch::Postfix:
+        return Fsl::StringUtil::EndsWith(str, entry.Name);
+      case BlackListMatch::PostfixNotEntityName:
+        return Fsl::StringUtil::EndsWith(str, entry.Name) && ! Fsl::StringUtil::EndsWith(currentEntityInfo.ClassName, entry.Name);
+      case BlackListMatch::PostfixNotEntityNameEx:
+        return Fsl::StringUtil::EndsWith(str, entry.Name) && !Fsl::StringUtil::EndsWith(currentEntityInfo.ClassName, entry.Value);
       default:
         throw Fsl::NotSupportedException("BlackListMatch type not supported");
       }
     }
 
 
-    inline bool HasPostfix(const std::string& str, const std::vector<BlackListEntry>& postfixes, const CurrentEntityInfo& currentEntityInfo)
+    inline bool HasMatchingEntry(const std::string& str, const std::vector<BlackListEntry>& postfixes, const CurrentEntityInfo& currentEntityInfo)
     {
       for (const auto& entry : postfixes)
       {
-        if (Fsl::StringUtil::EndsWith(str, entry.Name) && CheckMatchRequirement(entry, currentEntityInfo) )
-          return true;
-      }
-      return false;
-    }
-
-
-    inline bool HasEntry(const std::string& str, const std::vector<BlackListEntry>& postfixes, const CurrentEntityInfo& currentEntityInfo)
-    {
-      for (const auto& entry : postfixes)
-      {
-        if (str == entry.Name && CheckMatchRequirement(entry, currentEntityInfo))
+        if (CheckMatchRequirement(str, entry, currentEntityInfo) )
           return true;
       }
       return false;

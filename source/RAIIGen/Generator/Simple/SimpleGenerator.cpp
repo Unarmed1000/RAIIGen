@@ -497,7 +497,7 @@ namespace MB
             if (StringUtil::StartsWith(methodName, config.FunctionNamePrefix))
               methodName = methodName.substr(config.FunctionNamePrefix.size());
 
-            if (! HasPostfix(methodName, config.FunctionNamePostfixBlacklist, currentEntityInfo) && !HasEntry(methodName, config.FunctionNameBlacklist, currentEntityInfo))
+            if (!HasMatchingEntry(methodName, config.FunctionNameBlacklist, currentEntityInfo))
             {
 
               ClassMethod classMethod;
@@ -1650,7 +1650,7 @@ namespace MB
       CStructToCpp test(capture, config.ToolStatement, config.NamespaceName, templateRoot, dstFileNameStructTypes);
 
       auto dstFileNameDebugStrings = IO::Path::Combine(dstPath, "Debug/Strings");
-      EnumToStringLookup::Process(capture, config, templateRoot, dstFileNameDebugStrings, true);
+      EnumToStringLookup::Process(capture, config, templateRoot, dstPath, dstFileNameDebugStrings, true);
 
       //auto dstFileNameFormat = IO::Path::Combine(dstPath, "Vk/Formats.hpp");
       //FormatToCpp test2(capture, config.NamespaceName, templateRoot, dstFileNameFormat);

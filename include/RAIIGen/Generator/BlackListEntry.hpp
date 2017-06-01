@@ -28,9 +28,11 @@ namespace MB
 {
   enum BlackListMatch
   {
-    Always,
-    NotPostfixEntityName,
-    NotPostfixEntityNameEx,
+    Exact,
+    Contains,
+    Postfix,
+    PostfixNotEntityName,
+    PostfixNotEntityNameEx,
   };
 
   struct BlackListEntry
@@ -42,18 +44,18 @@ namespace MB
     BlackListEntry()
       : Name()
       , Value()
-      , MatchRequirement(BlackListMatch::Always)
+      , MatchRequirement(BlackListMatch::Postfix)
     {
     }
 
-    BlackListEntry(const std::string& name, const BlackListMatch matchRequirement = BlackListMatch::Always)
+    BlackListEntry(const std::string& name, const BlackListMatch matchRequirement)
       : Name(name)
       , Value()
       , MatchRequirement(matchRequirement)
     {
     }
 
-    BlackListEntry(const std::string& name, const std::string& value, const BlackListMatch matchRequirement = BlackListMatch::Always)
+    BlackListEntry(const std::string& name, const std::string& value, const BlackListMatch matchRequirement)
       : Name(name)
       , Value(value)
       , MatchRequirement(matchRequirement)

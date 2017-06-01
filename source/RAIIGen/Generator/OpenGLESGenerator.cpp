@@ -100,17 +100,12 @@ namespace MB
     };
 
 
-    const std::vector<BlackListEntry> g_functionNamePostfixBlacklist
+    const std::vector<BlackListEntry> g_enumNameBlacklist
     {
     };
 
 
-    const std::vector<BlackListEntry> g_enumNamePostfixBlacklist
-    {
-    };
-
-
-    const std::vector<BlackListEntry> g_enumMemberPostfixBlacklist
+    const std::vector<BlackListEntry> g_enumMemberBlacklist
     {
     };
 
@@ -160,8 +155,8 @@ namespace MB
     : SimpleGenerator(capture, 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter, 
-                                            g_functionGuards, g_functionNameBlacklist, g_functionNamePostfixBlacklist, 
-                                            g_enumNamePostfixBlacklist, g_enumMemberPostfixBlacklist,
+                                            g_functionGuards, g_functionNameBlacklist, 
+                                            g_enumNameBlacklist, g_enumMemberBlacklist,
                                             TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false),
                       templateRoot, dstPath)
   {

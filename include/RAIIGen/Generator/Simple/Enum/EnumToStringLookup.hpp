@@ -32,7 +32,7 @@ namespace MB
   class EnumToStringLookup
   {
   public:
-    static void Process(const Capture& capture, const SimpleGeneratorConfig& config, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstFileName, const bool useSeperateFiles);
+    static void Process(const Capture& capture, const SimpleGeneratorConfig& config, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstRootPath, const Fsl::IO::Path& dstFileName, const bool useSeperateFiles);
   };
 }
 #endif
