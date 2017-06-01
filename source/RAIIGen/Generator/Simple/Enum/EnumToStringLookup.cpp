@@ -66,6 +66,7 @@ namespace MB
     auto enumDict = capture.GetEnumDict();
     bool isFirst = true;
 
+    const std::string endOfLine3 = END_OF_LINE + END_OF_LINE + END_OF_LINE;
 
     for (const auto& entry : enumDict)
     {
@@ -81,7 +82,7 @@ namespace MB
             std::string caseContent = snippets.CaseEntry;
             StringUtil::Replace(caseContent, "##ENUM_MEMBER_NAME##", enumMember.Name);
 
-            switchCaseContent += std::string("\n") + caseContent;
+            switchCaseContent += END_OF_LINE + caseContent;
             ++caseCount;
           }
         }
@@ -90,7 +91,7 @@ namespace MB
           std::string methodContent = snippets.Method;
           StringUtil::Replace(methodContent, "##C_TYPE_NAME##", entry.second.Name);
           StringUtil::Replace(methodContent, "##CASE_ENTRIES##", switchCaseContent);
-          content += (!isFirst ? std::string("\n\n\n") : std::string("\n")) + methodContent;
+          content += (!isFirst ? endOfLine3 : END_OF_LINE) + methodContent;
           isFirst = false;
         }
       }
