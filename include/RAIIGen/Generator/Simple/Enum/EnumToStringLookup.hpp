@@ -1,5 +1,5 @@
-#ifndef MB_GENERATOR_SIMPLE_STRUCT_CSTRUCTTOCPP_HPP
-#define MB_GENERATOR_SIMPLE_STRUCT_CSTRUCTTOCPP_HPP
+#ifndef MB_GENERATOR_SIMPLE_ENUM_ENUMTOSTRINGLOOKUP_HPP
+#define MB_GENERATOR_SIMPLE_ENUM_ENUMTOSTRINGLOOKUP_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -23,15 +23,16 @@
 //***************************************************************************************************************************************************
 
 #include <FslBase/IO/Path.hpp>
+#include <RAIIGen/Generator/Simple/SimpleGeneratorConfig.hpp>
 
 namespace MB
 {
   class Capture;
 
-  class CStructToCpp
+  class EnumToStringLookup
   {
   public:
-    CStructToCpp(const Capture& capture, const std::string& toolStatement, const std::string& namespaceName, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstFileName);
+    EnumToStringLookup(const Capture& capture, const SimpleGeneratorConfig& config, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstFileName);
   };
 }
 #endif

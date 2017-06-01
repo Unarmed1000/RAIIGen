@@ -104,6 +104,8 @@
     <ClInclude Include="include\RAIIGen\FunctionParameterTypeOverride.hpp" />
     <ClInclude Include="include\RAIIGen\FunctionRecord.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\BlackListEntry.hpp" />
+    <ClInclude Include="include\RAIIGen\Generator\ConfigUtil.hpp" />
+    <ClInclude Include="include\RAIIGen\Generator\FunctionGuard.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\ClassMethod.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\ClassFunctionAbsorb.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\RAIIClassMethodOverrides.hpp" />
@@ -116,6 +118,8 @@
     <ClInclude Include="include\RAIIGen\Generator\RAIIClassCustomization.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\AnalysisResult.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\AnalyzeMode.hpp" />
+    <ClInclude Include="include\RAIIGen\Generator\Simple\Enum\EnumToStringLookup.hpp" />
+    <ClInclude Include="include\RAIIGen\Generator\Simple\Enum\EnumToStringSnippets.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\Format\FormatToCpp.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\FullAnalysis.hpp" />
     <ClInclude Include="include\RAIIGen\Generator\Simple\GenerateMethodCode.hpp" />
@@ -206,6 +210,7 @@
     <ClCompile Include="source\RAIIGen\Generator\OpenCLGenerator.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\OpenGLESGenerator.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\OpenVXGenerator.cpp" />
+    <ClCompile Include="source\RAIIGen\Generator\Simple\Enum\EnumToStringLookup.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\Simple\Format\FormatToCpp.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\Simple\SimpleGenerator.cpp" />
     <ClCompile Include="source\RAIIGen\Generator\Generator.cpp" />

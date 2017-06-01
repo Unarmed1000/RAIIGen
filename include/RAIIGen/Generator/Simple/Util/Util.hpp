@@ -1,9 +1,9 @@
-#ifndef MB_GENERATOR_SIMPLE_STRUCT_CSTRUCTTOCPP_HPP
-#define MB_GENERATOR_SIMPLE_STRUCT_CSTRUCTTOCPP_HPP
+#ifndef MB_GENERATOR_UTIL_UTIL_HPP
+#define MB_GENERATOR_UTIL_UTIL_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
-//* Copyright (c) 2016, Rene Thrane
+//* Copyright (c) 2017, Rene Thrane
 //* All rights reserved.
 //* 
 //* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,16 +22,48 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <FslBase/IO/Path.hpp>
+#include <RAIIGen/Generator/BlackListEntry.hpp>
+#include <deque>
 
 namespace MB
 {
-  class Capture;
-
-  class CStructToCpp
+  namespace Util
   {
-  public:
-    CStructToCpp(const Capture& capture, const std::string& toolStatement, const std::string& namespaceName, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstFileName);
-  };
+    bool CheckMatchRequirement(const BlackListEntry& entry, const CurrentEntityInfo& currentEntityInfo)
+    {
+      switch (entry.MatchRequirement)
+      {
+      case BlackListMatch::Always:
+        return true;
+      case BlackListMatch::NotPostfixClassName:
+        return ! StringUtil::EndsWith(currentEntityInfo.ClassName, entry.Name);
+      default:
+        throw NotSupportedException("BlackListMatch type not supported");
+      }
+    }
+
+
+    bool HasPostfix(const std::string& str, const std::vector<BlackListEntry>& postfixes, const CurrentEntityInfo& currentEntityInfo)
+    {
+      for (const auto& entry : postfixes)
+      {
+        if (StringUtil::EndsWith(str, entry.Name) && CheckMatchRequirement(entry, currentEntityInfo) )
+          return true;
+      }
+      return false;
+    }
+
+
+    bool HasEntry(const std::string& str, const std::vector<BlackListEntry>& postfixes, const CurrentEntityInfo& currentEntityInfo)
+    {
+      for (const auto& entry : postfixes)
+      {
+        if (str == entry.Name && CheckMatchRequirement(entry, currentEntityInfo))
+          return true;
+      }
+      return false;
+    }
+  }
 }
+
 #endif

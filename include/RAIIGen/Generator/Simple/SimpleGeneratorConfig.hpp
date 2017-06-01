@@ -42,6 +42,8 @@ namespace MB
     const std::vector<FunctionGuard> FunctionGuards;
     const std::vector<BlackListEntry> FunctionNameBlacklist;
     const std::vector<BlackListEntry> FunctionNamePostfixBlacklist;
+    const std::vector<BlackListEntry> EnumNamePostfixBlacklist;
+    const std::vector<BlackListEntry> EnumMemberPostfixBlacklist;
     const std::string TypeNamePrefix;
     const std::string FunctionNamePrefix;
     const std::string ErrorCodeTypeName;
@@ -65,7 +67,9 @@ namespace MB
       const std::vector<FunctionGuard>& functionGuards,
       const std::vector<BlackListEntry>& functionNameBlacklist,
       const std::vector<BlackListEntry>& functionNamePostfixBlacklist,
-      const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, const bool unrollCreateStructs, 
+      const std::vector<BlackListEntry>& enumNamePostfixBlacklist,
+      const std::vector<BlackListEntry>& enumMemberPostfixBlacklist,
+      const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, const bool unrollCreateStructs,
       const bool ownershipTransferUseClaimMode, const bool isVulkan=false)
       : GeneratorConfig(config)
       , RAIIClassCustomizations(raiiClassCustomizations)
@@ -76,6 +80,8 @@ namespace MB
       , FunctionGuards(functionGuards)
       , FunctionNameBlacklist(functionNameBlacklist)
       , FunctionNamePostfixBlacklist(functionNamePostfixBlacklist)
+      , EnumNamePostfixBlacklist(enumNamePostfixBlacklist)
+      , EnumMemberPostfixBlacklist(enumMemberPostfixBlacklist)
       , TypeNamePrefix(typeNamePrefix)
       , FunctionNamePrefix(functionNamePrefix)
       , ErrorCodeTypeName(errorCodeTypeName)
@@ -94,6 +100,8 @@ namespace MB
                           const std::vector<FunctionGuard>& functionGuards,
                           const std::vector<BlackListEntry>& functionNameBlacklist,
                           const std::vector<BlackListEntry>& functionNamePostfixBlacklist,
+                          const std::vector<BlackListEntry>& enumNamePostfixBlacklist,
+                          const std::vector<BlackListEntry>& enumMemberPostfixBlacklist,
                           const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName, 
                           const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode, const bool isVulkan = false)
       : GeneratorConfig(basicConfig, functionPairs, manualFunctionMatches)
@@ -105,6 +113,8 @@ namespace MB
       , FunctionGuards(functionGuards)
       , FunctionNameBlacklist(functionNameBlacklist)
       , FunctionNamePostfixBlacklist(functionNamePostfixBlacklist)
+      , EnumNamePostfixBlacklist(enumNamePostfixBlacklist)
+      , EnumMemberPostfixBlacklist(enumMemberPostfixBlacklist)
       , TypeNamePrefix(typeNamePrefix)
       , FunctionNamePrefix(functionNamePrefix)
       , ErrorCodeTypeName(errorCodeTypeName)

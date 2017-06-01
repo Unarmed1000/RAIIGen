@@ -141,7 +141,7 @@ namespace MB
       std::cout << "*** Running " << apiNameAndVersion << " generator ***\n";
 
 
-      const auto toolStatement = std::string("Auto-generated ") + baseApiName + " " + apiVersion + " C++11 RAII classes by " + programInfo.Name + " (https://github.com/Unarmed1000)";
+      const auto toolStatement = std::string("Auto-generated ") + baseApiName + " " + apiVersion + " C++11 RAII classes by " + programInfo.Name + " (https://github.com/Unarmed1000/RAIIGen)";
 
       auto namespaceName = apiNameAndVersion;
       StringUtil::Replace(namespaceName, ".", "_");

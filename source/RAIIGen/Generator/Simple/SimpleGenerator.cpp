@@ -30,6 +30,7 @@
 #include <RAIIGen/Generator/Simple/Snippets.hpp>
 #include <RAIIGen/Generator/Simple/FullAnalysis.hpp>
 #include <RAIIGen/Generator/Simple/ParamInStruct.hpp>
+#include <RAIIGen/Generator/ConfigUtil.hpp>
 #include <RAIIGen/CaseUtil.hpp>
 #include <RAIIGen/Capture.hpp>
 #include <RAIIGen/StringHelper.hpp>
@@ -47,6 +48,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <cassert>
+#include <RAIIGen/Generator/Simple/Enum/EnumToStringLookup.hpp>
 #include <RAIIGen/Generator/Simple/Format/FormatToCpp.hpp>
 #include <RAIIGen/Generator/Simple/Struct/CStructToCpp.hpp>
 
@@ -55,6 +57,7 @@ using namespace Fsl;
 
 namespace MB
 {
+  using namespace ConfigUtil;
 
   namespace
   {
@@ -461,53 +464,6 @@ namespace MB
         return val.Result.ResourceMemberVariable.Type == parameter.Type.Name; 
       };
       return std::find_if(managed.begin(), managed.end(), func) != managed.end();
-    }
-
-
-    struct CurrentEntityInfo
-    {
-      std::string ClassName;
-
-      CurrentEntityInfo(const std::string& className)
-        : ClassName(className)
-      {
-      }
-    };
-
-
-    bool CheckMatchRequirement(const BlackListEntry entry, const CurrentEntityInfo& currentEntityInfo)
-    {
-      switch (entry.MatchRequirement)
-      {
-      case BlackListMatch::Always:
-        return true;
-      case BlackListMatch::NotPostfixClassName:
-        return ! StringUtil::EndsWith(currentEntityInfo.ClassName, entry.Name);
-      default:
-        throw NotSupportedException("BlackListMatch type not supported");
-      }
-    }
-
-
-    bool HasPostfix(const std::string& str, const std::vector<BlackListEntry>& postfixes, const CurrentEntityInfo& currentEntityInfo)
-    {
-      for (const auto& entry : postfixes)
-      {
-        if (StringUtil::EndsWith(str, entry.Name) && CheckMatchRequirement(entry, currentEntityInfo) )
-          return true;
-      }
-      return false;
-    }
-
-
-    bool HasEntry(const std::string& str, const std::vector<BlackListEntry>& postfixes, const CurrentEntityInfo& currentEntityInfo)
-    {
-      for (const auto& entry : postfixes)
-      {
-        if (str == entry.Name && CheckMatchRequirement(entry, currentEntityInfo))
-          return true;
-      }
-      return false;
     }
 
 
@@ -1666,7 +1622,7 @@ namespace MB
 
     // Write 'Readme.txt'
     {
-      std::string content("Auto-generated ##API_NAME## ##API_VERSION## C++11 RAII classes by ##PROGRAM_NAME## ##PROGRAM_VERSION## (https://github.com/Unarmed1000)" + END_OF_LINE);
+      std::string content("Auto-generated ##API_NAME## ##API_VERSION## C++11 RAII classes by ##PROGRAM_NAME## ##PROGRAM_VERSION## (https://github.com/Unarmed1000/RAIIGen)" + END_OF_LINE);
 
       StringUtil::Replace(content, "##API_NAME##", config.APIName);
       StringUtil::Replace(content, "##API_VERSION##", config.APIVersion);
@@ -1691,7 +1647,10 @@ namespace MB
     if (config.IsVulkan)
     {
       auto dstFileNameStructTypes = IO::Path::Combine(dstPath, "Vk/Types.hpp");
-      CStructToCpp test(capture, config.NamespaceName, templateRoot, dstFileNameStructTypes);
+      CStructToCpp test(capture, config.ToolStatement, config.NamespaceName, templateRoot, dstFileNameStructTypes);
+
+      auto dstFileNameDebugStrings = IO::Path::Combine(dstPath, "DebugStrings.hpp");
+      EnumToStringLookup debugStrings(capture, config, templateRoot, dstFileNameDebugStrings);
 
       //auto dstFileNameFormat = IO::Path::Combine(dstPath, "Vk/Formats.hpp");
       //FormatToCpp test2(capture, config.NamespaceName, templateRoot, dstFileNameFormat);

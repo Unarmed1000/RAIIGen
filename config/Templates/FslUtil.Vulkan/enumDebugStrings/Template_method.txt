@@ -1,0 +1,8 @@
+    const char* ToString(const ##C_TYPE_NAME##& value)
+    {
+      switch(value)
+      {##CASE_ENTRIES##
+      default:
+        return "*Unknown*";
+      }
+    };

@@ -129,6 +129,36 @@ namespace MB
     };
 
 
+    const std::vector<BlackListEntry> g_enumNamePostfixBlacklist
+    {
+      BlackListEntry("AMD", BlackListMatch::Always),
+      BlackListEntry("EXT", BlackListMatch::Always),
+      BlackListEntry("GOOGLE", BlackListMatch::Always),
+      BlackListEntry("KHR", BlackListMatch::Always),
+      BlackListEntry("KHX", BlackListMatch::Always),
+      BlackListEntry("NV", BlackListMatch::Always),
+      BlackListEntry("NVX", BlackListMatch::Always),
+    };
+
+
+    const std::vector<BlackListEntry> g_enumMemberPostfixBlacklist
+    {
+      BlackListEntry("_BEGIN_RANGE", BlackListMatch::Always),
+      BlackListEntry("_END_RANGE", BlackListMatch::Always),
+      BlackListEntry("_RANGE_SIZE", BlackListMatch::Always),
+      BlackListEntry("_MAX_ENUM", BlackListMatch::Always),
+
+      BlackListEntry("_AMD", BlackListMatch::Always),
+      BlackListEntry("_EXT", BlackListMatch::Always),
+      BlackListEntry("_GOOGLE", BlackListMatch::Always),
+      BlackListEntry("_KHR", BlackListMatch::Always),
+      BlackListEntry("_KHX", BlackListMatch::Always),
+      BlackListEntry("_NV", BlackListMatch::Always),
+      BlackListEntry("_NVX", BlackListMatch::Always),
+    };
+
+
+
     //! Not necessary for the Vulkan header as it was properly constructed!
     const std::vector<FunctionParameterNameOverride> g_functionParameterNameOverride
     {
@@ -176,7 +206,8 @@ namespace MB
     : SimpleGenerator(capture, 
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
-                                            g_functionGuards, g_functionNameBlacklist, g_functionNamePostfixBlacklist,
+                                            g_functionGuards, g_functionNameBlacklist, g_functionNamePostfixBlacklist, 
+                                            g_enumNamePostfixBlacklist, g_enumMemberPostfixBlacklist,
                                             TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, true, true, true), 
                       templateRoot, dstPath)
   {

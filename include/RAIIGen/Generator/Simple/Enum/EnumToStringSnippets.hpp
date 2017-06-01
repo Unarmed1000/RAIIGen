@@ -1,5 +1,5 @@
-#ifndef MB_GENERATOR_SIMPLE_STRUCT_CSTRUCTTOCPP_HPP
-#define MB_GENERATOR_SIMPLE_STRUCT_CSTRUCTTOCPP_HPP
+#ifndef MB_GENERATOR_SIMPLE_ENUM_ENUMTOSTRINGSNIPPETS_HPP
+#define MB_GENERATOR_SIMPLE_ENUM_ENUMTOSTRINGSNIPPETS_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,16 +22,15 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <FslBase/IO/Path.hpp>
+#include <string>
 
 namespace MB
 {
-  class Capture;
-
-  class CStructToCpp
+  struct EnumToStringSnippets
   {
-  public:
-    CStructToCpp(const Capture& capture, const std::string& toolStatement, const std::string& namespaceName, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstFileName);
+    std::string Header;
+    std::string Method;
+    std::string CaseEntry;
   };
 }
 #endif

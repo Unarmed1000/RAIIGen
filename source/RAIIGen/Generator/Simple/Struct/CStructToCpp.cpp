@@ -290,7 +290,7 @@ namespace MB
 
 
 
-  CStructToCpp::CStructToCpp(const Capture& capture, const std::string& namespaceName, const IO::Path& templateRoot, const IO::Path& dstFileName)
+  CStructToCpp::CStructToCpp(const Capture& capture, const std::string& toolStatement, const std::string& namespaceName, const IO::Path& templateRoot, const IO::Path& dstFileName)
   {
     StructSnippets snippets = LoadSnippets(templateRoot);
 
@@ -354,6 +354,7 @@ namespace MB
     StringUtil::Replace(headerContent, "##ALL_TYPES##", typeCode);
     StringUtil::Replace(headerContent, "##NAMESPACE_NAME##", namespaceName);
     StringUtil::Replace(headerContent, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(namespaceName));
+    StringUtil::Replace(headerContent, "##AG_TOOL_STATEMENT##", toolStatement);
 
 
     //std::cout << headerContent << "\n";
