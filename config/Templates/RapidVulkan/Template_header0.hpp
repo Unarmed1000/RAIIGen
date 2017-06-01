@@ -1,5 +1,5 @@
 #ifndef RAPIDVULKAN_##CLASS_NAME!##_HPP
-#define RAPIDVULKAN_##CLASS_NAME!##_HPP
+#define RAPIDVULKAN_##CLASS_NAME!##_HPP##VERSION_GUARD_BEGIN##
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -129,5 +129,5 @@ namespace RapidVulkan
     }##ADDITIONAL_METHODS_HEADER##
   };
 }
-
+##VERSION_GUARD_END##
 #endif

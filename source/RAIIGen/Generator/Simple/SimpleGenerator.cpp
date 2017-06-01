@@ -1344,6 +1344,18 @@ namespace MB
 
       StringUtil::Replace(content, "##ADDITIONAL_METHODS_HEADER##", additionalMethodsHeader);
       StringUtil::Replace(content, "##ADDITIONAL_METHODS_SOURCE##", additionalMethodsSource);
+
+      const auto version = fullAnalysis.Pair.Create.Version;
+      std::string strVersinGuardBegin;
+      std::string strVersinGuardEnd;
+      if (config.VersionGuard.IsValid && version != VersionRecord())
+      {
+        strVersinGuardBegin = fmt::format("\n#if {0}", config.VersionGuard.ToGuardString(version));
+        strVersinGuardEnd = "\n#endif";
+      }
+      StringUtil::Replace(content, "##VERSION_GUARD_BEGIN##", strVersinGuardBegin);
+      StringUtil::Replace(content, "##VERSION_GUARD_END##", strVersinGuardEnd);
+
       return content;
     }
 
