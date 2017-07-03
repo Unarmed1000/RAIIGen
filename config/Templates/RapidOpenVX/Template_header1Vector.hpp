@@ -1,5 +1,5 @@
 #ifndef RAPIDOPENVX_##CLASS_NAME!##_HPP
-#define RAPIDOPENVX_##CLASS_NAME!##_HPP
+#define RAPIDOPENVX_##CLASS_NAME!##_HPP##VERSION_GUARD_BEGIN##
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -24,7 +24,8 @@
 
 // ##AG_TOOL_STATEMENT##
 
-#include <RapidOpenVX/Util.hpp>##ADDITIONAL_INCLUDES##
+#include <RapidOpenVX/ClaimMode.hpp>
+#include <RapidOpenVX/CheckError.hpp>##ADDITIONAL_INCLUDES##
 #include <VX/vx.h>
 #include <cassert>
 #include <utility>
@@ -118,11 +119,27 @@ namespace RapidOpenVX
       return ##RESOURCE_MEMBER_NAME##.size();
     }
 
+
+    //! @brief Get direct access to the vector content
+    const ##RESOURCE_TYPE##* Data() const
+    {
+      return ##RESOURCE_MEMBER_NAME##.data();
+    }
+
+
     //! @brief Get the associated resource handles
     const std::vector<##RESOURCE_TYPE##>& Get() const
     {
       return ##RESOURCE_MEMBER_NAME##;
     }
+
+
+      ##RESOURCE_TYPE## Get(const std::size_t arrayIndex) const
+      {
+        assert(arrayIndex < ##RESOURCE_MEMBER_NAME##.size());
+        return ##RESOURCE_MEMBER_NAME##[arrayIndex];
+      }
+
 
     //! @brief Access the resource at a given index
     ##RESOURCE_TYPE## operator[] (const std::size_t arrayIndex) const
@@ -131,12 +148,19 @@ namespace RapidOpenVX
       return ##RESOURCE_MEMBER_NAME##[arrayIndex];
     }
 
+    //! @brief get a pointer to the resource at the given index
+    const ##RESOURCE_TYPE##* GetPointer(const std::size_t arrayIndex) const
+    {
+      assert(arrayIndex < ##RESOURCE_MEMBER_NAME##.size());
+      return &##RESOURCE_MEMBER_NAME##[arrayIndex];
+    }
+
     //! @brief Check if this object contains a valid resource
     inline bool IsValid() const
     {
       return ##RESOURCE_MEMBER_NAME##.size() > 0;
-    }
+    }##ADDITIONAL_METHODS_HEADER##
   };
 }
-
+##VERSION_GUARD_END##
 #endif

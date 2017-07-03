@@ -1,5 +1,5 @@
 #ifndef RAPIDOPENVX_##CLASS_NAME!##_HPP
-#define RAPIDOPENVX_##CLASS_NAME!##_HPP
+#define RAPIDOPENVX_##CLASS_NAME!##_HPP##VERSION_GUARD_BEGIN##
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -24,7 +24,9 @@
 
 // ##AG_TOOL_STATEMENT##
 
-#include <RapidOpenVX/Util.hpp>##ADDITIONAL_INCLUDES##
+#include <RapidOpenVX/ClaimMode.hpp>
+#include <RapidOpenVX/CheckError.hpp>##ADDITIONAL_INCLUDES##
+#include <RapidOpenVX/System/Macro.hpp>
 #include <VX/vx.h>
 #include <cassert>
 
@@ -81,7 +83,7 @@ namespace RapidOpenVX
     }
 
     //! @brief returns the managed handle and releases the ownership.
-    ##RESOURCE_TYPE## Release()
+    ##RESOURCE_TYPE## Release() RAPIDOPENVX_FUNC_POSTFIX_WARN_UNUSED_RESULT
     {
       const auto resource = ##RESOURCE_MEMBER_NAME##;##RESET_INVALIDATE_MEMBERS##
       return resource;
@@ -124,8 +126,8 @@ namespace RapidOpenVX
     inline bool IsValid() const
     {
       return ##RESOURCE_MEMBER_NAME## != ##DEFAULT_VALUE##;
-    }
+    }##ADDITIONAL_METHODS_HEADER##
   };
 }
-
+##VERSION_GUARD_END##
 #endif

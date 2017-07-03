@@ -74,8 +74,17 @@ namespace MB
     std::deque<std::shared_ptr<CapturedData> > RunCaptureHistory(const BasicConfig& basicConfig, const IO::Path& relativeFilename, const IO::Path& historyPath, const MB::CaptureConfig& captureConfig)
     {
       using namespace MB;
+      const bool useMajorVersion = true;
+      std::string sourceAPIVersion = basicConfig.APIVersion;
+      if(useMajorVersion)
+      {
+        const auto dotIndex = StringUtil::IndexOf(sourceAPIVersion, '.');
+        if (dotIndex >= 0)
+          sourceAPIVersion = sourceAPIVersion.substr(0, dotIndex);
+      }
 
-      const std::string apiVersion = basicConfig.APIVersion + ".";
+
+      const std::string apiVersion = sourceAPIVersion + ".";
 
       std::deque<std::shared_ptr<CapturedData> > history;
 
@@ -326,8 +335,10 @@ namespace MB
       //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2.0");
       //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2.1");
       //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.0.1");
-      //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.1");
-      RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.0", true);
+      RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.1", true);
+      
+      // RapidVulkan
+      //RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.0", true);
       
       //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.1");
       //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.2");

@@ -1688,11 +1688,15 @@ namespace MB
       auto dstFileNameStructTypes = IO::Path::Combine(dstPath, "Vk/Types.hpp");
       CStructToCpp test(capture, config.ToolStatement, config.NamespaceName, templateRoot, dstFileNameStructTypes);
 
-      auto dstFileNameDebugStrings = IO::Path::Combine(dstPath, "Debug/Strings");
-      EnumToStringLookup::Process(capture, config, templateRoot, dstPath, dstFileNameDebugStrings, true);
 
       //auto dstFileNameFormat = IO::Path::Combine(dstPath, "Vk/Formats.hpp");
       //FormatToCpp test2(capture, config.NamespaceName, templateRoot, dstFileNameFormat);
     }
+
+    {
+      auto dstFileNameDebugStrings = IO::Path::Combine(dstPath, "Debug/Strings");
+      EnumToStringLookup::Process(capture, config, templateRoot, dstPath, dstFileNameDebugStrings, true);
+    }
+
   }
 }

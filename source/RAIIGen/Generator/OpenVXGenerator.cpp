@@ -143,7 +143,8 @@ namespace MB
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
                                             g_functionGuards, g_functionNameBlacklist, 
                                             g_enumNameBlacklist, g_enumMemberBlacklist,
-                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false),
+                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false,
+                                            VersionGuardConfig("VX_VERSION >= VX_VERSION_{0}_{1}")),
                       templateRoot, dstPath)
   {
   }
