@@ -1694,9 +1694,12 @@ namespace MB
     }
 
     {
-      auto dstFileNameDebugStrings = IO::Path::Combine(dstPath, "Debug/Strings");
-      EnumToStringLookup::Process(capture, config, templateRoot, dstPath, dstFileNameDebugStrings, true);
+      const auto pathDir = IO::Path::Combine(templateRoot, "enumDebugStrings");
+      if (IO::Directory::Exists(pathDir))
+      {
+        auto dstFileNameDebugStrings = IO::Path::Combine(dstPath, "Debug/Strings");
+        EnumToStringLookup::Process(capture, config, templateRoot, dstPath, dstFileNameDebugStrings, true);
+      }
     }
-
   }
 }

@@ -29,72 +29,68 @@
 
 namespace RapidOpenCL
 {
-  class Util
+  inline void CheckError(const cl_int errorCode)
   {
-  public:
-    static inline void Check(const cl_int errorCode)
+    if (errorCode != CL_SUCCESS)
     {
-      if (errorCode != CL_SUCCESS)
-      {
-        throw OpenCLErrorException("Unknown", errorCode);
-      }
+      throw OpenCLErrorException("Unknown", errorCode);
     }
+  }
 
-    static inline void Check(const cl_int errorCode, const char*const pszMessage)
+  inline void CheckError(const cl_int errorCode, const char*const pszMessage)
+  {
+    if (errorCode != CL_SUCCESS)
     {
-      if (errorCode != CL_SUCCESS)
-      {
-        assert(pszMessage != nullptr);
-        throw OpenCLErrorException(pszMessage, errorCode);
-      }
+      assert(pszMessage != nullptr);
+      throw OpenCLErrorException(pszMessage, errorCode);
     }
+  }
 
 
-    static inline void Check(const cl_int errorCode, const std::string& message)
+  inline void CheckError(const cl_int errorCode, const std::string& message)
+  {
+    if (errorCode != CL_SUCCESS)
     {
-      if (errorCode != CL_SUCCESS)
-      {
-        throw OpenCLErrorException(message, errorCode);
-      }
+      throw OpenCLErrorException(message, errorCode);
     }
+  }
 
-    static inline void Check(const cl_int errorCode, const char*const pszMessage, const char*const pszFileName, const int lineNumber)
+  inline void CheckError(const cl_int errorCode, const char*const pszMessage, const char*const pszFileName, const int lineNumber)
+  {
+    if (errorCode != CL_SUCCESS)
     {
-      if (errorCode != CL_SUCCESS)
-      {
-        assert(pszMessage != nullptr);
-        assert(pszFileName != nullptr);
-        throw OpenCLErrorException(pszMessage, errorCode, pszFileName, lineNumber);
-      }
+      assert(pszMessage != nullptr);
+      assert(pszFileName != nullptr);
+      throw OpenCLErrorException(pszMessage, errorCode, pszFileName, lineNumber);
     }
+  }
 
-    static inline void Check(const cl_int errorCode, const char*const pszMessage, const std::string& fileName, const int lineNumber)
+  inline void CheckError(const cl_int errorCode, const char*const pszMessage, const std::string& fileName, const int lineNumber)
+  {
+    if (errorCode != CL_SUCCESS)
     {
-      if (errorCode != CL_SUCCESS)
-      {
-        assert(pszMessage != nullptr);
-        throw OpenCLErrorException(pszMessage, errorCode, fileName, lineNumber);
-      }
+      assert(pszMessage != nullptr);
+      throw OpenCLErrorException(pszMessage, errorCode, fileName, lineNumber);
     }
+  }
 
 
-    static inline void Check(const cl_int errorCode, const std::string& message, const char*const pszFileName, const int lineNumber)
+  inline void CheckError(const cl_int errorCode, const std::string& message, const char*const pszFileName, const int lineNumber)
+  {
+    if (errorCode != CL_SUCCESS)
     {
-      if (errorCode != CL_SUCCESS)
-      {
-        assert(pszFileName != nullptr);
-        throw OpenCLErrorException(message, errorCode, pszFileName, lineNumber);
-      }
+      assert(pszFileName != nullptr);
+      throw OpenCLErrorException(message, errorCode, pszFileName, lineNumber);
     }
+  }
 
-    static inline void Check(const cl_int errorCode, const std::string& message, const std::string& fileName, const int lineNumber)
+  inline void CheckError(const cl_int errorCode, const std::string& message, const std::string& fileName, const int lineNumber)
+  {
+    if (errorCode != CL_SUCCESS)
     {
-      if (errorCode != CL_SUCCESS)
-      {
-        throw OpenCLErrorException(message, errorCode, fileName, lineNumber);
-      }
+      throw OpenCLErrorException(message, errorCode, fileName, lineNumber);
     }
-  };
+  }
 }
 
 #endif

@@ -1,9 +1,9 @@
-#ifndef RAPID##NAMESPACE_NAME!##_CHECK_HPP
-#define RAPID##NAMESPACE_NAME!##_CHECK_HPP
+#ifndef RAPIDOPENCL_SYSTEM_MACRO_HPP
+#define RAPIDOPENCL_SYSTEM_MACRO_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
-//* Copyright (c) 2016, Rene Thrane
+//* Copyright (c) 2017, Rene Thrane
 //* All rights reserved.
 //*
 //* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,13 +22,42 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RapidOpenCL/CheckError.hpp>
+#define RAPIDOPENCL_PARAM_NOT_USED(pARAM)    ((void)(pARAM))
 
-// Define some ease of use macros for logging.
-// Please beware that these are not pulled in by any of the RAII classes, so its 100% up to the user of the library to include it
-// if the functionality is desired.
 
-#define RAPIDOPENCL_CHECK(X)                  RapidOpenCL::CheckError((X), #X, __FILE__, __LINE__)
-#define RAPIDOPENCL_CHECK2(X, mESSAGE)        RapidOpenCL::CheckError((X), (mESSAGE), __FILE__, __LINE__)
+#ifdef FSL_DEMOFRAMEWORK
+
+// Use the FslBase implementation
+#include <FslBase/Attributes.hpp>
+#define RAPIDOPENCL_ATTR_DEPRECATED                            FSL_ATTR_DEPRECATED
+#define RAPIDOPENCL_FUNC_POSTFIX_WARN_UNUSED_RESULT            FSL_FUNC_POSTFIX_WARN_UNUSED_RESULT
+
+#else
+
+  #ifdef __GNUC__
+
+    // GCC
+    #if __cplusplus > 201103 // Check if its C++14
+      #define RAPIDOPENCL_ATTR_DEPRECATED                        [[deprecated]]
+    #else
+      #define RAPIDOPENCL_ATTR_DEPRECATED
+    #endif
+    #define RAPIDOPENCL_FUNC_POSTFIX_WARN_UNUSED_RESULT          __attribute__((warn_unused_result))
+
+  #elif defined(_MSC_VER)
+
+    // Visual studio
+    #define RAPIDOPENCL_ATTR_DEPRECATED                          __declspec(deprecated)
+    #define RAPIDOPENCL_FUNC_POSTFIX_WARN_UNUSED_RESULT
+
+  #else
+
+    #pragma message("WARNING: RAPIDOPENCL_ATTR_DEPRECATED, RAPIDOPENCL_FUNC_POSTFIX_WARN_UNUSED_RESULT not implemented for this compiler")
+    #define RAPIDOPENCL_ATTR_DEPRECATED
+    #define RAPIDOPENCL_FUNC_POSTFIX_WARN_UNUSED_RESULT
+  
+  #endif
+
+#endif
 
 #endif

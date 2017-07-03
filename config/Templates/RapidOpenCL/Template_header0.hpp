@@ -1,5 +1,5 @@
-#ifndef RAPID##NAMESPACE_NAME!##__##CLASS_NAME!##_HPP
-#define RAPID##NAMESPACE_NAME!##__##CLASS_NAME!##_HPP
+#ifndef RAPID##NAMESPACE_NAME!##_##CLASS_NAME!##_HPP
+#define RAPID##NAMESPACE_NAME!##_##CLASS_NAME!##_HPP##VERSION_GUARD_BEGIN##
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -26,13 +26,14 @@
 
 #include <RapidOpenCL/Config.hpp>
 #include <RapidOpenCL/CustomTypes.hpp>
-#include <RapidOpenCL/Util.hpp>##ADDITIONAL_INCLUDES##
+#include <RapidOpenCL/CheckError.hpp>##ADDITIONAL_INCLUDES##
+#include <RapidOpenCL/System/Macro.hpp>
 #include <CL/cl.h>
 #include <cassert>
 
 namespace RapidOpenCL
 {
-  // This object is movable so it can be thought of as behaving in the same was as a unique_ptr and is compatible with std containers
+  //! This object is movable so it can be thought of as behaving in the same was as a unique_ptr and is compatible with std containers
   class ##CLASS_NAME##
   {##CLASS_ADDITIONAL_MEMBER_VARIABLES##
     ##RESOURCE_TYPE## ##RESOURCE_MEMBER_NAME##;
@@ -57,6 +58,7 @@ namespace RapidOpenCL
     }
 
     //! @brief Move constructor
+    //! Transfer ownership from other to this
     ##CLASS_NAME##(##CLASS_NAME##&& other)##MOVE_CONSTRUCTOR_MEMBER_INITIALIZATION##
     {
       // Remove the data from other##MOVE_CONSTRUCTOR_INVALIDATE_MEMBERS##
@@ -120,14 +122,13 @@ namespace RapidOpenCL
     {
       return &##RESOURCE_MEMBER_NAME##;
     }
-    
+
     //! @brief Check if this object contains a valid resource
     inline bool IsValid() const
     {
       return ##RESOURCE_MEMBER_NAME## != ##DEFAULT_VALUE##;
-    }
+    }##ADDITIONAL_METHODS_HEADER##
   };
 }
-
-
+##VERSION_GUARD_END##
 #endif

@@ -1,9 +1,9 @@
-#ifndef RAPID##NAMESPACE_NAME!##_CONFIG_HPP
-#define RAPID##NAMESPACE_NAME!##_CONFIG_HPP
+#ifndef RAPIDOPENCL_SYSTEM_ERRORFORMATTER_HPP
+#define RAPIDOPENCL_SYSTEM_ERRORFORMATTER_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
-//* Copyright (c) 2016, Rene Thrane
+//* Copyright (c) 2017, Rene Thrane
 //* All rights reserved.
 //*
 //* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,14 +22,35 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#ifdef _MSC_VER
-  #define RAPIDOPENCL_FUNC_POSTFIX_WARN_UNUSED_RESULT
-#elif defined(__GNUC__)
-  #define RAPIDOPENCL_FUNC_POSTFIX_WARN_UNUSED_RESULT  __attribute__((warn_unused_result))
-#else
-  #pragma message("RAPIDOPENCL_FUNC_POSTFIX_WARN_UNUSED_RESULT not implemented for this compiler")
-  #define RAPIDOPENCL_FUNC_POSTFIX_WARN_UNUSED_RESULT
-#endif
+#include <RapidOpenCL/System/Macro.hpp>
+#include <string>
+#include <CL/cl.h>
 
+namespace RapidOpenCL
+{
+  namespace ErrorFormatter
+  {
+#ifdef RAPIDOPENCL_ERRORFORMATTER_EXTERN
+    extern std::string Format(const std::string& message, const cl_int errorCode);
+    extern std::string Format(const std::string& message, const cl_int errorCode, const std::string& fileName, const int lineNumber);
+#else
+
+    inline std::string Format(const std::string& message, const cl_int errorCode)
+    {
+      RAPIDOPENCL_PARAM_NOT_USED(errorCode);
+      return message;
+    }
+
+    inline std::string Format(const std::string& message, const cl_int errorCode, const std::string& fileName, const int lineNumber)
+    {
+      RAPIDOPENCL_PARAM_NOT_USED(errorCode);
+      RAPIDOPENCL_PARAM_NOT_USED(fileName);
+      RAPIDOPENCL_PARAM_NOT_USED(lineNumber);
+      return message;
+    }      
+
+    #endif
+  }
+}
 
 #endif
