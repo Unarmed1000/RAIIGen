@@ -1,5 +1,5 @@
-#ifndef RAPID##NAMESPACE_NAME!##_EXCEPTIONS_HPP
-#define RAPID##NAMESPACE_NAME!##_EXCEPTIONS_HPP
+#ifndef ##NAMESPACE_NAME!##_EXCEPTIONS_HPP
+#define ##NAMESPACE_NAME!##_EXCEPTIONS_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -26,7 +26,7 @@
 #include <string>
 #include <CL/cl.h>
 
-namespace RapidOpenCL
+namespace ##NAMESPACE_NAME##
 {
   class OpenCLException : public std::runtime_error
   {

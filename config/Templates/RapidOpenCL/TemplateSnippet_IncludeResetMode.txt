@@ -1,1 +1,1 @@
-#include <RapidOpenCL/ResetMode.hpp>
+#include <##NAMESPACE_NAME##/ResetMode.hpp>

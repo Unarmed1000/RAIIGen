@@ -1,5 +1,5 @@
-#ifndef RAPID##NAMESPACE_NAME!##_RESETMODE_HPP
-#define RAPID##NAMESPACE_NAME!##_RESETMODE_HPP
+#ifndef ##NAMESPACE_NAME!##_RESETMODE_HPP
+#define ##NAMESPACE_NAME!##_RESETMODE_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -24,7 +24,7 @@
 
 // ##AG_TOOL_STATEMENT##
 
-namespace RapidOpenCL
+namespace ##NAMESPACE_NAME##
 {
   enum class ResetMode
   {

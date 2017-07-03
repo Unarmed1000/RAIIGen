@@ -1,5 +1,5 @@
-#ifndef RAPIDOPENCL_SYSTEM_ERRORFORMATTER_HPP
-#define RAPIDOPENCL_SYSTEM_ERRORFORMATTER_HPP
+#ifndef ##NAMESPACE_NAME!##_SYSTEM_ERRORFORMATTER_HPP
+#define ##NAMESPACE_NAME!##_SYSTEM_ERRORFORMATTER_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,11 +22,11 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RapidOpenCL/System/Macro.hpp>
+#include <##NAMESPACE_NAME##/System/Macro.hpp>
 #include <string>
 #include <CL/cl.h>
 
-namespace RapidOpenCL
+namespace ##NAMESPACE_NAME##
 {
   namespace ErrorFormatter
   {

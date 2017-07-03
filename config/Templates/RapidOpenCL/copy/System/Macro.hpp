@@ -1,5 +1,5 @@
-#ifndef RAPIDOPENCL_SYSTEM_MACRO_HPP
-#define RAPIDOPENCL_SYSTEM_MACRO_HPP
+#ifndef ##NAMESPACE_NAME!##_SYSTEM_MACRO_HPP
+#define ##NAMESPACE_NAME!##_SYSTEM_MACRO_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*

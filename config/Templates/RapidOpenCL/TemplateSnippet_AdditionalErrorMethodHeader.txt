@@ -1,5 +1,5 @@
     //! @note  Function: ##SOURCE_FUNCTION_NAME##
     void ##METHOD_NAME##(##METHOD_PARAMETERS##)
     {
-      Util::Check(##SOURCE_FUNCTION_NAME##(##FUNCTION_ARGUMENTS##), "##SOURCE_FUNCTION_NAME##", __FILE__, __LINE__);
+      CheckError(##SOURCE_FUNCTION_NAME##(##FUNCTION_ARGUMENTS##), "##SOURCE_FUNCTION_NAME##", __FILE__, __LINE__);
     }

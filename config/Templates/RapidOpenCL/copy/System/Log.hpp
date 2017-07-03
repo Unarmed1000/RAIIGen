@@ -1,5 +1,5 @@
-#ifndef RAPIDOPENCL_SYSTEM_LOG_HPP
-#define RAPIDOPENCL_SYSTEM_LOG_HPP
+#ifndef ##NAMESPACE_NAME!##_SYSTEM_LOG_HPP
+#define ##NAMESPACE_NAME!##_SYSTEM_LOG_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*

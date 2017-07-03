@@ -1,5 +1,5 @@
-#ifndef RAPID##NAMESPACE_NAME!##_DEBUGSTRINGS_HPP
-#define RAPID##NAMESPACE_NAME!##_DEBUGSTRINGS_HPP
+#ifndef ##NAMESPACE_NAME!##_DEBUGSTRINGS_HPP
+#define ##NAMESPACE_NAME!##_DEBUGSTRINGS_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -24,7 +24,7 @@
 
 #include <CL/cl.h>
 
-namespace RapidOpenCL
+namespace ##NAMESPACE_NAME##
 {
   //! Extend the debug namespace with 'convenience' methods.
   //! This file adds conversion methods that helps transform various things to a nice string representation.

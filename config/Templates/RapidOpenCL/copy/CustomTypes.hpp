@@ -1,5 +1,5 @@
-#ifndef RAPID##NAMESPACE_NAME!##_CUSTOMTYPES_HPP
-#define RAPID##NAMESPACE_NAME!##_CUSTOMTYPES_HPP
+#ifndef ##NAMESPACE_NAME!##_CUSTOMTYPES_HPP
+#define ##NAMESPACE_NAME!##_CUSTOMTYPES_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -24,7 +24,7 @@
 
 #include <CL/cl.h>
 
-namespace RapidOpenCL
+namespace ##NAMESPACE_NAME##
 {
   // Define some function pointer typedefs which OpenCL failed to do
   typedef void (CL_CALLBACK *FNOpenCLNotify)(const char *, const void *, size_t, void *);

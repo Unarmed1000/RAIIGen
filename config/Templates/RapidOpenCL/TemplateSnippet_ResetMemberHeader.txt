@@ -11,7 +11,7 @@
       // Since we want to ensure that the resource is left untouched on error we use a local variable as a intermediary
       cl_int errorCode;
       const ##RESOURCE_TYPE## ##RESOURCE_INTERMEDIARY_NAME## = ##CREATE_FUNCTION##(##CREATE_FUNCTION_ARGUMENTS##);
-      Util::Check(errorCode, "##CREATE_FUNCTION##", __FILE__, __LINE__);
+      CheckError(errorCode, "##CREATE_FUNCTION##", __FILE__, __LINE__);
 
       // Everything is ready, so assign the members##RESET_SET_MEMBERS##
     }

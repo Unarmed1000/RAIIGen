@@ -1,5 +1,5 @@
-#ifndef RAPID##NAMESPACE_NAME!##_##CLASS_NAME!##_HPP
-#define RAPID##NAMESPACE_NAME!##_##CLASS_NAME!##_HPP##VERSION_GUARD_BEGIN##
+#ifndef ##NAMESPACE_NAME!##_##CLASS_NAME!##_HPP
+#define ##NAMESPACE_NAME!##_##CLASS_NAME!##_HPP##VERSION_GUARD_BEGIN##
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -24,15 +24,15 @@
 
 // ##AG_TOOL_STATEMENT##
 
-#include <RapidOpenCL/Config.hpp>
-#include <RapidOpenCL/CustomTypes.hpp>
-#include <RapidOpenCL/Util.hpp>##ADDITIONAL_INCLUDES##
+#include <##NAMESPACE_NAME##/CustomTypes.hpp>
+#include <##NAMESPACE_NAME##/Util.hpp>##ADDITIONAL_INCLUDES##
+#include <##NAMESPACE_NAME##/System/Macro.hpp>
 #include <CL/cl.h>
 #include <cassert>
 #include <utility>
 #include <vector>
 
-namespace RapidOpenCL
+namespace ##NAMESPACE_NAME##
 {
   //! This object is movable so it can be thought of as behaving in the same was as a unique_ptr and is compatible with std containers
   class ##CLASS_NAME##

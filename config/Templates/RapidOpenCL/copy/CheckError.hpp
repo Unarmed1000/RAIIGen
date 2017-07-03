@@ -1,5 +1,5 @@
-#ifndef RAPID##NAMESPACE_NAME!##_UTIL_HPP
-#define RAPID##NAMESPACE_NAME!##_UTIL_HPP
+#ifndef ##NAMESPACE_NAME!##_UTIL_HPP
+#define ##NAMESPACE_NAME!##_UTIL_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -22,12 +22,12 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RapidOpenCL/Exceptions.hpp>
+#include <##NAMESPACE_NAME##/Exceptions.hpp>
 #include <cassert>
 #include <string>
 #include <CL/cl.h>
 
-namespace RapidOpenCL
+namespace ##NAMESPACE_NAME##
 {
   inline void CheckError(const cl_int errorCode)
   {

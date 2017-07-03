@@ -1,5 +1,5 @@
-#ifndef RAPID##NAMESPACE_NAME!##_VALUES_HPP
-#define RAPID##NAMESPACE_NAME!##_VALUES_HPP
+#ifndef ##NAMESPACE_NAME!##_VALUES_HPP
+#define ##NAMESPACE_NAME!##_VALUES_HPP
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
@@ -24,7 +24,7 @@
 
 #include <CL/cl.h>
 
-namespace RapidOpenCL
+namespace ##NAMESPACE_NAME##
 {
   namespace Values
   {
