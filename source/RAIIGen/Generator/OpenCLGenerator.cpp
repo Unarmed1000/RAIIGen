@@ -171,6 +171,11 @@ namespace MB
       FunctionParameterNameOverride("clCreateProgramWithBinary", 3, "pSize", "lengths"),
       FunctionParameterNameOverride("clCreateProgramWithBinary", 4, "pUnsignedChar", "ppBinaries"),
       FunctionParameterNameOverride("clCreateProgramWithBinary", 5, "pInt", "pBinaryStatus"),
+      // clCreateProgramWithBuiltInKernels
+      FunctionParameterNameOverride("clCreateProgramWithBuiltInKernels", 1, "uint", "numDevices"),
+      FunctionParameterNameOverride("clCreateProgramWithBuiltInKernels", 2, "pDeviceId", "pDeviceList"),
+      FunctionParameterNameOverride("clCreateProgramWithBuiltInKernels", 3, "pChar", "pszKernelNames"),
+
       // clCreateSampler
       FunctionParameterNameOverride("clCreateSampler", 1, "bool", "normalizedCoords"),
 
@@ -337,6 +342,13 @@ namespace MB
       FunctionParameterNameOverride("clEnqueueNativeKernel", 7, "uint", "numEventsInWaitList"),
       FunctionParameterNameOverride("clEnqueueNativeKernel", 8, "pEvent", "pEventWaitList"),
 
+      // clBuildProgram
+      FunctionParameterNameOverride("clBuildProgram", 1, "uint", "numDevices"),
+      FunctionParameterNameOverride("clBuildProgram", 2, "pDeviceId", "pDeviceList"),
+      FunctionParameterNameOverride("clBuildProgram", 3, "pChar", "pOptions"),
+      FunctionParameterNameOverride("clBuildProgram", 4, "pVoid(clProgram,Void*)", "pfnNotify"),
+      FunctionParameterNameOverride("clBuildProgram", 5, "pVoid", "pUserData"),
+
       // clCompileProgram
       FunctionParameterNameOverride("clCompileProgram", 1, "uint", "numDevices"),
       FunctionParameterNameOverride("clCompileProgram", 2, "pDeviceId", "pDeviceList"),
@@ -344,6 +356,7 @@ namespace MB
       FunctionParameterNameOverride("clCompileProgram", 4, "uint", "numInputHeaders"),
       FunctionParameterNameOverride("clCompileProgram", 5, "pProgram", "pInputHeaders"),
       FunctionParameterNameOverride("clCompileProgram", 6, "pChar", "ppHeaderIncludeNames"),
+      FunctionParameterNameOverride("clCompileProgram", 7, "pVoid(clProgram,Void*)", "pfnNotify"),
       FunctionParameterNameOverride("clCompileProgram", 8, "pVoid", "pUserData"),
 
       // clLinkProgram
@@ -352,8 +365,9 @@ namespace MB
       FunctionParameterNameOverride("clLinkProgram", 3, "pChar", "pOptions"),
       FunctionParameterNameOverride("clLinkProgram", 4, "uint", "numInputPrograms"),
       FunctionParameterNameOverride("clLinkProgram", 5, "pProgram", "pInputPrograms"),
+      FunctionParameterNameOverride("clLinkProgram", 6, "pVoid(clProgram,Void*)", "pfnNotify"),
       FunctionParameterNameOverride("clLinkProgram", 7, "pVoid", "pUserData"),
-      FunctionParameterNameOverride("clLinkProgram", 9, "int", "pErrorCode"),
+      FunctionParameterNameOverride("clLinkProgram", 8, "pInt", "pErrorCode"),
 
       // clEnqueueFillBuffer 
       FunctionParameterNameOverride("clEnqueueFillBuffer", 1, "mem", "buffer"),
@@ -440,6 +454,19 @@ namespace MB
       FunctionParameterNameOverride("clEnqueueSVMMigrateMem", 3, "pSize", "pSizes"),
       FunctionParameterNameOverride("clEnqueueSVMMigrateMem", 5, "uint", "numEventsInWaitList"),
       FunctionParameterNameOverride("clEnqueueSVMMigrateMem", 6, "pEvent", "pEventWaitList"),
+
+      // clSetMemObjectDestructorCallback
+      FunctionParameterNameOverride("clSetMemObjectDestructorCallback", 1, "pVoid(clMem,Void*)", "pfnNotify"),
+      FunctionParameterNameOverride("clSetMemObjectDestructorCallback", 2, "pVoid", "pUserData"),
+
+      // clSetEventCallback
+      FunctionParameterNameOverride("clSetEventCallback", 1, "int", "commandExecCallbackType"),
+      FunctionParameterNameOverride("clSetEventCallback", 2, "pVoid(clEvent,ClInt,Void*)", "pfnNotify"),
+      FunctionParameterNameOverride("clSetEventCallback", 3, "pVoid", "pUserData"),
+
+      // clSetUserEventStatus
+      FunctionParameterNameOverride("clSetUserEventStatus", 1, "int", "executionStatus"),
+
     };
 
 
@@ -448,9 +475,28 @@ namespace MB
     const std::vector<FunctionParameterTypeOverride> g_functionParameterTypeOverride
     {
       // clCreateContextFromType
-      FunctionParameterTypeOverride("clCreateContextFromType", 2, "void (*)(const char *, const void *, size_t, void *) __attribute__((stdcall))", "FNOpenCLNotify"),
+      FunctionParameterTypeOverride("clCreateContextFromType", 2, "void (*)(const char *, const void *, size_t, void *) __attribute__((stdcall))", "FNOpenCLCreateCallback"),
       // clCreateContext
-      FunctionParameterTypeOverride("clCreateContext", 3, "void (*)(const char *, const void *, size_t, void *) __attribute__((stdcall))", "FNOpenCLNotify"),
+      FunctionParameterTypeOverride("clCreateContext", 3, "void (*)(const char *, const void *, size_t, void *) __attribute__((stdcall))", "FNOpenCLCreateCallback"),
+
+      // clCompileProgram
+      FunctionParameterTypeOverride("clCompileProgram", 7, "void (*)(cl_program, void *) __attribute__((stdcall))", "FNOpenCLCompileProgramCallback"),
+
+      // clBuildProgram
+      FunctionParameterTypeOverride("clBuildProgram", 4, "void (*)(cl_program, void *) __attribute__((stdcall))", "FNOpenCLBuildProgramCallback"),
+      
+      // FIX: this is a problem function as OpenCL versions define it slightly differently
+      // clEnqueueNativeKernel 
+      // FunctionParameterTypeOverride("clEnqueueNativeKernel", 1, "void (*)(void *) __attribute__((stdcall))", "FNOpenCLEnqueueNativeKernelCallback"),
+
+      // clLinkProgram
+      FunctionParameterTypeOverride("clLinkProgram", 6, "void (*)(cl_program, void *) __attribute__((stdcall))", "FNOpenCLLinkProgramCallback"),
+
+      // clSetEventCallback      
+      FunctionParameterTypeOverride("clSetEventCallback", 2, "void (*)(cl_event, cl_int, void *) __attribute__((stdcall))", "FNOpenCLSetEventCallback"),
+
+      //clSetMemObjectDestructorCallback
+      FunctionParameterTypeOverride("clSetMemObjectDestructorCallback", 1, "void (*)(cl_mem, void *) __attribute__((stdcall))", "FNOpenCLObjectDestructorCallback"),
     };
 
 

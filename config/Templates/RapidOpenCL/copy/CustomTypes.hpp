@@ -27,7 +27,12 @@
 namespace ##NAMESPACE_NAME##
 {
   // Define some function pointer typedefs which OpenCL failed to do
-  typedef void (CL_CALLBACK *FNOpenCLNotify)(const char *, const void *, size_t, void *);
+  typedef void (CL_CALLBACK *FNOpenCLCreateCallback)(const char *, const void *, size_t, void *);
+  typedef void (CL_CALLBACK *FNOpenCLCompileProgramCallback)(cl_program, void *);
+  typedef void (CL_CALLBACK *FNOpenCLBuildProgramCallback)(cl_program, void *);
+  typedef void (CL_CALLBACK *FNOpenCLLinkProgramCallback)(cl_program, void *);
+  typedef void (CL_CALLBACK *FNOpenCLObjectDestructorCallback)(cl_mem, void *);
+  typedef void (CL_CALLBACK *FNOpenCLSetEventCallback)(cl_event, cl_int, void *);
 }
 
 #endif

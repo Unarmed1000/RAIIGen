@@ -961,6 +961,14 @@ namespace MB
       StringUtil::Replace(content, "##RESET_PARAMETER_VALIDATION##", resetParamValidation);
       StringUtil::Replace(content, "##RESET_ASSERT_VALIDATION##", resetParamAsserts);
       StringUtil::Replace(content, "##SOURCE_FUNCTION_NAME##", fullAnalysis.Pair.Create.Name);
+
+      const auto version = fullAnalysis.Pair.Create.Version;
+      if (config.VersionGuard.IsValid && version != VersionRecord())
+      {
+        std::string strVersinGuardBegin = fmt::format("#if {0}" + END_OF_LINE, config.VersionGuard.ToGuardString(version));
+        std::string strVersinGuardEnd = END_OF_LINE + "#endif";
+        content = strVersinGuardBegin + content + strVersinGuardEnd;
+      }
       return content;
     }
 
@@ -1588,7 +1596,7 @@ namespace MB
     for (auto itr = fullAnalysis.begin(); itr != fullAnalysis.end(); ++itr)
     {
       Snippets classSnippets(snippets);
-      // check if there is any class method overrids and apply the to the snippets if they exist
+      // check if there is any class method overrides and apply the to the snippets if they exist
       const auto itrFindMethodOverride = resolvedClassMethodOverrides.find(itr->Result.ClassName);
       if (itrFindMethodOverride != resolvedClassMethodOverrides.end())
       {
