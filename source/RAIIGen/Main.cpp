@@ -3,20 +3,20 @@
 //*
 //* Copyright (c) 2016, Rene Thrane
 //* All rights reserved.
-//* 
+//*
 //* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-//* 
+//*
 //* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-//* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the 
+//* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
 //*    documentation and/or other materials provided with the distribution.
-//* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this 
+//* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this
 //*    software without specific prior written permission.
-//* 
-//* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
-//* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
-//* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
-//* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-//* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
+//*
+//* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+//* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+//* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+//* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+//* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
@@ -113,9 +113,9 @@ namespace MB
           history.push_back(std::make_shared<CapturedData>(basicConfig, srcFile, includePaths, captureConfig, customLog, version));
         }
       }
-      
+
       auto sortMethod = [](const std::shared_ptr<CapturedData> &lhs, const std::shared_ptr<CapturedData> &rhs)
-      { 
+      {
         const uint64_t domain = 1000000;
         assert(lhs->Version.Major < domain);
         assert(lhs->Version.Minor < domain);
@@ -168,7 +168,7 @@ namespace MB
       for (const auto& capture : history)
       {
         const auto enumDict = capture->TheCapture.GetEnumDict();
-        
+
         const auto itrFind = enumDict.find(name);
         if (itrFind != enumDict.end())
           return capture;
@@ -267,7 +267,7 @@ namespace MB
 
       const auto captureConfig = TGenerator::GetCaptureConfig();
 
-      VersionRecord version("0.0.0");
+      VersionRecord version;
       CapturedData capturedData(basicConfig, filename, includePaths, captureConfig, customLog, version);
 
       if (useAPIHistory)
@@ -280,7 +280,7 @@ namespace MB
           history.front()->Version = VersionRecord();
           TagWithHistory(capturedData, history);
         }
-       
+
       }
 
       //captureConfig.GetCapture().Dump();
@@ -311,7 +311,7 @@ namespace MB
       BasicConfig basicConfig(programInfo, toolStatement, namespaceName, baseApiName, apiVersion);
 
       Run<TGenerator>(basicConfig, srcFile, filename, templatePath, apiHistoryPath, dstPath, includePaths, useAPIHistory);
-    } 
+    }
 
 
     void GenerateClasses(const ProgramInfo& programInfo, const IO::Path& currentWorkingDirectory)
@@ -334,19 +334,19 @@ namespace MB
       //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2.0");
       //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2.1");
       //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.0.1");
-      
+
       // RapidOpenCL1
-      RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "1", true);
+      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "1", true);
 
       // RapidOpenCL2
       //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2", true);
 
       // RapidOpenVX
-      RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.1", true);
-      
+      //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.1", true);
+
       // RapidVulkan
       RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.0", true);
-      
+
       //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.1");
       //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.2");
       //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "FslUtilOpenVX", "OpenVX", "1.0.1");

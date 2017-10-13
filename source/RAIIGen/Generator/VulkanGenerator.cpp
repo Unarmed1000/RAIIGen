@@ -3,20 +3,20 @@
 //*
 //* Copyright (c) 2016, Rene Thrane
 //* All rights reserved.
-//* 
+//*
 //* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-//* 
+//*
 //* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-//* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the 
+//* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
 //*    documentation and/or other materials provided with the distribution.
-//* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this 
+//* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this
 //*    software without specific prior written permission.
-//* 
-//* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
-//* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
-//* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
-//* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-//* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
+//*
+//* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+//* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+//* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+//* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+//* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
@@ -197,18 +197,23 @@ namespace MB
       { "VkShaderModule", DEFAULT_VALUE },
       { "VkSurfaceKHR", DEFAULT_VALUE },
       { "VkSwapchainKHR", DEFAULT_VALUE },
+      { "VkSamplerYcbcrConversionKHR", DEFAULT_VALUE },
+      { "VkDescriptorUpdateTemplateKHR", DEFAULT_VALUE },
+      { "VkIndirectCommandsLayoutNVX", DEFAULT_VALUE },
+      { "VkObjectTableNVX", DEFAULT_VALUE },
+      { "VkValidationCacheEXT", DEFAULT_VALUE },
     };
   }
 
 
   VulkanGenerator::VulkanGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
-    : SimpleGenerator(capture, 
-                      SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
+    : SimpleGenerator(capture,
+                      SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization,
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
-                                            g_functionGuards, g_functionNameBlacklist, 
+                                            g_functionGuards, g_functionNameBlacklist,
                                             g_enumNameBlacklist, g_enumMemberBlacklist,
-                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, true, true, 
-                                            VersionGuardConfig("VK_HEADER_VERSION >= {2}"),  true), 
+                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, true, true,
+                                            VersionGuardConfig("VK_HEADER_VERSION >= {2}"),  true),
                       templateRoot, dstPath)
   {
   }
