@@ -342,10 +342,11 @@ namespace MB
       //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2", true);
 
       // RapidOpenVX
-      //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.1", true);
+      RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.0.1", true);
+      RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.1", true);
 
       // RapidVulkan
-      RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.0", true);
+      //RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.0", true);
 
       //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.1");
       //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.2");
@@ -356,7 +357,7 @@ namespace MB
       //RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES2/gl2.h", "RapidOpenGLES", "OpenGLES", "2.0");
       //RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl3.h", "RapidOpenGLES", "OpenGLES", "3.0");
       //RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl31.h", "RapidOpenGLES", "OpenGLES", "3.1");
-      //RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl32.h", "RapidOpenGLES", "OpenGLES", "3.2");
+      RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl32.h", "RapidOpenGLES", "OpenGLES", "3.2");
     }
   }
 }
