@@ -227,6 +227,6 @@ namespace MB
     //filters.push_back(DESTROY_FUNCTION);
     //filters.push_back(ALLOCATE_FUNCTION);
     //filters.push_back(FREE_FUNCTION);
-    return CaptureConfig(TYPE_NAME_PREFIX, filters, g_functionParameterNameOverride, g_functionParameterTypeOverride, true);
+    return CaptureConfig(TYPE_NAME_PREFIX, filters, g_functionParameterNameOverride, g_functionParameterTypeOverride, false);
   }
 }

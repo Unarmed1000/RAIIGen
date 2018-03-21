@@ -3,20 +3,20 @@
 //*
 //* Copyright (c) 2016, Rene Thrane
 //* All rights reserved.
-//* 
+//*
 //* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-//* 
+//*
 //* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-//* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the 
+//* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
 //*    documentation and/or other materials provided with the distribution.
-//* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this 
+//* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this
 //*    software without specific prior written permission.
-//* 
-//* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
-//* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
-//* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
-//* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-//* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
+//*
+//* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+//* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+//* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+//* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+//* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
@@ -369,7 +369,7 @@ namespace MB
       FunctionParameterNameOverride("clLinkProgram", 7, "pVoid", "pUserData"),
       FunctionParameterNameOverride("clLinkProgram", 8, "pInt", "pErrorCode"),
 
-      // clEnqueueFillBuffer 
+      // clEnqueueFillBuffer
       FunctionParameterNameOverride("clEnqueueFillBuffer", 1, "mem", "buffer"),
       FunctionParameterNameOverride("clEnqueueFillBuffer", 2, "pVoid", "pPattern"),
       FunctionParameterNameOverride("clEnqueueFillBuffer", 3, "size", "patternSize"),
@@ -378,7 +378,7 @@ namespace MB
       FunctionParameterNameOverride("clEnqueueFillBuffer", 6, "uint", "numEventsInWaitList"),
       FunctionParameterNameOverride("clEnqueueFillBuffer", 7, "pEvent", "pEventWaitList"),
 
-      // clEnqueueFillImage 
+      // clEnqueueFillImage
       FunctionParameterNameOverride("clEnqueueFillImage", 1, "mem", "image"),
       FunctionParameterNameOverride("clEnqueueFillImage", 2, "pVoid", "pFillColor"),
       FunctionParameterNameOverride("clEnqueueFillImage", 3, "pSize", "pOrigin"),
@@ -386,7 +386,7 @@ namespace MB
       FunctionParameterNameOverride("clEnqueueFillImage", 5, "uint", "numEventsInWaitList"),
       FunctionParameterNameOverride("clEnqueueFillImage", 6, "pEvent", "pEventWaitList"),
 
-      // clEnqueueMigrateMemObjects 
+      // clEnqueueMigrateMemObjects
       FunctionParameterNameOverride("clEnqueueMigrateMemObjects", 1, "uint", "numMemObjects"),
       FunctionParameterNameOverride("clEnqueueMigrateMemObjects", 2, "pMem", "pMemObjects"),
       FunctionParameterNameOverride("clEnqueueMigrateMemObjects", 4, "uint", "numEventsInWaitList"),
@@ -407,7 +407,7 @@ namespace MB
       FunctionParameterNameOverride("clEnqueueSVMFree", 5, "uint", "numEventsInWaitList"),
       FunctionParameterNameOverride("clEnqueueSVMFree", 6, "pEvent", "pEventWaitList"),
 
-      // clEnqueueSVMMemcpy 
+      // clEnqueueSVMMemcpy
       FunctionParameterNameOverride("clEnqueueSVMMemcpy", 1, "bool", "blockingCopy"),
       FunctionParameterNameOverride("clEnqueueSVMMemcpy", 2, "pVoid", "pDst"),
       FunctionParameterNameOverride("clEnqueueSVMMemcpy", 3, "pVoid", "pSrc"),
@@ -415,7 +415,7 @@ namespace MB
       FunctionParameterNameOverride("clEnqueueSVMMemcpy", 5, "uint", "numEventsInWaitList"),
       FunctionParameterNameOverride("clEnqueueSVMMemcpy", 6, "pEvent", "pEventWaitList"),
 
-      // clEnqueueSVMMemFill 
+      // clEnqueueSVMMemFill
       FunctionParameterNameOverride("clEnqueueSVMMemFill", 1, "pVoid", "pSvm"),
       FunctionParameterNameOverride("clEnqueueSVMMemFill", 2, "pVoid", "pPattern"),
       FunctionParameterNameOverride("clEnqueueSVMMemFill", 3, "size", "patternSize"),
@@ -484,15 +484,15 @@ namespace MB
 
       // clBuildProgram
       FunctionParameterTypeOverride("clBuildProgram", 4, "void (*)(cl_program, void *) __attribute__((stdcall))", "FNOpenCLBuildProgramCallback"),
-      
+
       // FIX: this is a problem function as OpenCL versions define it slightly differently
-      // clEnqueueNativeKernel 
+      // clEnqueueNativeKernel
       // FunctionParameterTypeOverride("clEnqueueNativeKernel", 1, "void (*)(void *) __attribute__((stdcall))", "FNOpenCLEnqueueNativeKernelCallback"),
 
       // clLinkProgram
       FunctionParameterTypeOverride("clLinkProgram", 6, "void (*)(cl_program, void *) __attribute__((stdcall))", "FNOpenCLLinkProgramCallback"),
 
-      // clSetEventCallback      
+      // clSetEventCallback
       FunctionParameterTypeOverride("clSetEventCallback", 2, "void (*)(cl_event, cl_int, void *) __attribute__((stdcall))", "FNOpenCLSetEventCallback"),
 
       //clSetMemObjectDestructorCallback
@@ -536,10 +536,10 @@ namespace MB
 
 
   OpenCLGenerator::OpenCLGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
-    : SimpleGenerator(ModCapture(capture), 
-                      SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization, 
-                                            g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter, 
-                                            g_functionGuards, g_functionNameBlacklist, 
+    : SimpleGenerator(ModCapture(capture),
+                      SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization,
+                                            g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
+                                            g_functionGuards, g_functionNameBlacklist,
                                             g_enumNameBlacklist, g_enumMemberBlacklist,
                                             TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false,
                                             VersionGuardConfig("CL_VERSION_{0}_{1}")),
