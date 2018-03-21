@@ -120,7 +120,8 @@ namespace MB
       BlackListEntry("EXT", BlackListMatch::PostfixNotEntityName),
       BlackListEntry("GOOGLE", BlackListMatch::PostfixNotEntityName),
       BlackListEntry("KHR", BlackListMatch::PostfixNotEntityName),
-      BlackListEntry("KHX", BlackListMatch::PostfixNotEntityName)
+      BlackListEntry("KHX", BlackListMatch::PostfixNotEntityName),
+      BlackListEntry("AMD", BlackListMatch::PostfixNotEntityName)
     };
 
 

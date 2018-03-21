@@ -3,20 +3,20 @@
 //*
 //* Copyright (c) 2016, Rene Thrane
 //* All rights reserved.
-//* 
+//*
 //* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-//* 
+//*
 //* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-//* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the 
+//* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
 //*    documentation and/or other materials provided with the distribution.
-//* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this 
+//* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this
 //*    software without specific prior written permission.
-//* 
-//* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
-//* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
-//* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
-//* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-//* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
+//*
+//* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+//* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+//* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+//* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+//* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
@@ -459,9 +459,9 @@ namespace MB
 
     bool IsManagedType(const std::deque<FullAnalysis>& managed, const ParameterRecord& parameter)
     {
-      auto func = [parameter](const FullAnalysis& val) 
-      { 
-        return val.Result.ResourceMemberVariable.Type == parameter.Type.Name; 
+      auto func = [parameter](const FullAnalysis& val)
+      {
+        return val.Result.ResourceMemberVariable.Type == parameter.Type.Name;
       };
       return std::find_if(managed.begin(), managed.end(), func) != managed.end();
     }
@@ -510,7 +510,6 @@ namespace MB
 
             if (!HasMatchingEntry(methodName, config.FunctionNameBlacklist, currentEntityInfo))
             {
-
               ClassMethod classMethod;
               classMethod.SourceFunction = *itr;
               classMethod.Name = methodName;
@@ -531,7 +530,6 @@ namespace MB
               // Convert all the method arguments
               for (auto &param : itr->Parameters)
                 classMethod.OriginalMethodArguments.push_back(ToMethodArgument(param, false));
-
 
               // Add the starting params (the members)
               for (std::size_t paramIndex = 0; paramIndex < rResult.Result.AllMemberVariables.size(); ++paramIndex)
@@ -811,7 +809,7 @@ namespace MB
     }
 
 
-    //! Analyze the create parameters and 'unroll' the structs 
+    //! Analyze the create parameters and 'unroll' the structs
     void AnalyzeCreateFunctionStructParameters(const Capture& capture, const SimpleGeneratorConfig& config, std::deque<FullAnalysis>& rFullAnalysis)
     {
       //std::cout << "Create function parameter struct analysis\n";
@@ -916,7 +914,7 @@ namespace MB
         }
       }
 
-      // 
+      //
       AbsorbFunctions(managed, config.ClassFunctionAbsorbtion);
 
       if( config.UnrollCreateStructs )
@@ -931,7 +929,7 @@ namespace MB
     }
 
 
-    std::string GenerateExtraCreate(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetFunction, 
+    std::string GenerateExtraCreate(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetFunction,
                                     const std::string& snippetVoidFunction, const FullAnalysis& fullAnalysis, const bool allowAbsorb)
     {
       if (!allowAbsorb && fullAnalysis.AbsorbedFunctions && fullAnalysis.AbsorbedFunctions->size() > 0)
@@ -973,7 +971,7 @@ namespace MB
     }
 
 
-    GeneratedMethodCode GenerateExtraCreates(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetHeader, const std::string& snippetSource, 
+    GeneratedMethodCode GenerateExtraCreates(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetHeader, const std::string& snippetSource,
                                              const std::string& snippetVoidHeader, const std::string& snippetVoidSource, const FullAnalysis& fullAnalysis)
     {
       std::string resultHeader = GenerateExtraCreate(config, snippets, snippetHeader, snippetVoidHeader, fullAnalysis, true);
@@ -1042,7 +1040,7 @@ namespace MB
       return result;
     }
 
-    
+
     std::string GenerateUnrolledCreate(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetFunction, const FullAnalysis& fullAnalysis, const bool allowAbsorb, const bool isConstructor)
     {
       if (!allowAbsorb && fullAnalysis.AbsorbedFunctions && fullAnalysis.AbsorbedFunctions->size() > 0)
@@ -1554,9 +1552,9 @@ namespace MB
   }
 
 
-  // FIX: 
+  // FIX:
   // - Handle 'create array' of resources, example: CommandBuffers
-  // - Add helper methods 
+  // - Add helper methods
 
   SimpleGenerator::SimpleGenerator(const Capture& capture, const SimpleGeneratorConfig& config, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
     : Generator(capture, config)
@@ -1608,7 +1606,7 @@ namespace MB
       const auto activeHeaderTemplate = headerTemplates[static_cast<std::size_t>(itr->TemplateType)];
       {
         auto fileName = IO::Path::Combine(dstPath, itr->Result.ClassName + ".hpp");
-        
+
         const auto additionalContent = GetAdditionalContent(additionalFileContent, fileName);
         auto headerContent = GenerateContent(config, *itr, activeHeaderTemplate, &classSnippets.HeaderSnippetMemberVariable, &classSnippets.HeaderSnippetMemberVariableGet, classSnippets, additionalContent);
         IOUtil::WriteAllTextIfChanged(fileName, headerContent);
