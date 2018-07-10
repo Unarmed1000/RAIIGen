@@ -41,7 +41,7 @@ namespace ##NAMESPACE_NAME##
     ##CLASS_NAME##& operator=(const ##CLASS_NAME##&) = delete;
 
     //! @brief Move assignment operator
-    ##CLASS_NAME##& operator=(##CLASS_NAME##&& other)
+    ##CLASS_NAME##& operator=(##CLASS_NAME##&& other) noexcept
     {
       if (this != &other)
       {
@@ -58,7 +58,7 @@ namespace ##NAMESPACE_NAME##
 
     //! @brief Move constructor
     //! Transfer ownership from other to this
-    ##CLASS_NAME##(##CLASS_NAME##&& other)##MOVE_CONSTRUCTOR_MEMBER_INITIALIZATION##
+    ##CLASS_NAME##(##CLASS_NAME##&& other) noexcept##MOVE_CONSTRUCTOR_MEMBER_INITIALIZATION##
     {
       // Remove the data from other##MOVE_CONSTRUCTOR_INVALIDATE_MEMBERS##
     }
@@ -90,7 +90,7 @@ namespace ##NAMESPACE_NAME##
     }
 
     //! @brief Destroys any owned resources and resets the object to its default state.
-    void Reset()
+    void Reset() noexcept
     {
       if (! IsValid())
         return;
