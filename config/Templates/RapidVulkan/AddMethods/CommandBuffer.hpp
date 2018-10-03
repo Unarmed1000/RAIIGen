@@ -1,6 +1,6 @@
     void Begin(const VkCommandBufferUsageFlags flags, const VkRenderPass renderPass, const uint32_t subpass,
                const VkFramebuffer framebuffer, const VkBool32 occlusionQueryEnable, const VkQueryControlFlags queryFlags,
-               const VkQueryPipelineStatisticFlags pipelineStatistics, const uint32_t bufferIndex = 0)
+               const VkQueryPipelineStatisticFlags pipelineStatistics)
     {
       VkCommandBufferInheritanceInfo commandBufferInheritanceInfo{};
       commandBufferInheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
