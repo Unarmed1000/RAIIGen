@@ -35,6 +35,9 @@
 #define VK_LAYER_EXPORT
 #endif
 
+// Definition for VkLayerDispatchTable and VkLayerInstanceDispatchTable now appear in externally generated header
+#include "vk_layer_dispatch_table.h"
+
 #define MAX_NUM_UNKNOWN_EXTS 250
 
  // Loader-Layer version negotiation API.  Versions add the following features:
@@ -46,9 +49,6 @@
 #define MIN_SUPPORTED_LOADER_LAYER_INTERFACE_VERSION 1
 
 #define VK_CURRENT_CHAIN_VERSION 1
-
-// Typedef for use in the interfaces below
-typedef PFN_vkVoidFunction (VKAPI_PTR *PFN_GetPhysicalDeviceProcAddr)(VkInstance instance, const char* pName);
 
 // Version negotiation values
 typedef enum VkNegotiateLayerStructType {
