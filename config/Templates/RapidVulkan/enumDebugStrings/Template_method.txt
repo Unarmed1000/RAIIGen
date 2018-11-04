@@ -1,8 +1,14 @@
-    inline const char* ToString(const ##C_TYPE_NAME##& value)
+    inline const char* TryToString(const ##C_TYPE_NAME##& value)
     {
       switch(value)
       {##CASE_ENTRIES##
       default:
-        return "*Unknown*";
+        return nullptr;
       }
+    };
+
+    inline const char* ToString(const ##C_TYPE_NAME##& value)
+    {
+      auto result = TryToString(value);
+      return (result != nullptr ? result : "*Unknown*");
     };
