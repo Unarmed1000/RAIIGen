@@ -42,6 +42,8 @@ namespace MB
 
     std::shared_ptr<std::deque<FullAnalysis>> AbsorbedFunctions;
     std::deque<ClassMethod> ClassMethods;
+    bool GenerateExtraMethods{true};
+    bool GenerateUnrolledMethods{true};
 
     FullAnalysis()
       : Pair()
@@ -52,12 +54,15 @@ namespace MB
     {
     }
 
-    FullAnalysis(const MatchedFunctionPair pair, const AnalysisResult& result, const AnalyzeMode mode, const SourceTemplateType sourceTemplateType)
+    FullAnalysis(const MatchedFunctionPair pair, const AnalysisResult& result, const AnalyzeMode mode, const SourceTemplateType sourceTemplateType,
+                 const bool generateExtraMethods = true, const bool generateUnrolledMethods = true)
       : Pair(pair)
       , Result(result)
       , AbsorbedFunctions()
       , Mode(mode)
       , TemplateType(sourceTemplateType)
+      , GenerateExtraMethods(generateExtraMethods)
+      , GenerateUnrolledMethods(generateUnrolledMethods)
     {
     }
 

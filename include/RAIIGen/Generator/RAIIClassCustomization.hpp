@@ -39,6 +39,8 @@ namespace MB
     SourceTemplateType VectorInstanceTemplateType;
     //! A parameter with this name will not be C++ified
     std::vector<std::string> PreserveParameterNames;
+    bool GenerateExtraMethods{true};
+    bool GenerateUnrolledMethods{true};
 
     RAIIClassCustomization()
       : SourceCreateMethod()
@@ -56,7 +58,8 @@ namespace MB
                            const std::string& vectorInstanceClassName, const std::string& resourceName, const std::string& structArrayCountName,
                            const std::string& paramArrayCountName,
                            const SourceTemplateType vectorInstanceTemplateType = SourceTemplateType::ArrayResource,
-                           std::vector<std::string> preserveParameterNames = {})
+                           std::vector<std::string> preserveParameterNames = {}, const bool generateExtraMethods = true,
+                           const bool GenerateUnrolledMethods = true)
       : SourceCreateMethod(sourceCreateMethod)
       , SingleInstanceClassName(singleInstanceClassName)
       , VectorInstanceClassName(vectorInstanceClassName)
@@ -65,6 +68,8 @@ namespace MB
       , ParamMemberArrayCountName(paramArrayCountName)
       , VectorInstanceTemplateType(vectorInstanceTemplateType)
       , PreserveParameterNames(std::move(preserveParameterNames))
+      , GenerateExtraMethods(generateExtraMethods)
+      , GenerateUnrolledMethods(GenerateUnrolledMethods)
     {
     }
   };

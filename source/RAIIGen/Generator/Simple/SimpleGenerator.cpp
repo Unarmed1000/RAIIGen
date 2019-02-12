@@ -968,7 +968,8 @@ namespace MB
                            itrCustom->VectorInstanceTemplateType == SourceTemplateType::ArrayAllocationButSingleInstanceDestroy,
                            itrCustom->PreserveParameterNames);
           CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
-          managed.push_back(FullAnalysis(*itr, result, AnalyzeMode::VectorInstance, itrCustom->VectorInstanceTemplateType));
+          managed.push_back(FullAnalysis(*itr, result, AnalyzeMode::VectorInstance, itrCustom->VectorInstanceTemplateType,
+                                         itrCustom->GenerateExtraMethods, itrCustom->GenerateUnrolledMethods));
         }
       }
 
@@ -1372,14 +1373,25 @@ namespace MB
 
       const std::string destroyFunctionArguments = GenerateExpandedParameterNameList(fullAnalysis.Result.DestroyArguments);
 
-      auto classExtraConstructors = GenerateExtraCreates(config, snippets, snippets.CreateConstructorHeader, snippets.CreateConstructorSource,
-                                                         snippets.CreateVoidConstructorHeader, snippets.CreateVoidConstructorSource, fullAnalysis);
-      auto classExtraResetMethods = GenerateExtraCreates(config, snippets, resetMemberHeader, resetMemberSource, snippets.ResetVoidMemberHeader,
-                                                         snippets.ResetVoidMemberSource, fullAnalysis);
-      auto classUnrolledConstructors =
-        GenerateUnrolledCreates(config, snippets, snippets.CreateConstructorHeader, snippets.CreateConstructorSource, fullAnalysis, true);
-      auto classUnrolledResetMethods =
-        GenerateUnrolledCreates(config, snippets, snippets.ResetUnrollMemberHeader, snippets.ResetUnrollMemberSource, fullAnalysis, false);
+
+      GeneratedMethodCode classExtraConstructors;
+      GeneratedMethodCode classExtraResetMethods;
+      GeneratedMethodCode classUnrolledConstructors;
+      GeneratedMethodCode classUnrolledResetMethods;
+      if (fullAnalysis.GenerateExtraMethods)
+      {
+        classExtraConstructors = GenerateExtraCreates(config, snippets, snippets.CreateConstructorHeader, snippets.CreateConstructorSource,
+                                                      snippets.CreateVoidConstructorHeader, snippets.CreateVoidConstructorSource, fullAnalysis);
+        classExtraResetMethods = GenerateExtraCreates(config, snippets, resetMemberHeader, resetMemberSource, snippets.ResetVoidMemberHeader,
+                                                      snippets.ResetVoidMemberSource, fullAnalysis);
+      }
+      if (fullAnalysis.GenerateUnrolledMethods)
+      {
+        classUnrolledConstructors =
+          GenerateUnrolledCreates(config, snippets, snippets.CreateConstructorHeader, snippets.CreateConstructorSource, fullAnalysis, true);
+        classUnrolledResetMethods =
+          GenerateUnrolledCreates(config, snippets, snippets.ResetUnrollMemberHeader, snippets.ResetUnrollMemberSource, fullAnalysis, false);
+      }
 
       if (classUnrolledConstructors.Header.size() > 0)
       {
