@@ -24,6 +24,7 @@
 
 #include <RAIIGen/Generator/MatchedFunctionPair.hpp>
 #include <RAIIGen/Generator/SourceTemplateType.hpp>
+#include <utility>
 
 namespace MB
 {
@@ -36,6 +37,8 @@ namespace MB
     std::string StructMemberArrayCountName;
     std::string ParamMemberArrayCountName;
     SourceTemplateType VectorInstanceTemplateType;
+    //! A parameter with this name will not be C++ified
+    std::vector<std::string> PreserveParameterNames;
 
     RAIIClassCustomization()
       : SourceCreateMethod()
@@ -45,13 +48,15 @@ namespace MB
       , StructMemberArrayCountName()
       , ParamMemberArrayCountName()
       , VectorInstanceTemplateType(SourceTemplateType::ArrayResource)
+      , PreserveParameterNames()
     {
     }
 
     RAIIClassCustomization(const std::string& sourceCreateMethod, const std::string& singleInstanceClassName,
                            const std::string& vectorInstanceClassName, const std::string& resourceName, const std::string& structArrayCountName,
                            const std::string& paramArrayCountName,
-                           const SourceTemplateType vectorInstanceTemplateType = SourceTemplateType::ArrayResource)
+                           const SourceTemplateType vectorInstanceTemplateType = SourceTemplateType::ArrayResource,
+                           std::vector<std::string> preserveParameterNames = {})
       : SourceCreateMethod(sourceCreateMethod)
       , SingleInstanceClassName(singleInstanceClassName)
       , VectorInstanceClassName(vectorInstanceClassName)
@@ -59,9 +64,9 @@ namespace MB
       , StructMemberArrayCountName(structArrayCountName)
       , ParamMemberArrayCountName(paramArrayCountName)
       , VectorInstanceTemplateType(vectorInstanceTemplateType)
+      , PreserveParameterNames(std::move(preserveParameterNames))
     {
     }
   };
-
 }
 #endif

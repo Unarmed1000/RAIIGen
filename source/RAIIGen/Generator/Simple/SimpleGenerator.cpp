@@ -173,6 +173,11 @@ namespace MB
       return MethodArgument(value.Type, fullTypeString, argumentName, parameterName);
     }
 
+    MethodArgument ToMethodArgument(const ParameterRecord& value, const std::vector<std::string>& preserveParameterNames)
+    {
+      bool preserve = std::find(preserveParameterNames.begin(), preserveParameterNames.end(), value.ArgumentName) != preserveParameterNames.end();
+      return ToMethodArgument(value, !preserve);
+    }
 
     MethodArgument ToMethodArgument(const MemberVariable& value)
     {
@@ -219,7 +224,8 @@ namespace MB
 
     AnalysisResult AnalyzeCreate(std::unordered_map<std::string, MethodArgument>& rDstMap, const SimpleGeneratorConfig& config,
                                  const MatchedFunctionPair& functions, const std::vector<std::string>& forceNullParameter,
-                                 const AnalyzeMode analyzeMode, const std::string& paramMemberArrayCountName, const bool singleElementDelete)
+                                 const AnalyzeMode analyzeMode, const std::string& paramMemberArrayCountName, const bool singleElementDelete,
+                                 const std::vector<std::string>& preserveParameterNames)
     {
       bool rResourceParameterFound = false;
       AnalysisResult result;
@@ -228,7 +234,7 @@ namespace MB
         const auto typeName = itr->Type.Name;
         if (itr->ParamType == ParameterType::ErrorCode)
         {
-          auto createArgument = ToMethodArgument(*itr);
+          auto createArgument = ToMethodArgument(*itr, preserveParameterNames);
           if (itr->Type.IsPointer)
             createArgument.ParameterValue = std::string("&") + createArgument.ParameterValue;
           result.CreateArguments.push_back(createArgument);
@@ -252,7 +258,7 @@ namespace MB
 
 
                 {    // Build the create argument
-                  auto createArgument = ToMethodArgument(*itr);
+                  auto createArgument = ToMethodArgument(*itr, preserveParameterNames);
                   if (itr->Type.IsPointer)
                   {
                     if (analyzeMode == AnalyzeMode::VectorInstance)
@@ -269,7 +275,7 @@ namespace MB
                   result.CreateArguments.push_back(createArgument);
                 }
                 {    // Build the destroy argument
-                  auto destroyArgument = ToMethodArgument(*itr);
+                  auto destroyArgument = ToMethodArgument(*itr, preserveParameterNames);
                   if (itrFind->Type.IsPointer)
                   {
                     if (analyzeMode == AnalyzeMode::VectorInstance)
@@ -294,27 +300,27 @@ namespace MB
                 std::cout << "  Param matched: " << itr->Type.Name << "\n";
 
                 auto member = ToMemberVariable(*itr);
-                auto destroyArgument = ToMethodArgument(*itr);
+                auto destroyArgument = ToMethodArgument(*itr, preserveParameterNames);
 
                 if (analyzeMode == AnalyzeMode::Normal || itr->ArgumentName != paramMemberArrayCountName)
                 {
                   result.AdditionalMemberVariables.push_back(member);
-                  result.MethodArguments.push_back(ToMethodArgument(*itr));
-                  result.CreateArguments.push_back(ToMethodArgument(*itr));
+                  result.MethodArguments.push_back(ToMethodArgument(*itr, preserveParameterNames));
+                  result.CreateArguments.push_back(ToMethodArgument(*itr, preserveParameterNames));
                   destroyArgument.ParameterValue = member.Name;
                 }
                 else if (analyzeMode == AnalyzeMode::SingleInstance)
                 {
                   result.AdditionalMemberVariables.push_back(member);
-                  result.MethodArguments.push_back(ToMethodArgument(*itr));
-                  result.CreateArguments.push_back(ToMethodArgument(*itr));
+                  result.MethodArguments.push_back(ToMethodArgument(*itr, preserveParameterNames));
+                  result.CreateArguments.push_back(ToMethodArgument(*itr, preserveParameterNames));
                   destroyArgument.ParameterValue = "1";
                 }
                 else
                 {
                   result.AdditionalMemberVariables.push_back(member);
-                  result.MethodArguments.push_back(ToMethodArgument(*itr));
-                  result.CreateArguments.push_back(ToMethodArgument(*itr));
+                  result.MethodArguments.push_back(ToMethodArgument(*itr, preserveParameterNames));
+                  result.CreateArguments.push_back(ToMethodArgument(*itr, preserveParameterNames));
                   destroyArgument.ParameterValue = member.Name + ".size()";
                 }
                 rDstMap[itrFind->ArgumentName] = destroyArgument;
@@ -324,26 +330,30 @@ namespace MB
             {
               std::cout << "  Param force ignored: " << itr->Type.Name << "\n";
 
-              auto createArgument = ToMethodArgument(*itr);
+              auto createArgument = ToMethodArgument(*itr, preserveParameterNames);
               createArgument.ParameterValue = "nullptr";
               result.CreateArguments.push_back(createArgument);
 
-              auto destroyArgument = ToMethodArgument(*itr);
+              auto destroyArgument = ToMethodArgument(*itr, preserveParameterNames);
               destroyArgument.ParameterValue = "nullptr";
               rDstMap[itrFind->ArgumentName] = destroyArgument;
             }
           }
           else
           {
-            std::cout << "  Param not matched: " << itr->Type.Name << "\n";
+            std::cout << "  Param not matched: " << itr->Type.Name << " name: " << itr->ArgumentName << "\n";
             if (analyzeMode != AnalyzeMode::SingleInstance || itr->ArgumentName != paramMemberArrayCountName)
             {
-              result.MethodArguments.push_back(ToMethodArgument(*itr));
-              result.CreateArguments.push_back(ToMethodArgument(*itr));
+              result.MethodArguments.push_back(ToMethodArgument(*itr, preserveParameterNames));
+              result.CreateArguments.push_back(ToMethodArgument(*itr, preserveParameterNames));
+              if (itr->ArgumentName == paramMemberArrayCountName)
+              {
+                result.ResourceCountVariableName = itr->ArgumentName;
+              }
             }
             else if (analyzeMode == AnalyzeMode::SingleInstance)
             {
-              auto arg = ToMethodArgument(*itr);
+              auto arg = ToMethodArgument(*itr, preserveParameterNames);
               arg.ParameterValue = "1";
               result.CreateArguments.push_back(arg);
             }
@@ -366,7 +376,7 @@ namespace MB
                                                        CaseUtil::UpperCaseFirstCharacter(result.IntermediaryName));
 
         {    // Build the destroy argument
-          auto destroyArgument = ToMethodArgument(*itrFind);
+          auto destroyArgument = ToMethodArgument(*itrFind, preserveParameterNames);
           if (itrFind->Type.IsPointer)
           {
             if (analyzeMode == AnalyzeMode::VectorInstance)
@@ -405,7 +415,9 @@ namespace MB
       {
         auto itrFindDst = dstMap.find(itr->ArgumentName);
         if (itrFindDst != dstMap.end())
+        {
           rResult.DestroyArguments.push_back(itrFindDst->second);
+        }
         else
         {
           auto found = LookupParameterInStruct(capture, rResult.CreateArguments, *itr);
@@ -445,12 +457,13 @@ namespace MB
 
     AnalysisResult Analyze(const Capture& capture, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions,
                            const std::string& lowerCamelCaseClassName, const std::vector<std::string>& forceNullParameter,
-                           const AnalyzeMode analyzeMode, const std::string& paramMemberArrayCountName, const bool singleElementDelete)
+                           const AnalyzeMode analyzeMode, const std::string& paramMemberArrayCountName, const bool singleElementDelete,
+                           const std::vector<std::string>& preserveParameterNames)
     {
       std::unordered_map<std::string, MethodArgument> dstMap;
 
-      AnalysisResult result =
-        AnalyzeCreate(dstMap, config, functions, forceNullParameter, analyzeMode, paramMemberArrayCountName, singleElementDelete);
+      AnalysisResult result = AnalyzeCreate(dstMap, config, functions, forceNullParameter, analyzeMode, paramMemberArrayCountName,
+                                            singleElementDelete, preserveParameterNames);
       AnalyzeDestroy(result, capture, config, functions, analyzeMode, dstMap);
 
       std::copy(result.AdditionalMemberVariables.begin(), result.AdditionalMemberVariables.end(), std::back_inserter(result.AllMemberVariables));
@@ -938,21 +951,22 @@ namespace MB
                        [createMethodName](const RAIIClassCustomization& val) { return val.SourceCreateMethod == createMethodName; });
         if (itrCustom == config.RAIIClassCustomizations.end())
         {
-          const auto result =
-            Analyze(capture, config, *itr, CaseUtil::LowerCaseFirstCharacter(itr->Name), config.ForceNullParameter, AnalyzeMode::Normal, "", true);
+          const auto result = Analyze(capture, config, *itr, CaseUtil::LowerCaseFirstCharacter(itr->Name), config.ForceNullParameter,
+                                      AnalyzeMode::Normal, "", true, {});
           CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
           managed.push_back(FullAnalysis(*itr, result, AnalyzeMode::Normal, SourceTemplateType::NormalResource));
         }
         else
         {
           auto result = Analyze(capture, config, *itr, itrCustom->SingleInstanceClassName, config.ForceNullParameter, AnalyzeMode::SingleInstance,
-                                itrCustom->ParamMemberArrayCountName, true);
+                                itrCustom->ParamMemberArrayCountName, true, {});
           CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
           managed.push_back(FullAnalysis(*itr, result, AnalyzeMode::SingleInstance, SourceTemplateType::NormalResource));
 
           result = Analyze(capture, config, *itr, itrCustom->VectorInstanceClassName, config.ForceNullParameter, AnalyzeMode::VectorInstance,
                            itrCustom->ParamMemberArrayCountName,
-                           itrCustom->VectorInstanceTemplateType == SourceTemplateType::ArrayAllocationButSingleInstanceDestroy);
+                           itrCustom->VectorInstanceTemplateType == SourceTemplateType::ArrayAllocationButSingleInstanceDestroy,
+                           itrCustom->PreserveParameterNames);
           CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
           managed.push_back(FullAnalysis(*itr, result, AnalyzeMode::VectorInstance, itrCustom->VectorInstanceTemplateType));
         }

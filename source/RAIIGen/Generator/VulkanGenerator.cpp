@@ -81,9 +81,9 @@ namespace MB
       RAIIClassCustomization("vkAllocateCommandBuffers", "CommandBuffer", "CommandBuffers", "commandBuffers", "commandBufferCount", ""),
       RAIIClassCustomization("vkAllocateDescriptorSets", "DescriptorSet", "DescriptorSets", "descriptorSets", "descriptorSetCount", ""),
       RAIIClassCustomization("vkCreateComputePipelines", "ComputePipeline", "ComputePipelines", "computePipelines", "", "createInfoCount",
-                             SourceTemplateType::ArrayAllocationButSingleInstanceDestroy),
+                             SourceTemplateType::ArrayAllocationButSingleInstanceDestroy, {"pCreateInfos"}),
       RAIIClassCustomization("vkCreateGraphicsPipelines", "GraphicsPipeline", "GraphicsPipelines", "graphicsPipelines", "", "createInfoCount",
-                             SourceTemplateType::ArrayAllocationButSingleInstanceDestroy),
+                             SourceTemplateType::ArrayAllocationButSingleInstanceDestroy, {"pCreateInfos"}),
     };
 
 
