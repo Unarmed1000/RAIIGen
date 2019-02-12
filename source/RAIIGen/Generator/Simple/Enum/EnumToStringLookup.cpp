@@ -77,7 +77,7 @@ namespace MB
 
     std::string GenerateEnumMember(const VersionGuardConfig& versionGuard, const std::string& snippet, const EnumMemberRecord& enumMember)
     {
-      //guardConfig.ToGuardString(version);
+      // guardConfig.ToGuardString(version);
       std::string content(snippet);
       StringUtil::Replace(content, "##ENUM_MEMBER_NAME##", enumMember.Name);
 
@@ -158,7 +158,8 @@ namespace MB
             std::string methodContent = snippets.Method;
             if (config.VersionGuard.IsValid && itrFind->second.Version != VersionRecord())
             {
-              methodContent = fmt::format("#if {0}{1}{2}{1}#endif", config.VersionGuard.ToGuardString(itrFind->second.Version), END_OF_LINE, methodContent);
+              methodContent =
+                fmt::format("#if {0}{1}{2}{1}#endif", config.VersionGuard.ToGuardString(itrFind->second.Version), END_OF_LINE, methodContent);
             }
 
             StringUtil::Replace(methodContent, "##C_TYPE_NAME##", itrFind->second.Name);
@@ -180,7 +181,8 @@ namespace MB
     }
 
 
-    void ProcessMultipleFile(const EnumToStringSnippets& snippets, const Capture& capture, const SimpleGeneratorConfig& config, const IO::Path& dstRootPath, const IO::Path& dstFilePath, const bool useSeperateFiles)
+    void ProcessMultipleFile(const EnumToStringSnippets& snippets, const Capture& capture, const SimpleGeneratorConfig& config,
+                             const IO::Path& dstRootPath, const IO::Path& dstFilePath, const bool useSeperateFiles)
     {
       IO::Directory::CreateDirectory(dstFilePath);
 
@@ -219,8 +221,8 @@ namespace MB
   }
 
 
-
-  void EnumToStringLookup::Process(const Capture& capture, const SimpleGeneratorConfig& config, const IO::Path& templateRoot, const IO::Path& dstRootPath, const IO::Path& dstFileName, const bool useSeperateFiles)
+  void EnumToStringLookup::Process(const Capture& capture, const SimpleGeneratorConfig& config, const IO::Path& templateRoot,
+                                   const IO::Path& dstRootPath, const IO::Path& dstFileName, const bool useSeperateFiles)
   {
     EnumToStringSnippets snippets = LoadSnippets(templateRoot);
 

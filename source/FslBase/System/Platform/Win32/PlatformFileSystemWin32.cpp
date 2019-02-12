@@ -1,34 +1,34 @@
 #ifdef _WIN32
 /****************************************************************************************************************************************************
-* Copyright (c) 2015 Freescale Semiconductor, Inc.
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-*    * Redistributions of source code must retain the above copyright notice,
-*      this list of conditions and the following disclaimer.
-*
-*    * Redistributions in binary form must reproduce the above copyright notice,
-*      this list of conditions and the following disclaimer in the documentation
-*      and/or other materials provided with the distribution.
-*
-*    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
-*      its contributors may be used to endorse or promote products derived from
-*      this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-* ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-****************************************************************************************************************************************************/
+ * Copyright (c) 2015 Freescale Semiconductor, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *    * Redistributions of source code must retain the above copyright notice,
+ *      this list of conditions and the following disclaimer.
+ *
+ *    * Redistributions in binary form must reproduce the above copyright notice,
+ *      this list of conditions and the following disclaimer in the documentation
+ *      and/or other materials provided with the distribution.
+ *
+ *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
+ *      its contributors may be used to endorse or promote products derived from
+ *      this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ****************************************************************************************************************************************************/
 
 #include <FslBase/System/Platform/PlatformFileSystem.hpp>
 #include <FslBase/Exceptions.hpp>
@@ -55,10 +55,9 @@ namespace Fsl
       bool operator==(const FileData& rhs) const
       {
         if (!IsDataValid)
-          return ! rhs.IsDataValid;
+          return !rhs.IsDataValid;
 
-        return AttributeData.dwFileAttributes == rhs.AttributeData.dwFileAttributes &&
-               AttributeData.nFileSizeLow == rhs.AttributeData.nFileSizeLow &&
+        return AttributeData.dwFileAttributes == rhs.AttributeData.dwFileAttributes && AttributeData.nFileSizeLow == rhs.AttributeData.nFileSizeLow &&
                AttributeData.nFileSizeHigh == rhs.AttributeData.nFileSizeHigh &&
                CompareFileTime(&AttributeData.ftLastWriteTime, &rhs.AttributeData.ftLastWriteTime) == 0;
       }
@@ -100,8 +99,7 @@ namespace Fsl
 
       inline bool IsSpecialDirectory(const WIN32_FIND_DATA& fd)
       {
-        return (fd.cFileName[0] == L'.' && fd.cFileName[1] == 0) ||
-               (fd.cFileName[0] == L'.' && fd.cFileName[1] == L'.' && fd.cFileName[2] == 0);
+        return (fd.cFileName[0] == L'.' && fd.cFileName[1] == 0) || (fd.cFileName[0] == L'.' && fd.cFileName[1] == L'.' && fd.cFileName[2] == 0);
       }
 
 
@@ -129,7 +127,7 @@ namespace Fsl
                 AppendEntry(rResult, path, fd);
               }
 
-              if (isDirectory && includeSubdirectories && ! IsSpecialDirectory(fd))
+              if (isDirectory && includeSubdirectories && !IsSpecialDirectory(fd))
               {
                 const std::string strFilename(PlatformWin32::Narrow(std::wstring(fd.cFileName)));
                 const Path subDir = Path::Combine(path, strFilename);
@@ -191,11 +189,12 @@ namespace Fsl
     }
 
 
-    void PlatformFileSystem::GetContent(PathDeque& rResult, const Path& path, const SearchOptions searchOptions, const FileAttributes& attributeFilter)
+    void PlatformFileSystem::GetContent(PathDeque& rResult, const Path& path, const SearchOptions searchOptions,
+                                        const FileAttributes& attributeFilter)
     {
       rResult.clear();
       FileAttributes attr;
-      if (! TryGetAttributes(path, attr) || ! attr.HasFlag(FileAttributes::Directory))
+      if (!TryGetAttributes(path, attr) || !attr.HasFlag(FileAttributes::Directory))
         throw DirectoryNotFoundException(path.ToAsciiString());
 
       switch (searchOptions)

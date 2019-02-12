@@ -47,29 +47,23 @@ namespace MB
     const auto BYTES_PER_PIXEL_UNDEFINED = "PixelFormatFlags::BytesPerPixelUndefined";
 
 
-    std::vector<FormatRecord > g_numericFormat =
-    {
-      FormatRecord("_UNORM", "PixelFormatFlags::NF_UNorm"),
-      FormatRecord("_SNORM", "PixelFormatFlags::NF_SNorm"),
-      FormatRecord("_USCALED", "PixelFormatFlags::NF_UScaled"),
-      FormatRecord("_SSCALED", "PixelFormatFlags::NF_SScaled"),
-      FormatRecord("_UINT", "PixelFormatFlags::NF_UInt"),
-      FormatRecord("_SINT", "PixelFormatFlags::NF_SInt"),
-      FormatRecord("_UFLOAT", "PixelFormatFlags::NF_UFloat"),
-      FormatRecord("_SFLOAT", "PixelFormatFlags::NF_SFloat"),
+    std::vector<FormatRecord> g_numericFormat = {
+      FormatRecord("_UNORM", "PixelFormatFlags::NF_UNorm"),     FormatRecord("_SNORM", "PixelFormatFlags::NF_SNorm"),
+      FormatRecord("_USCALED", "PixelFormatFlags::NF_UScaled"), FormatRecord("_SSCALED", "PixelFormatFlags::NF_SScaled"),
+      FormatRecord("_UINT", "PixelFormatFlags::NF_UInt"),       FormatRecord("_SINT", "PixelFormatFlags::NF_SInt"),
+      FormatRecord("_UFLOAT", "PixelFormatFlags::NF_UFloat"),   FormatRecord("_SFLOAT", "PixelFormatFlags::NF_SFloat"),
       FormatRecord("_SRGB", "PixelFormatFlags::NF_Srgb"),
     };
 
 
-    std::vector<FormatRecord > g_compression =
-    {
+    std::vector<FormatRecord> g_compression = {
       FormatRecord("BC", "PixelFormatFlags::CS_BC"),
       FormatRecord("ETC", "PixelFormatFlags::CS_ETC2"),
       FormatRecord("EAC", "PixelFormatFlags::CS_EAC"),
       FormatRecord("ASTC", "PixelFormatFlags::CS_ASTC"),
     };
 
-    std::string TryGetFormat(const std::vector<FormatRecord >& formatRecords, const std::string& name)
+    std::string TryGetFormat(const std::vector<FormatRecord>& formatRecords, const std::string& name)
     {
       for (auto itr = formatRecords.begin(); itr != formatRecords.end(); ++itr)
       {
@@ -91,7 +85,7 @@ namespace MB
       if (index == std::string::npos)
         return std::string();
 
-      const auto firstPart = name.substr(0,index);
+      const auto firstPart = name.substr(0, index);
       return TryGetFormat(g_compression, firstPart);
     }
 
@@ -135,7 +129,7 @@ namespace MB
           currentNumber[numDigits] = name[i];
           ++numDigits;
         }
-        else if(numDigits > 0)
+        else if (numDigits > 0)
         {
           result.push_back(ToNum(currentNumber, numDigits));
           numDigits = 0;
@@ -158,7 +152,7 @@ namespace MB
 
       const auto firstPart = name.substr(0, index);
       auto values = TryGetValues(firstPart);
-      if( values.size() < 0 )
+      if (values.size() < 0)
         return BYTES_PER_PIXEL_UNDEFINED;
 
       uint64_t totalBits = 0;
@@ -169,7 +163,7 @@ namespace MB
       if ((totalBits % 8) != 0)
         throw NotSupportedException("We only support formats that can be contained in full bytes");
 
-      if( totalBytes <= 0 )
+      if (totalBytes <= 0)
         return BYTES_PER_PIXEL_UNDEFINED;
 
       std::stringstream result;
@@ -180,9 +174,8 @@ namespace MB
 
     std::string TryGetPack(const std::string& name)
     {
-      if( StringUtil::EndsWith(name, "PACK8")   || StringUtil::EndsWith(name, "PACK16") ||
-          StringUtil::EndsWith(name, "PACK32")  || StringUtil::EndsWith(name, "PACK64") ||
-          StringUtil::EndsWith(name, "PACK128") || StringUtil::EndsWith(name, "PACK256") )
+      if (StringUtil::EndsWith(name, "PACK8") || StringUtil::EndsWith(name, "PACK16") || StringUtil::EndsWith(name, "PACK32") ||
+          StringUtil::EndsWith(name, "PACK64") || StringUtil::EndsWith(name, "PACK128") || StringUtil::EndsWith(name, "PACK256"))
       {
         return std::string("PixelFormatFlags::UsesHostEndianness");
       }
@@ -193,7 +186,7 @@ namespace MB
     std::string GetEncodedName(const EnumMemberRecord& enumMember)
     {
       std::string removePrefix("VK_FORMAT_");
-      if (! StringUtil::StartsWith(enumMember.Name, removePrefix))
+      if (!StringUtil::StartsWith(enumMember.Name, removePrefix))
       {
         std::cout << "WARNING: type did not start with: " << removePrefix << "\n";
         return enumMember.Name;
@@ -224,14 +217,18 @@ namespace MB
         result << " | " + pack;
       result << ",";
 
-      //return result.str();
+      // return result.str();
 
       std::stringstream result2;
-      // result2 << "static_assert( ((static_cast<uint32_t>(PixelFormat::" << newName << ") & static_cast<uint32_t>(PixelFormatFlags::BIT_MASK_FORMAT_ID)) - static_cast<uint32_t>(PixelFormat::ENUM_BEGIN_RANGE)) == " << enumMember.UnsignedValue << ", \"The index did not match our assumption\");";
-      //result2 << newName;
-      //result2 << "PixelFormat::" << newName << ",";
+      // result2 << "static_assert( ((static_cast<uint32_t>(PixelFormat::" << newName << ") &
+      // static_cast<uint32_t>(PixelFormatFlags::BIT_MASK_FORMAT_ID)) - static_cast<uint32_t>(PixelFormat::ENUM_BEGIN_RANGE)) == " <<
+      // enumMember.UnsignedValue << ", \"The index did not match our assumption\");";
+      // result2 << newName;
+      // result2 << "PixelFormat::" << newName << ",";
       result2 << "case PixelFormat::" << newName << ":";
-      //result2 << "static_assert( ((static_cast<uint32_t>(PixelFormat::" << newName << ") & static_cast<uint32_t>(PixelFormatFlags::BIT_MASK_FORMAT_ID)) - static_cast<uint32_t>(PixelFormat::ENUM_BEGIN_RANGE)) == static_cast<uint32_t>(" << enumMember.UnsignedValue << " - VK_FORMAT_BEGIN_RANGE), \"The formatId did not match the Vulkan format\");";
+      // result2 << "static_assert( ((static_cast<uint32_t>(PixelFormat::" << newName << ") &
+      // static_cast<uint32_t>(PixelFormatFlags::BIT_MASK_FORMAT_ID)) - static_cast<uint32_t>(PixelFormat::ENUM_BEGIN_RANGE)) ==
+      // static_cast<uint32_t>(" << enumMember.UnsignedValue << " - VK_FORMAT_BEGIN_RANGE), \"The formatId did not match the Vulkan format\");";
 
       return result2.str();
     }
@@ -251,7 +248,7 @@ namespace MB
 
     for (auto itr = formatRecord.Members.begin(); itr != formatRecord.Members.end(); ++itr)
     {
-      //std::cout << itr->Name << "\n";
+      // std::cout << itr->Name << "\n";
       std::cout << GetEncodedName(*itr) << "\n";
     }
   }

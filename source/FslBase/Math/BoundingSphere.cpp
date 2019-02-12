@@ -1,33 +1,33 @@
 /****************************************************************************************************************************************************
-* Copyright (c) 2016 Freescale Semiconductor, Inc.
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-*    * Redistributions of source code must retain the above copyright notice,
-*      this list of conditions and the following disclaimer.
-*
-*    * Redistributions in binary form must reproduce the above copyright notice,
-*      this list of conditions and the following disclaimer in the documentation
-*      and/or other materials provided with the distribution.
-*
-*    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
-*      its contributors may be used to endorse or promote products derived from
-*      this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-* ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-****************************************************************************************************************************************************/
+ * Copyright (c) 2016 Freescale Semiconductor, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *    * Redistributions of source code must retain the above copyright notice,
+ *      this list of conditions and the following disclaimer.
+ *
+ *    * Redistributions in binary form must reproduce the above copyright notice,
+ *      this list of conditions and the following disclaimer in the documentation
+ *      and/or other materials provided with the distribution.
+ *
+ *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
+ *      its contributors may be used to endorse or promote products derived from
+ *      this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ****************************************************************************************************************************************************/
 
 // The functions in this file are a port of an MIT licensed library: MonaGame - BoundingSphere.cs.
 
@@ -72,13 +72,15 @@ SOFTWARE.
 
 namespace Fsl
 {
-
   BoundingSphere BoundingSphere::Transform(const Matrix& matrix)
   {
     const float* mat = matrix.DirectAccess();
     BoundingSphere sphere;
     sphere.Center = Vector3::Transform(Center, matrix);
-    sphere.Radius = Radius * ((float)std::sqrt((double)std::max(((mat[_M11] * mat[_M11]) + (mat[_M12] * mat[_M12])) + (mat[_M13] * mat[_M13]), std::max(((mat[_M21] * mat[_M21]) + (mat[_M22] * mat[_M22])) + (mat[_M23] * mat[_M23]), ((mat[_M31] * mat[_M31]) + (mat[_M32] * mat[_M32])) + (mat[_M33] * mat[_M33])))));
+    sphere.Radius =
+      Radius * ((float)std::sqrt((double)std::max(((mat[_M11] * mat[_M11]) + (mat[_M12] * mat[_M12])) + (mat[_M13] * mat[_M13]),
+                                                  std::max(((mat[_M21] * mat[_M21]) + (mat[_M22] * mat[_M22])) + (mat[_M23] * mat[_M23]),
+                                                           ((mat[_M31] * mat[_M31]) + (mat[_M32] * mat[_M32])) + (mat[_M33] * mat[_M33])))));
     return sphere;
   }
 
@@ -87,12 +89,15 @@ namespace Fsl
   {
     const float* mat = matrix.DirectAccess();
     rResult.Center = Vector3::Transform(Center, matrix);
-    rResult.Radius = Radius * ((float)std::sqrt((double)std::max(((mat[_M11] * mat[_M11]) + (mat[_M12] * mat[_M12])) + (mat[_M13] * mat[_M13]), std::max(((mat[_M21] * mat[_M21]) + (mat[_M22] * mat[_M22])) + (mat[_M23] * mat[_M23]), ((mat[_M31] * mat[_M31]) + (mat[_M32] * mat[_M32])) + (mat[_M33] * mat[_M33])))));
+    rResult.Radius =
+      Radius * ((float)std::sqrt((double)std::max(((mat[_M11] * mat[_M11]) + (mat[_M12] * mat[_M12])) + (mat[_M13] * mat[_M13]),
+                                                  std::max(((mat[_M21] * mat[_M21]) + (mat[_M22] * mat[_M22])) + (mat[_M23] * mat[_M23]),
+                                                           ((mat[_M31] * mat[_M31]) + (mat[_M32] * mat[_M32])) + (mat[_M33] * mat[_M33])))));
   }
 
   ContainmentType BoundingSphere::Contains(const BoundingBox& box) const
   {
-    //check if all corner is in sphere
+    // check if all corner is in sphere
     bool inside = true;
     // FIX: Update this code so it doens't utilize dynamic memory
     const auto corners = box.GetCorners();
@@ -108,7 +113,7 @@ namespace Fsl
     if (inside)
       return ContainmentType::Contains;
 
-    //check if the distance from sphere center to cube face < radius
+    // check if the distance from sphere center to cube face < radius
     double dmin = 0;
 
     if (Center.X < box.Min.X)
@@ -129,7 +134,7 @@ namespace Fsl
     if (dmin <= Radius * Radius)
       return ContainmentType::Intersects;
 
-    //else disjoint
+    // else disjoint
     return ContainmentType::Disjoint;
   }
 
@@ -140,7 +145,7 @@ namespace Fsl
 
   ContainmentType BoundingSphere::Contains(const BoundingFrustum& frustum) const
   {
-    //check if all corner is in sphere
+    // check if all corner is in sphere
     bool inside = true;
 
     // FIX: Update this code so it doens't utilize dynamic memory
@@ -156,14 +161,14 @@ namespace Fsl
     if (inside)
       return ContainmentType::Contains;
 
-    //check if the distance from sphere center to frustum face < radius
+    // check if the distance from sphere center to frustum face < radius
     double dmin = 0;
-    //TODO : calcul dmin
+    // TODO : calcul dmin
 
     if (dmin <= Radius * Radius)
       return ContainmentType::Intersects;
 
-    //else disjoint
+    // else disjoint
     return ContainmentType::Disjoint;
   }
 
@@ -220,9 +225,7 @@ namespace Fsl
   void BoundingSphere::CreateFromBoundingBox(const BoundingBox& box, BoundingSphere& rResult)
   {
     // Find the center of the box.
-    const Vector3 center((box.Min.X + box.Max.X) / 2.0f,
-      (box.Min.Y + box.Max.Y) / 2.0f,
-      (box.Min.Z + box.Max.Z) / 2.0f);
+    const Vector3 center((box.Min.X + box.Max.X) / 2.0f, (box.Min.Y + box.Max.Y) / 2.0f, (box.Min.Z + box.Max.Z) / 2.0f);
 
     // Find the distance between the center and one of the corners of the box.
     const float radius = Vector3::Distance(center, box.Max);
@@ -299,7 +302,7 @@ namespace Fsl
       const float sqDist = diff.LengthSquared();
       if (sqDist > sqRadius)
       {
-        const float distance = std::sqrt(sqDist); // equal to diff.Length();
+        const float distance = std::sqrt(sqDist);    // equal to diff.Length();
         Vector3 direction = diff / distance;
         Vector3 G = center - radius * direction;
         center = (G + points[i]) / 2;
@@ -323,23 +326,23 @@ namespace Fsl
   {
     Vector3 ocenterToaCenter = additional.Center - original.Center;
     const float distance = ocenterToaCenter.Length();
-    if (distance <= original.Radius + additional.Radius)//intersect
+    if (distance <= original.Radius + additional.Radius)    // intersect
     {
-      if (distance <= original.Radius - additional.Radius)//original contain additional
+      if (distance <= original.Radius - additional.Radius)    // original contain additional
       {
         rResult = original;
         return;
       }
-      if (distance <= additional.Radius - original.Radius)//additional contain original
+      if (distance <= additional.Radius - original.Radius)    // additional contain original
       {
         rResult = additional;
         return;
       }
     }
-    //else find center of new sphere and radius
+    // else find center of new sphere and radius
     const float leftRadius = std::max(original.Radius - distance, additional.Radius);
     const float Rightradius = std::max(original.Radius + distance, additional.Radius);
-    ocenterToaCenter = ocenterToaCenter + (((leftRadius - Rightradius) / (2 * ocenterToaCenter.Length())) * ocenterToaCenter);//
+    ocenterToaCenter = ocenterToaCenter + (((leftRadius - Rightradius) / (2 * ocenterToaCenter.Length())) * ocenterToaCenter);    //
 
     rResult = BoundingSphere(original.Center + ocenterToaCenter, (leftRadius + Rightradius) / 2.0f);
   }
@@ -396,7 +399,6 @@ namespace Fsl
   {
     return ray.Intersects(*this, rResult);
   }
-
 
 
 }

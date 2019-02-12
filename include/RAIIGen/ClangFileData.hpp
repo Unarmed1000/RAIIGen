@@ -35,12 +35,13 @@ namespace MB
     CXIndex m_index;
     CXTranslationUnit m_tu;
     CXCursor m_rootCursor;
+
   public:
     ClangFileData(const BasicConfig& basicConfig, const Fsl::IO::Path& filename, const std::vector<Fsl::IO::Path>& includePaths)
     {
       using namespace MB;
 
-      //char* clangAargs[] =
+      // char* clangAargs[] =
       //{
       //  "-Ic:/Program Files (x86)/AMD APP SDK/3.0/include",
       //  "-Ie:/_sdk/amdovx-core/openvx/include",
@@ -66,8 +67,10 @@ namespace MB
         clangArgs[i] = clangArgsTemp[i].c_str();
 
       m_index = clang_createIndex(0, 1);
-      //m_tu = clang_createTranslationUnitFromSourceFile(m_index, filename.ToUTF8String().c_str(), static_cast<int>(clangArgs.size()), clangArgs.data(), 0, nullptr);
-      m_tu = clang_parseTranslationUnit(m_index, filename.ToUTF8String().c_str(), clangArgs.data(), static_cast<int>(clangArgs.size()), nullptr, 0, CXTranslationUnit_None);
+      // m_tu = clang_createTranslationUnitFromSourceFile(m_index, filename.ToUTF8String().c_str(), static_cast<int>(clangArgs.size()),
+      // clangArgs.data(), 0, nullptr);
+      m_tu = clang_parseTranslationUnit(m_index, filename.ToUTF8String().c_str(), clangArgs.data(), static_cast<int>(clangArgs.size()), nullptr, 0,
+                                        CXTranslationUnit_None);
 
       if (!m_tu)
       {

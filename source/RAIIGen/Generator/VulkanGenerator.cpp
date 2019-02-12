@@ -42,14 +42,13 @@ using namespace Fsl;
 
 namespace MB
 {
-
   namespace
   {
     // OpenCL
-    //const auto VULKAN_CREATE_FUNCTION = "clCreate";
-    //const auto VULKAN_DESTROY_FUNCTION = "clDestroy";
-    //const auto VULKAN_ALLOCATE_FUNCTION = "clAllocate";
-    //const auto VULKAN_FREE_FUNCTION = "clFree";
+    // const auto VULKAN_CREATE_FUNCTION = "clCreate";
+    // const auto VULKAN_DESTROY_FUNCTION = "clDestroy";
+    // const auto VULKAN_ALLOCATE_FUNCTION = "clAllocate";
+    // const auto VULKAN_FREE_FUNCTION = "clFree";
 
 
     const auto CREATE_FUNCTION = "vkCreate";
@@ -65,16 +64,12 @@ namespace MB
     const auto ERRORCODE_TYPE_NAME = "VkResult";
 
 
-    const std::vector<FunctionNamePair> g_functionPairs
-    {
-      FunctionNamePair(CREATE_FUNCTION, DESTROY_FUNCTION),
-      FunctionNamePair(ALLOCATE_FUNCTION, FREE_FUNCTION)
-    };
+    const std::vector<FunctionNamePair> g_functionPairs{FunctionNamePair(CREATE_FUNCTION, DESTROY_FUNCTION),
+                                                        FunctionNamePair(ALLOCATE_FUNCTION, FREE_FUNCTION)};
 
 
     // Manual matches for methods that don't follow 'standard' patterns
-    const std::vector<FunctionNamePair> g_manualFunctionMatches
-    {
+    const std::vector<FunctionNamePair> g_manualFunctionMatches{
       // Pipelines are destroyed with vkDestroyPipeline
       FunctionNamePair("vkCreateGraphicsPipelines", "vkDestroyPipeline"),
       FunctionNamePair("vkCreateComputePipelines", "vkDestroyPipeline"),
@@ -82,65 +77,52 @@ namespace MB
     };
 
 
-    const std::vector<RAIIClassCustomization> g_arrayRAIIClassCustomization
-    {
+    const std::vector<RAIIClassCustomization> g_arrayRAIIClassCustomization{
       RAIIClassCustomization("vkAllocateCommandBuffers", "CommandBuffer", "CommandBuffers", "commandBuffers", "commandBufferCount", ""),
       RAIIClassCustomization("vkAllocateDescriptorSets", "DescriptorSet", "DescriptorSets", "descriptorSets", "descriptorSetCount", ""),
-      RAIIClassCustomization("vkCreateComputePipelines", "ComputePipeline", "ComputePipelines", "computePipelines", "", "createInfoCount", SourceTemplateType::ArrayAllocationButSingleInstanceDestroy),
-      RAIIClassCustomization("vkCreateGraphicsPipelines", "GraphicsPipeline", "GraphicsPipelines", "graphicsPipelines", "", "createInfoCount", SourceTemplateType::ArrayAllocationButSingleInstanceDestroy),
+      RAIIClassCustomization("vkCreateComputePipelines", "ComputePipeline", "ComputePipelines", "computePipelines", "", "createInfoCount",
+                             SourceTemplateType::ArrayAllocationButSingleInstanceDestroy),
+      RAIIClassCustomization("vkCreateGraphicsPipelines", "GraphicsPipeline", "GraphicsPipelines", "graphicsPipelines", "", "createInfoCount",
+                             SourceTemplateType::ArrayAllocationButSingleInstanceDestroy),
     };
 
 
-    const std::vector<ClassFunctionAbsorb> g_classFunctionAbsorbtion
-    {
+    const std::vector<ClassFunctionAbsorb> g_classFunctionAbsorbtion{};
+
+
+    const std::unordered_map<std::string, RAIIClassMethodOverrides> g_classMethodOverride = {
+      {"SwapchainKHR", RAIIClassMethodOverrides("TemplateSnippet_ResetMemberHeader_CustomSwapchain.txt")},
     };
 
 
-    const std::unordered_map<std::string, RAIIClassMethodOverrides> g_classMethodOverride =
-    {
-      { "SwapchainKHR", RAIIClassMethodOverrides("TemplateSnippet_ResetMemberHeader_CustomSwapchain.txt") },
-    };
+    const std::vector<std::string> g_forceNullParameter{"VkAllocationCallbacks"};
 
 
-    const std::vector<std::string> g_forceNullParameter
-    {
-      "VkAllocationCallbacks"
-    };
-
-
-    const std::vector<FunctionGuard> g_functionGuards
-    {
+    const std::vector<FunctionGuard> g_functionGuards{
       // FunctionGuard("vkGetSwapchainStatusKHR", "VK_HEADER_VERSION >= 49")
     };
 
 
-    const std::vector<BlackListEntry> g_functionNameBlacklist
-    {
-      BlackListEntry("GetFenceStatus", BlackListMatch::Exact),
-      BlackListEntry("EXT", BlackListMatch::PostfixNotEntityName),
-      BlackListEntry("GOOGLE", BlackListMatch::PostfixNotEntityName),
-      BlackListEntry("KHR", BlackListMatch::PostfixNotEntityName),
-      BlackListEntry("KHX", BlackListMatch::PostfixNotEntityName),
-      BlackListEntry("AMD", BlackListMatch::PostfixNotEntityName),
-      BlackListEntry("NVX", BlackListMatch::PostfixNotEntityName),
-      BlackListEntry("NV", BlackListMatch::PostfixNotEntityName),
+    const std::vector<BlackListEntry> g_functionNameBlacklist{
+      BlackListEntry("GetFenceStatus", BlackListMatch::Exact),        BlackListEntry("EXT", BlackListMatch::PostfixNotEntityName),
+      BlackListEntry("GOOGLE", BlackListMatch::PostfixNotEntityName), BlackListEntry("KHR", BlackListMatch::PostfixNotEntityName),
+      BlackListEntry("KHX", BlackListMatch::PostfixNotEntityName),    BlackListEntry("AMD", BlackListMatch::PostfixNotEntityName),
+      BlackListEntry("NVX", BlackListMatch::PostfixNotEntityName),    BlackListEntry("NV", BlackListMatch::PostfixNotEntityName),
     };
 
 
-    const std::vector<BlackListEntry> g_enumNameBlacklist
-    {
-      //BlackListEntry("AMD", BlackListMatch::Always),
-      //BlackListEntry("EXT", BlackListMatch::Always),
-      //BlackListEntry("GOOGLE", BlackListMatch::Always),
-      //BlackListEntry("KHR", BlackListMatch::Always),
-      //BlackListEntry("KHX", BlackListMatch::Always),
-      //BlackListEntry("NV", BlackListMatch::Always),
-      //BlackListEntry("NVX", BlackListMatch::Always),
+    const std::vector<BlackListEntry> g_enumNameBlacklist{
+      // BlackListEntry("AMD", BlackListMatch::Always),
+      // BlackListEntry("EXT", BlackListMatch::Always),
+      // BlackListEntry("GOOGLE", BlackListMatch::Always),
+      // BlackListEntry("KHR", BlackListMatch::Always),
+      // BlackListEntry("KHX", BlackListMatch::Always),
+      // BlackListEntry("NV", BlackListMatch::Always),
+      // BlackListEntry("NVX", BlackListMatch::Always),
     };
 
 
-    const std::vector<BlackListEntry> g_enumMemberBlacklist
-    {
+    const std::vector<BlackListEntry> g_enumMemberBlacklist{
       BlackListEntry("_BEGIN_RANGE", BlackListMatch::Postfix),
       BlackListEntry("_END_RANGE", BlackListMatch::Postfix),
       BlackListEntry("_RANGE_SIZE", BlackListMatch::Postfix),
@@ -161,62 +143,56 @@ namespace MB
     };
 
 
-
     //! Not necessary for the Vulkan header as it was properly constructed!
-    const std::vector<FunctionParameterNameOverride> g_functionParameterNameOverride
-    {
-    };
+    const std::vector<FunctionParameterNameOverride> g_functionParameterNameOverride{};
 
 
-    const std::vector<FunctionParameterTypeOverride> g_functionParameterTypeOverride
-    {
-    };
+    const std::vector<FunctionParameterTypeOverride> g_functionParameterTypeOverride{};
 
-    const std::unordered_map<std::string, std::string> g_typeDefaultValues =
-    {
-      { "VkBuffer", DEFAULT_VALUE },
-      { "VkBufferView", DEFAULT_VALUE },
-      { "VkCommandBuffer", DEFAULT_VALUE },
-      { "VkCommandPool", DEFAULT_VALUE },
-      { "VkDebugReportCallbackEXT", DEFAULT_VALUE },
-      { "VkDescriptorPool", DEFAULT_VALUE },
-      { "VkDescriptorSet", DEFAULT_VALUE },
-      { "VkDescriptorSetLayout", DEFAULT_VALUE },
-      { "VkDevice", DEFAULT_VALUE },
-      { "VkDeviceMemory", DEFAULT_VALUE },
-      { "VkEvent", DEFAULT_VALUE },
-      { "VkFence", DEFAULT_VALUE },
-      { "VkFramebuffer", DEFAULT_VALUE },
-      { "VkImage", DEFAULT_VALUE },
-      { "VkImageView", DEFAULT_VALUE },
-      { "VkInstance", DEFAULT_VALUE },
-      { "VkPipeline", DEFAULT_VALUE },
-      { "VkPipelineCache", DEFAULT_VALUE },
-      { "VkPipelineLayout", DEFAULT_VALUE },
-      { "VkQueryPool", DEFAULT_VALUE },
-      { "VkRenderPass", DEFAULT_VALUE },
-      { "VkSampler", DEFAULT_VALUE },
-      { "VkSemaphore", DEFAULT_VALUE },
-      { "VkShaderModule", DEFAULT_VALUE },
-      { "VkSurfaceKHR", DEFAULT_VALUE },
-      { "VkSwapchainKHR", DEFAULT_VALUE },
-      { "VkSamplerYcbcrConversionKHR", DEFAULT_VALUE },
-      { "VkDescriptorUpdateTemplateKHR", DEFAULT_VALUE },
-      { "VkIndirectCommandsLayoutNVX", DEFAULT_VALUE },
-      { "VkObjectTableNVX", DEFAULT_VALUE },
-      { "VkValidationCacheEXT", DEFAULT_VALUE },
+    const std::unordered_map<std::string, std::string> g_typeDefaultValues = {
+      {"VkBuffer", DEFAULT_VALUE},
+      {"VkBufferView", DEFAULT_VALUE},
+      {"VkCommandBuffer", DEFAULT_VALUE},
+      {"VkCommandPool", DEFAULT_VALUE},
+      {"VkDebugReportCallbackEXT", DEFAULT_VALUE},
+      {"VkDescriptorPool", DEFAULT_VALUE},
+      {"VkDescriptorSet", DEFAULT_VALUE},
+      {"VkDescriptorSetLayout", DEFAULT_VALUE},
+      {"VkDevice", DEFAULT_VALUE},
+      {"VkDeviceMemory", DEFAULT_VALUE},
+      {"VkEvent", DEFAULT_VALUE},
+      {"VkFence", DEFAULT_VALUE},
+      {"VkFramebuffer", DEFAULT_VALUE},
+      {"VkImage", DEFAULT_VALUE},
+      {"VkImageView", DEFAULT_VALUE},
+      {"VkInstance", DEFAULT_VALUE},
+      {"VkPipeline", DEFAULT_VALUE},
+      {"VkPipelineCache", DEFAULT_VALUE},
+      {"VkPipelineLayout", DEFAULT_VALUE},
+      {"VkQueryPool", DEFAULT_VALUE},
+      {"VkRenderPass", DEFAULT_VALUE},
+      {"VkSampler", DEFAULT_VALUE},
+      {"VkSemaphore", DEFAULT_VALUE},
+      {"VkShaderModule", DEFAULT_VALUE},
+      {"VkSurfaceKHR", DEFAULT_VALUE},
+      {"VkSwapchainKHR", DEFAULT_VALUE},
+      {"VkSamplerYcbcrConversionKHR", DEFAULT_VALUE},
+      {"VkDescriptorUpdateTemplateKHR", DEFAULT_VALUE},
+      {"VkIndirectCommandsLayoutNVX", DEFAULT_VALUE},
+      {"VkObjectTableNVX", DEFAULT_VALUE},
+      {"VkValidationCacheEXT", DEFAULT_VALUE},
     };
   }
 
 
-  VulkanGenerator::VulkanGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
+  VulkanGenerator::VulkanGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot,
+                                   const Fsl::IO::Path& dstPath)
     : SimpleGenerator(capture,
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization,
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
-                                            g_functionGuards, g_functionNameBlacklist,
-                                            g_enumNameBlacklist, g_enumMemberBlacklist,
-                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, true, true,
-                                            VersionGuardConfig("VK_HEADER_VERSION >= {2}"),  true),
+                                            g_functionGuards, g_functionNameBlacklist, g_enumNameBlacklist, g_enumMemberBlacklist, TYPE_NAME_PREFIX,
+                                            FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, true, true, VersionGuardConfig("VK_HEADER_VERSION >= {2}"),
+                                            true),
                       templateRoot, dstPath)
   {
   }
@@ -225,10 +201,10 @@ namespace MB
   CaptureConfig VulkanGenerator::GetCaptureConfig()
   {
     std::deque<std::string> filters;
-    //filters.push_back(CREATE_FUNCTION);
-    //filters.push_back(DESTROY_FUNCTION);
-    //filters.push_back(ALLOCATE_FUNCTION);
-    //filters.push_back(FREE_FUNCTION);
+    // filters.push_back(CREATE_FUNCTION);
+    // filters.push_back(DESTROY_FUNCTION);
+    // filters.push_back(ALLOCATE_FUNCTION);
+    // filters.push_back(FREE_FUNCTION);
     return CaptureConfig(TYPE_NAME_PREFIX, filters, g_functionParameterNameOverride, g_functionParameterTypeOverride, false);
   }
 }

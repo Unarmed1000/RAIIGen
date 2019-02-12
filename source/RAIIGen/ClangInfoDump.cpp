@@ -11,15 +11,12 @@ namespace MB
 
   namespace ClangInfoDump
   {
-
-
-
-    //VKAPI_ATTR VkResult VKAPI_CALL vkCreateInstance(
+    // VKAPI_ATTR VkResult VKAPI_CALL vkCreateInstance(
     //  const VkInstanceCreateInfo*                 pCreateInfo,
     //  const VkAllocationCallbacks*                pAllocator,
     //  VkInstance*                                 pInstance);
     //
-    //FunctionDecl(vkCreateInstance)
+    // FunctionDecl(vkCreateInstance)
     //  - TypeRef(VkResult)
     //  - ParmDecl(pCreateInfo)
     //  --TypeRef(VkInstanceCreateInfo)
@@ -36,7 +33,6 @@ namespace MB
       if (cursorSpelling.find("vkCreate") == 0)
       {
         std::cout << std::string(currentLevel, '-') << " " << cursorKindName << " (" << cursorSpelling << ")\n";
-
       }
       else if (cursorSpelling.find("vkDestroy") == 0)
         std::cout << std::string(currentLevel, '-') << " " << cursorKindName << " (" << cursorSpelling << ")\n";
@@ -50,7 +46,7 @@ namespace MB
     CXChildVisitResult Visitor(CXCursor cursor, CXCursor /* parent */, CXClientData clientData)
     {
       CXSourceLocation location = clang_getCursorLocation(cursor);
-      //if (clang_Location_isFromMainFile(location) == 0)
+      // if (clang_Location_isFromMainFile(location) == 0)
       //  return CXChildVisit_Continue;
 
       CXCursorKind cursorKind = clang_getCursorKind(cursor);
@@ -59,10 +55,10 @@ namespace MB
       unsigned int nextLevel = curLevel + 1;
 
       bool useFallback = true;
-      //clang_getCursorType(cursor);
+      // clang_getCursorType(cursor);
       switch (cursorKind)
       {
-      //case CXCursor_FunctionDecl:
+      // case CXCursor_FunctionDecl:
       //  ExamineFunc(cursor, cursorKind, curLevel);
       //  break;
       case CXCursor_FieldDecl:
@@ -77,7 +73,7 @@ namespace MB
       default:
         break;
       }
-      if( useFallback )
+      if (useFallback)
         std::cout << std::string(curLevel, '-') << " " << GetCursorKindName(cursorKind) << " (" << GetCursorSpelling(cursor) << ")\n";
 
       clang_visitChildren(cursor, Visitor, &nextLevel);

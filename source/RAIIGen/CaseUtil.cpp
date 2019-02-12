@@ -49,7 +49,7 @@ namespace MB
       return content;
 
     std::string modded(content);
-    for (auto & rC : modded)
+    for (auto& rC : modded)
     {
       if (rC >= 'a' && rC <= 'z')
         rC -= CASE_OFFSET;
@@ -64,7 +64,7 @@ namespace MB
       return content;
 
     std::string modded(content);
-    for (auto & rC : modded)
+    for (auto& rC : modded)
     {
       if (rC >= 'A' && rC <= 'Z')
         rC += CASE_OFFSET;

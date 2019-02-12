@@ -99,7 +99,6 @@ namespace MB
           Members.push_back(AnalyzedMemberRecord(*itr));
         }
       }
-
     };
 
 
@@ -121,9 +120,9 @@ namespace MB
     }
 
 
-
-
-    std::string GenerateMemberParameterList(const std::deque<AnalyzedMemberRecord>& members, const std::unordered_map<std::string, AnalyzedStructRecord>& analyzedStructLookupDict, const bool unrollRecursively)
+    std::string GenerateMemberParameterList(const std::deque<AnalyzedMemberRecord>& members,
+                                            const std::unordered_map<std::string, AnalyzedStructRecord>& analyzedStructLookupDict,
+                                            const bool unrollRecursively)
     {
       bool isFirst = true;
       std::string content;
@@ -144,15 +143,15 @@ namespace MB
           }
           else
             content += itr->Source.Type.FullTypeString + " " + itr->Source.ArgumentName;
-
         }
       }
       return content;
     }
 
 
-
-    std::string GenerateParentMemberInitialization(const AnalyzedStructRecord& type, const std::string& strTemplate, const std::string& prefix, const std::unordered_map<std::string, AnalyzedStructRecord>& analyzedStructLookupDict, const bool unrollRecursively)
+    std::string GenerateParentMemberInitialization(const AnalyzedStructRecord& type, const std::string& strTemplate, const std::string& prefix,
+                                                   const std::unordered_map<std::string, AnalyzedStructRecord>& analyzedStructLookupDict,
+                                                   const bool unrollRecursively)
     {
       std::string result;
       for (auto itr = type.Members.begin(); itr != type.Members.end(); ++itr)
@@ -192,7 +191,9 @@ namespace MB
     }
 
 
-    std::string GenerateParentListInitializationParameterList(const AnalyzedStructRecord& type, const std::unordered_map<std::string, AnalyzedStructRecord>& analyzedStructLookupDict, const bool unrollRecursively)
+    std::string GenerateParentListInitializationParameterList(const AnalyzedStructRecord& type,
+                                                              const std::unordered_map<std::string, AnalyzedStructRecord>& analyzedStructLookupDict,
+                                                              const bool unrollRecursively)
     {
       bool isFirst = true;
       std::string result = "{";
@@ -233,7 +234,9 @@ namespace MB
     }
 
 
-    std::string GenerateParentListInitialization(const AnalyzedStructRecord& type, const std::string& strTemplate, const std::unordered_map<std::string, AnalyzedStructRecord>& analyzedStructLookupDict, const bool unrollRecursively)
+    std::string GenerateParentListInitialization(const AnalyzedStructRecord& type, const std::string& strTemplate,
+                                                 const std::unordered_map<std::string, AnalyzedStructRecord>& analyzedStructLookupDict,
+                                                 const bool unrollRecursively)
     {
       std::string parameters = GenerateParentListInitializationParameterList(type, analyzedStructLookupDict, unrollRecursively);
 
@@ -242,11 +245,15 @@ namespace MB
       return content;
     }
 
-    std::string GenerateUnrolledConstructor(const AnalyzedStructRecord& type, const StructSnippets& snippets, const std::unordered_map<std::string, AnalyzedStructRecord>& analyzedStructLookupDict, const bool unrollRecursively)
+    std::string GenerateUnrolledConstructor(const AnalyzedStructRecord& type, const StructSnippets& snippets,
+                                            const std::unordered_map<std::string, AnalyzedStructRecord>& analyzedStructLookupDict,
+                                            const bool unrollRecursively)
     {
       std::string createMethodParameters = GenerateMemberParameterList(type.Members, analyzedStructLookupDict, unrollRecursively);
-      std::string modernParentListInitialization = GenerateParentListInitialization(type, snippets.StructParentListInitialization, analyzedStructLookupDict, unrollRecursively);
-      std::string parentMemberInitialization = GenerateParentMemberInitialization(type, snippets.StructParentMemberInitialization, "this->", analyzedStructLookupDict, unrollRecursively);
+      std::string modernParentListInitialization =
+        GenerateParentListInitialization(type, snippets.StructParentListInitialization, analyzedStructLookupDict, unrollRecursively);
+      std::string parentMemberInitialization =
+        GenerateParentMemberInitialization(type, snippets.StructParentMemberInitialization, "this->", analyzedStructLookupDict, unrollRecursively);
 
       std::string result = snippets.StructConstructor;
       StringUtil::Replace(result, "##CREATE_METHOD_PARAMETERS##", createMethodParameters);
@@ -256,7 +263,8 @@ namespace MB
     }
 
 
-    std::string GenerateConstructors(const AnalyzedStructRecord& type, const StructSnippets& snippets, const std::unordered_map<std::string, AnalyzedStructRecord>& analyzedStructLookupDict)
+    std::string GenerateConstructors(const AnalyzedStructRecord& type, const StructSnippets& snippets,
+                                     const std::unordered_map<std::string, AnalyzedStructRecord>& analyzedStructLookupDict)
     {
       if (type.Members.size() <= 0)
         return std::string();
@@ -289,32 +297,22 @@ namespace MB
   }
 
 
-
-  CStructToCpp::CStructToCpp(const Capture& capture, const std::string& toolStatement, const std::string& namespaceName, const IO::Path& templateRoot, const IO::Path& dstFileName)
+  CStructToCpp::CStructToCpp(const Capture& capture, const std::string& toolStatement, const std::string& namespaceName, const IO::Path& templateRoot,
+                             const IO::Path& dstFileName)
   {
     StructSnippets snippets = LoadSnippets(templateRoot);
 
     auto structs = capture.GetStructs();
 
-    std::vector<std::string> skipTypes =
-    {
+    std::vector<std::string> skipTypes = {
       // FIX: these types use "fixed array size" type members  like "char test[2]"
-      "VkPhysicalDeviceLimits",
-      "VkPhysicalDeviceProperties",
-      "VkPhysicalDeviceMemoryProperties",
-      "VkImageBlit",
-      "VkExtensionProperties",
-      "VkLayerProperties",
-      "VkPipelineColorBlendStateCreateInfo",
-      "VkDebugMarkerMarkerInfoEXT",
+      "VkPhysicalDeviceLimits", "VkPhysicalDeviceProperties", "VkPhysicalDeviceMemoryProperties",    "VkImageBlit",
+      "VkExtensionProperties",  "VkLayerProperties",          "VkPipelineColorBlendStateCreateInfo", "VkDebugMarkerMarkerInfoEXT",
     };
 
     std::unordered_map<std::string, AnalyzedStructRecord> analyzedStructLookupDict;
     {
-      std::vector<std::string> unrollMembersRecursively
-      {
-        "VkRect2D"
-      };
+      std::vector<std::string> unrollMembersRecursively{"VkRect2D"};
 
       for (auto itr = structs.begin(); itr != structs.end(); ++itr)
       {
@@ -328,9 +326,9 @@ namespace MB
 
 
     std::string typeCode = "";
-    for (auto itr = structs.begin(); itr!= structs.end(); ++itr)
+    for (auto itr = structs.begin(); itr != structs.end(); ++itr)
     {
-      //if (itr->Name != "VkRect2D")
+      // if (itr->Name != "VkRect2D")
       //  continue;
       if (std::find(skipTypes.begin(), skipTypes.end(), itr->Name) != skipTypes.end())
         continue;
@@ -357,7 +355,7 @@ namespace MB
     StringUtil::Replace(headerContent, "##AG_TOOL_STATEMENT##", toolStatement);
 
 
-    //std::cout << headerContent << "\n";
+    // std::cout << headerContent << "\n";
 
     auto dirName = IO::Path::GetDirectoryName(dstFileName);
     IO::Directory::CreateDirectory(dirName);

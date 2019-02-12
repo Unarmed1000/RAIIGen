@@ -71,12 +71,13 @@ namespace MB
     };
 
 
-    std::deque<std::shared_ptr<CapturedData> > RunCaptureHistory(const BasicConfig& basicConfig, const IO::Path& relativeFilename, const IO::Path& historyPath, const MB::CaptureConfig& captureConfig)
+    std::deque<std::shared_ptr<CapturedData>> RunCaptureHistory(const BasicConfig& basicConfig, const IO::Path& relativeFilename,
+                                                                const IO::Path& historyPath, const MB::CaptureConfig& captureConfig)
     {
       using namespace MB;
       const bool useMajorVersion = true;
       std::string sourceAPIVersion = basicConfig.APIVersion;
-      if(useMajorVersion)
+      if (useMajorVersion)
       {
         const auto dotIndex = StringUtil::IndexOf(sourceAPIVersion, '.');
         if (dotIndex >= 0)
@@ -86,7 +87,7 @@ namespace MB
 
       const std::string apiVersion = sourceAPIVersion + ".";
 
-      std::deque<std::shared_ptr<CapturedData> > history;
+      std::deque<std::shared_ptr<CapturedData>> history;
 
       // Scan for history files
       IO::PathDeque entries;
@@ -96,7 +97,8 @@ namespace MB
       // For now we disable the logger during history parsing
       const std::shared_ptr<CustomLog> customLog;
 
-      std::cout << "Scanning API history" << "\n";
+      std::cout << "Scanning API history"
+                << "\n";
       for (const auto& entry : entries)
       {
         const auto dirName = IO::Path::GetFileName(*entry);
@@ -109,13 +111,12 @@ namespace MB
           VersionRecord version(dirName.ToUTF8String());
 
           // Create the history
-          const std::vector<IO::Path> includePaths = { *entry };
+          const std::vector<IO::Path> includePaths = {*entry};
           history.push_back(std::make_shared<CapturedData>(basicConfig, srcFile, includePaths, captureConfig, customLog, version));
         }
       }
 
-      auto sortMethod = [](const std::shared_ptr<CapturedData> &lhs, const std::shared_ptr<CapturedData> &rhs)
-      {
+      auto sortMethod = [](const std::shared_ptr<CapturedData>& lhs, const std::shared_ptr<CapturedData>& rhs) {
         const uint64_t domain = 1000000;
         assert(lhs->Version.Major < domain);
         assert(lhs->Version.Minor < domain);
@@ -123,8 +124,10 @@ namespace MB
         assert(rhs->Version.Major < domain);
         assert(rhs->Version.Minor < domain);
         assert(rhs->Version.Build < domain);
-        uint64_t lhsVal = static_cast<uint64_t>(lhs->Version.Major * 2 * domain) + static_cast<uint64_t>(lhs->Version.Minor * domain) + static_cast<uint64_t>(lhs->Version.Build);
-        uint64_t rhsVal = static_cast<uint64_t>(rhs->Version.Major * 2 * domain) + static_cast<uint64_t>(rhs->Version.Minor * domain) + static_cast<uint64_t>(rhs->Version.Build);
+        uint64_t lhsVal = static_cast<uint64_t>(lhs->Version.Major * 2 * domain) + static_cast<uint64_t>(lhs->Version.Minor * domain) +
+                          static_cast<uint64_t>(lhs->Version.Build);
+        uint64_t rhsVal = static_cast<uint64_t>(rhs->Version.Major * 2 * domain) + static_cast<uint64_t>(rhs->Version.Minor * domain) +
+                          static_cast<uint64_t>(rhs->Version.Build);
         return lhsVal < rhsVal;
       };
 
@@ -133,7 +136,7 @@ namespace MB
     }
 
 
-    std::shared_ptr<CapturedData> LocateFirstAppearanceOfStruct(const std::deque<std::shared_ptr<CapturedData> >& history, const std::string& name)
+    std::shared_ptr<CapturedData> LocateFirstAppearanceOfStruct(const std::deque<std::shared_ptr<CapturedData>>& history, const std::string& name)
     {
       for (const auto& capture : history)
       {
@@ -148,7 +151,7 @@ namespace MB
     }
 
 
-    std::shared_ptr<CapturedData> LocateFirstAppearanceOfFunction(const std::deque<std::shared_ptr<CapturedData> >& history, const std::string& name)
+    std::shared_ptr<CapturedData> LocateFirstAppearanceOfFunction(const std::deque<std::shared_ptr<CapturedData>>& history, const std::string& name)
     {
       for (const auto& capture : history)
       {
@@ -163,7 +166,7 @@ namespace MB
     }
 
 
-    std::shared_ptr<CapturedData> LocateFirstAppearanceOfEnum(const std::deque<std::shared_ptr<CapturedData> >& history, const std::string& name)
+    std::shared_ptr<CapturedData> LocateFirstAppearanceOfEnum(const std::deque<std::shared_ptr<CapturedData>>& history, const std::string& name)
     {
       for (const auto& capture : history)
       {
@@ -178,7 +181,8 @@ namespace MB
       throw std::runtime_error("Could not be found in history");
     }
 
-    std::shared_ptr<CapturedData>  LocateFirstAppearanceOfEnumMember(const std::deque<std::shared_ptr<CapturedData> >& history, const std::string& enumName, const std::string& enumMemberName)
+    std::shared_ptr<CapturedData> LocateFirstAppearanceOfEnumMember(const std::deque<std::shared_ptr<CapturedData>>& history,
+                                                                    const std::string& enumName, const std::string& enumMemberName)
     {
       for (const auto& capture : history)
       {
@@ -188,7 +192,8 @@ namespace MB
         if (itrFind != enumDict.end())
         {
           const auto& members = itrFind->second.Members;
-          const auto itrFindMember = std::find_if(members.begin(), members.end(), [enumMemberName](const EnumMemberRecord& val) { return val.Name == enumMemberName; });
+          const auto itrFindMember =
+            std::find_if(members.begin(), members.end(), [enumMemberName](const EnumMemberRecord& val) { return val.Name == enumMemberName; });
           if (itrFindMember != members.end())
             return capture;
         }
@@ -199,8 +204,7 @@ namespace MB
     }
 
 
-
-    void TagStructsWithHistory(CapturedData& rCapturedData, const std::deque<std::shared_ptr<CapturedData> >& history)
+    void TagStructsWithHistory(CapturedData& rCapturedData, const std::deque<std::shared_ptr<CapturedData>>& history)
     {
       for (auto& rEntry : rCapturedData.TheCapture.DirectAccessStructDict())
       {
@@ -216,7 +220,7 @@ namespace MB
     }
 
 
-    void TagFunctionsWithHistory(CapturedData& rCapturedData, const std::deque<std::shared_ptr<CapturedData> >& history)
+    void TagFunctionsWithHistory(CapturedData& rCapturedData, const std::deque<std::shared_ptr<CapturedData>>& history)
     {
       for (auto& rEntry : rCapturedData.TheCapture.DirectAccessFunctions())
       {
@@ -226,7 +230,7 @@ namespace MB
     }
 
 
-    void TagEnumsWithHistory(CapturedData& rCapturedData, const std::deque<std::shared_ptr<CapturedData> >& history)
+    void TagEnumsWithHistory(CapturedData& rCapturedData, const std::deque<std::shared_ptr<CapturedData>>& history)
     {
       for (auto& rEntry : rCapturedData.TheCapture.DirectAccessEnumDict())
       {
@@ -244,7 +248,7 @@ namespace MB
     }
 
 
-    void TagWithHistory(CapturedData& rCapturedData, const std::deque<std::shared_ptr<CapturedData> >& history)
+    void TagWithHistory(CapturedData& rCapturedData, const std::deque<std::shared_ptr<CapturedData>>& history)
     {
       std::cout << "- Enums\n";
       TagEnumsWithHistory(rCapturedData, history);
@@ -255,8 +259,9 @@ namespace MB
     }
 
 
-    template<typename TGenerator>
-    void Run(const BasicConfig& basicConfig, const IO::Path& filename, const IO::Path& relativeFilename, const IO::Path& templatePath, const IO::Path& apiHistoryPath, const IO::Path& dstPath, const std::vector<IO::Path>& includePaths, const bool useAPIHistory)
+    template <typename TGenerator>
+    void Run(const BasicConfig& basicConfig, const IO::Path& filename, const IO::Path& relativeFilename, const IO::Path& templatePath,
+             const IO::Path& apiHistoryPath, const IO::Path& dstPath, const std::vector<IO::Path>& includePaths, const bool useAPIHistory)
     {
       using namespace MB;
 
@@ -280,16 +285,16 @@ namespace MB
           history.front()->Version = VersionRecord();
           TagWithHistory(capturedData, history);
         }
-
       }
 
-      //captureConfig.GetCapture().Dump();
+      // captureConfig.GetCapture().Dump();
       TGenerator generator(capturedData.TheCapture, basicConfig, templatePath, dstPath);
     }
 
 
-    template<typename TGenerator>
-    void RunGenerator(const ProgramInfo& programInfo, const Config& config, const std::string& filename, const std::string& templateName, const std::string& baseApiName, const std::string& apiVersion, const bool useAPIHistory = false)
+    template <typename TGenerator>
+    void RunGenerator(const ProgramInfo& programInfo, const Config& config, const std::string& filename, const std::string& templateName,
+                      const std::string& baseApiName, const std::string& apiVersion, const bool useAPIHistory = false)
     {
       const auto apiNameAndVersion = baseApiName + apiVersion;
       const auto templateNameAndVersion = templateName + apiVersion;
@@ -299,11 +304,12 @@ namespace MB
       const auto dstPath = IO::Path::Combine(config.OutputRoot, templateNameAndVersion);
       const auto apiHistoryPath = IO::Path::Combine(apiHeaderPath, "history");
 
-      const std::vector<IO::Path> includePaths = { apiHeaderPath };
+      const std::vector<IO::Path> includePaths = {apiHeaderPath};
       std::cout << "*** Running " << apiNameAndVersion << " generator ***\n";
 
 
-      const auto toolStatement = std::string("Auto-generated ") + baseApiName + " " + apiVersion + " C++11 RAII classes by " + programInfo.Name + " (https://github.com/Unarmed1000/RAIIGen)";
+      const auto toolStatement = std::string("Auto-generated ") + baseApiName + " " + apiVersion + " C++11 RAII classes by " + programInfo.Name +
+                                 " (https://github.com/Unarmed1000/RAIIGen)";
 
       auto namespaceName = templateName + apiVersion;
       StringUtil::Replace(namespaceName, ".", "_");
@@ -322,47 +328,46 @@ namespace MB
 
       Config config(headerRoot, templateRoot, outputRoot);
 
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "1.1");
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "1.2");
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "2.0");
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "2.1");
-      //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "OpenVX", "OpenVX", "1.0.1");
-      //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "OpenVX", "OpenVX", "1.1");
-      //RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "Vulkan", "Vulkan", "1.0");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "1.1");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "1.2");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "2.0");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "2.1");
+      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "OpenVX", "OpenVX", "1.0.1");
+      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "OpenVX", "OpenVX", "1.1");
+      // RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "Vulkan", "Vulkan", "1.0");
 
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "1.1");
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2.0");
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2.1");
-      //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.0.1");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "1.1");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2.0");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2.1");
+      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.0.1");
 
       // RapidOpenCL1
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "1", true);
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "1", true);
 
       // RapidOpenCL2
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2", true);
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2", true);
 
       // RapidOpenVX
-      //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.0.1", true);
+      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.0.1", true);
       // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.1", true);
 
       // RapidVulkan
-      RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.0", true);
-      //RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.1", true);
+      RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.0", false);
+      // RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.1", true);
 
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.1");
-      //RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.2");
-      //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "FslUtilOpenVX", "OpenVX", "1.0.1");
-      //RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "FslUtilOpenVX", "OpenVX", "1.1");
-      //RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "FslUtil.Vulkan", "Vulkan", "1.0");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.1");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.2");
+      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "FslUtilOpenVX", "OpenVX", "1.0.1");
+      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "FslUtilOpenVX", "OpenVX", "1.1");
+      // RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "FslUtil.Vulkan", "Vulkan", "1.0");
 
-      //RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES2/gl2.h", "RapidOpenGLES", "OpenGLES", "2.0");
-      //RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl3.h", "RapidOpenGLES", "OpenGLES", "3.0");
-      //RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl31.h", "RapidOpenGLES", "OpenGLES", "3.1");
-      //RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl32.h", "RapidOpenGLES", "OpenGLES", "3.2");
+      // RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES2/gl2.h", "RapidOpenGLES", "OpenGLES", "2.0");
+      // RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl3.h", "RapidOpenGLES", "OpenGLES", "3.0");
+      // RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl31.h", "RapidOpenGLES", "OpenGLES", "3.1");
+      // RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl32.h", "RapidOpenGLES", "OpenGLES", "3.2");
     }
   }
 }
-
 
 
 int main(int argc, char** argv)

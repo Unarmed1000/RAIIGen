@@ -41,7 +41,6 @@ using namespace Fsl;
 
 namespace MB
 {
-
   namespace
   {
     // OpenCL
@@ -55,15 +54,13 @@ namespace MB
     const auto ERRORCODE_TYPE_NAME = "";
 
 
-    const std::vector<FunctionNamePair> g_functionPairs
-    {
+    const std::vector<FunctionNamePair> g_functionPairs{
       FunctionNamePair(CREATE_FUNCTION, DESTROY_FUNCTION),
     };
 
 
     // Manual matches for methods that don't follow 'standard' patterns
-    const std::vector<FunctionNamePair> g_manualFunctionMatches
-    {
+    const std::vector<FunctionNamePair> g_manualFunctionMatches{
       FunctionNamePair("clCreateCommandQueueWithProperties", "clReleaseCommandQueue"),
       FunctionNamePair("clCreateContextFromType", "clReleaseContext"),
       FunctionNamePair("clCreateProgramWithSource", "clReleaseProgram"),
@@ -79,13 +76,10 @@ namespace MB
     };
 
 
-    const std::vector<RAIIClassCustomization> g_arrayRAIIClassCustomization
-    {
-    };
+    const std::vector<RAIIClassCustomization> g_arrayRAIIClassCustomization{};
 
 
-    const std::vector<ClassFunctionAbsorb> g_classFunctionAbsorbtion
-    {
+    const std::vector<ClassFunctionAbsorb> g_classFunctionAbsorbtion{
       ClassFunctionAbsorb("CommandQueue", "clCreateCommandQueueWithProperties", false),
       ClassFunctionAbsorb("Context", "clCreateContextFromType"),
       ClassFunctionAbsorb("Program", "clCreateProgramWithSource", true),
@@ -97,42 +91,29 @@ namespace MB
     };
 
 
-    const std::unordered_map<std::string, RAIIClassMethodOverrides> g_classMethodOverride =
-    {
-    };
+    const std::unordered_map<std::string, RAIIClassMethodOverrides> g_classMethodOverride = {};
 
     // WARNING: No match found for: clCreateSubDevices
     // WARNING: No match found for: clCreateSubBuffer
     // WARNING: No match found for: clCreateKernelsInProgram
 
-    const std::vector<std::string> g_forceNullParameter
-    {
-    };
+    const std::vector<std::string> g_forceNullParameter{};
 
 
-    const std::vector<FunctionGuard> g_functionGuards
-    {
-    };
+    const std::vector<FunctionGuard> g_functionGuards{};
 
 
-    const std::vector<BlackListEntry> g_functionNameBlacklist
-    {
-    };
+    const std::vector<BlackListEntry> g_functionNameBlacklist{};
 
 
-    const std::vector<BlackListEntry> g_enumNameBlacklist
-    {
-    };
+    const std::vector<BlackListEntry> g_enumNameBlacklist{};
 
 
-    const std::vector<BlackListEntry> g_enumMemberBlacklist
-    {
-    };
+    const std::vector<BlackListEntry> g_enumMemberBlacklist{};
 
 
     // This crap is necessary because they decided to 'skip' naming the parameters in the header file!!!
-    const std::vector<FunctionParameterNameOverride> g_functionParameterNameOverride
-    {
+    const std::vector<FunctionParameterNameOverride> g_functionParameterNameOverride{
       // clCreateBuffer
       FunctionParameterNameOverride("clCreateBuffer", 3, "pVoid", "pHost"),
       // clCreateImage2D
@@ -472,12 +453,13 @@ namespace MB
 
     // This crap is necessary because I have been unable to get the 'exact written code' from clang and
     // because OpenCL decided not to use a typedef for its function pointers
-    const std::vector<FunctionParameterTypeOverride> g_functionParameterTypeOverride
-    {
+    const std::vector<FunctionParameterTypeOverride> g_functionParameterTypeOverride{
       // clCreateContextFromType
-      FunctionParameterTypeOverride("clCreateContextFromType", 2, "void (*)(const char *, const void *, size_t, void *) __attribute__((stdcall))", "FNOpenCLCreateCallback"),
+      FunctionParameterTypeOverride("clCreateContextFromType", 2, "void (*)(const char *, const void *, size_t, void *) __attribute__((stdcall))",
+                                    "FNOpenCLCreateCallback"),
       // clCreateContext
-      FunctionParameterTypeOverride("clCreateContext", 3, "void (*)(const char *, const void *, size_t, void *) __attribute__((stdcall))", "FNOpenCLCreateCallback"),
+      FunctionParameterTypeOverride("clCreateContext", 3, "void (*)(const char *, const void *, size_t, void *) __attribute__((stdcall))",
+                                    "FNOpenCLCreateCallback"),
 
       // clCompileProgram
       FunctionParameterTypeOverride("clCompileProgram", 7, "void (*)(cl_program, void *) __attribute__((stdcall))", "FNOpenCLCompileProgramCallback"),
@@ -487,28 +469,27 @@ namespace MB
 
       // FIX: this is a problem function as OpenCL versions define it slightly differently
       // clEnqueueNativeKernel
-      // FunctionParameterTypeOverride("clEnqueueNativeKernel", 1, "void (*)(void *) __attribute__((stdcall))", "FNOpenCLEnqueueNativeKernelCallback"),
+      // FunctionParameterTypeOverride("clEnqueueNativeKernel", 1, "void (*)(void *) __attribute__((stdcall))",
+      // "FNOpenCLEnqueueNativeKernelCallback"),
 
       // clLinkProgram
       FunctionParameterTypeOverride("clLinkProgram", 6, "void (*)(cl_program, void *) __attribute__((stdcall))", "FNOpenCLLinkProgramCallback"),
 
       // clSetEventCallback
-      FunctionParameterTypeOverride("clSetEventCallback", 2, "void (*)(cl_event, cl_int, void *) __attribute__((stdcall))", "FNOpenCLSetEventCallback"),
+      FunctionParameterTypeOverride("clSetEventCallback", 2, "void (*)(cl_event, cl_int, void *) __attribute__((stdcall))",
+                                    "FNOpenCLSetEventCallback"),
 
-      //clSetMemObjectDestructorCallback
-      FunctionParameterTypeOverride("clSetMemObjectDestructorCallback", 1, "void (*)(cl_mem, void *) __attribute__((stdcall))", "FNOpenCLObjectDestructorCallback"),
+      // clSetMemObjectDestructorCallback
+      FunctionParameterTypeOverride("clSetMemObjectDestructorCallback", 1, "void (*)(cl_mem, void *) __attribute__((stdcall))",
+                                    "FNOpenCLObjectDestructorCallback"),
     };
 
 
-    const std::unordered_map<std::string, std::string> g_typeDefaultValues =
-    {
-      { "cl_context", "##HANDLE_CLASS_NAME##::INVALID_CONTEXT" },
-      { "cl_command_queue", "##HANDLE_CLASS_NAME##::INVALID_COMMAND_QUEUE" },
-      { "cl_kernel", "##HANDLE_CLASS_NAME##::INVALID_KERNEL" },
-      { "cl_event", "##HANDLE_CLASS_NAME##::INVALID_EVENT" },
-      { "cl_mem", "##HANDLE_CLASS_NAME##::INVALID_MEM" },
-      { "cl_program", "##HANDLE_CLASS_NAME##::INVALID_PROGRAM" },
-      { "cl_sampler", "##HANDLE_CLASS_NAME##::INVALID_SAMPLER" },
+    const std::unordered_map<std::string, std::string> g_typeDefaultValues = {
+      {"cl_context", "##HANDLE_CLASS_NAME##::INVALID_CONTEXT"}, {"cl_command_queue", "##HANDLE_CLASS_NAME##::INVALID_COMMAND_QUEUE"},
+      {"cl_kernel", "##HANDLE_CLASS_NAME##::INVALID_KERNEL"},   {"cl_event", "##HANDLE_CLASS_NAME##::INVALID_EVENT"},
+      {"cl_mem", "##HANDLE_CLASS_NAME##::INVALID_MEM"},         {"cl_program", "##HANDLE_CLASS_NAME##::INVALID_PROGRAM"},
+      {"cl_sampler", "##HANDLE_CLASS_NAME##::INVALID_SAMPLER"},
     };
 
 
@@ -535,14 +516,13 @@ namespace MB
   }
 
 
-  OpenCLGenerator::OpenCLGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
+  OpenCLGenerator::OpenCLGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot,
+                                   const Fsl::IO::Path& dstPath)
     : SimpleGenerator(ModCapture(capture),
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization,
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
-                                            g_functionGuards, g_functionNameBlacklist,
-                                            g_enumNameBlacklist, g_enumMemberBlacklist,
-                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false,
-                                            VersionGuardConfig("CL_VERSION_{0}_{1}")),
+                                            g_functionGuards, g_functionNameBlacklist, g_enumNameBlacklist, g_enumMemberBlacklist, TYPE_NAME_PREFIX,
+                                            FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false, VersionGuardConfig("CL_VERSION_{0}_{1}")),
                       templateRoot, dstPath)
   {
   }
@@ -551,8 +531,8 @@ namespace MB
   CaptureConfig OpenCLGenerator::GetCaptureConfig()
   {
     std::deque<std::string> filters;
-    //filters.push_back(CREATE_FUNCTION);
-    //filters.push_back(DESTROY_FUNCTION);
+    // filters.push_back(CREATE_FUNCTION);
+    // filters.push_back(DESTROY_FUNCTION);
     return CaptureConfig(TYPE_NAME_PREFIX, filters, g_functionParameterNameOverride, g_functionParameterTypeOverride, true);
   }
 }

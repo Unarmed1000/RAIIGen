@@ -1,33 +1,33 @@
 /****************************************************************************************************************************************************
-* Copyright (c) 2016 Freescale Semiconductor, Inc.
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-*    * Redistributions of source code must retain the above copyright notice,
-*      this list of conditions and the following disclaimer.
-*
-*    * Redistributions in binary form must reproduce the above copyright notice,
-*      this list of conditions and the following disclaimer in the documentation
-*      and/or other materials provided with the distribution.
-*
-*    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
-*      its contributors may be used to endorse or promote products derived from
-*      this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-* ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-****************************************************************************************************************************************************/
+ * Copyright (c) 2016 Freescale Semiconductor, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *    * Redistributions of source code must retain the above copyright notice,
+ *      this list of conditions and the following disclaimer.
+ *
+ *    * Redistributions in binary form must reproduce the above copyright notice,
+ *      this list of conditions and the following disclaimer in the documentation
+ *      and/or other materials provided with the distribution.
+ *
+ *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
+ *      its contributors may be used to endorse or promote products derived from
+ *      this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ****************************************************************************************************************************************************/
 
 // The functions in this file are a port of an MIT licensed library: MonaGame - Plane.cs.
 
@@ -71,7 +71,6 @@ SOFTWARE.
 
 namespace Fsl
 {
-
   Plane::Plane(const Vector3& a, const Vector3& b, const Vector3& c)
   {
     Vector3 ab = b - a;
@@ -161,7 +160,7 @@ namespace Fsl
   {
     const Vector3 normal = Vector3::Normalize(Normal);
     const float factor = static_cast<float>(std::sqrt(Normal.X * Normal.X + Normal.Y * Normal.Y + Normal.Z * Normal.Z)) /
-      static_cast<float>(std::sqrt(normal.X * normal.X + normal.Y * normal.Y + normal.Z * normal.Z));
+                         static_cast<float>(std::sqrt(normal.X * normal.X + normal.Y * normal.Y + normal.Z * normal.Z));
     D = D * factor;
   }
 
@@ -177,11 +176,11 @@ namespace Fsl
   void Plane::Normalize(const Plane& value, Plane& rResult)
   {
     rResult.Normal = Vector3::Normalize(value.Normal);
-    const float factor = static_cast<float>(std::sqrt(rResult.Normal.X * rResult.Normal.X + rResult.Normal.Y * rResult.Normal.Y + rResult.Normal.Z * rResult.Normal.Z)) /
+    const float factor =
+      static_cast<float>(std::sqrt(rResult.Normal.X * rResult.Normal.X + rResult.Normal.Y * rResult.Normal.Y + rResult.Normal.Z * rResult.Normal.Z)) /
       static_cast<float>(std::sqrt(value.Normal.X * value.Normal.X + value.Normal.Y * value.Normal.Y + value.Normal.Z * value.Normal.Z));
     rResult.D = value.D * factor;
   }
-
 
 
   PlaneIntersectionType Plane::Intersects(const BoundingBox& box) const

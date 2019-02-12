@@ -1,33 +1,33 @@
 /****************************************************************************************************************************************************
-* Copyright (c) 2016 Freescale Semiconductor, Inc.
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-*    * Redistributions of source code must retain the above copyright notice,
-*      this list of conditions and the following disclaimer.
-*
-*    * Redistributions in binary form must reproduce the above copyright notice,
-*      this list of conditions and the following disclaimer in the documentation
-*      and/or other materials provided with the distribution.
-*
-*    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
-*      its contributors may be used to endorse or promote products derived from
-*      this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-* ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-****************************************************************************************************************************************************/
+ * Copyright (c) 2016 Freescale Semiconductor, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *    * Redistributions of source code must retain the above copyright notice,
+ *      this list of conditions and the following disclaimer.
+ *
+ *    * Redistributions in binary form must reproduce the above copyright notice,
+ *      this list of conditions and the following disclaimer in the documentation
+ *      and/or other materials provided with the distribution.
+ *
+ *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
+ *      its contributors may be used to endorse or promote products derived from
+ *      this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ****************************************************************************************************************************************************/
 
 // The functions in this file are a port of an MIT licensed library: MonaGame - BoundingBox.cs.
 
@@ -79,14 +79,10 @@ namespace Fsl
 
   ContainmentType BoundingBox::Contains(const BoundingBox& box) const
   {
-    //test if all corner is in the same side of a face by just checking min and max
-    if (box.Max.X < Min.X || box.Min.X > Max.X
-      || box.Max.Y < Min.Y || box.Min.Y > Max.Y
-      || box.Max.Z < Min.Z || box.Min.Z > Max.Z)
+    // test if all corner is in the same side of a face by just checking min and max
+    if (box.Max.X < Min.X || box.Min.X > Max.X || box.Max.Y < Min.Y || box.Min.Y > Max.Y || box.Max.Z < Min.Z || box.Min.Z > Max.Z)
       return ContainmentType::Disjoint;
-    else if (box.Min.X >= Min.X && box.Max.X <= Max.X
-      && box.Min.Y >= Min.Y && box.Max.Y <= Max.Y
-      && box.Min.Z >= Min.Z && box.Max.Z <= Max.Z)
+    else if (box.Min.X >= Min.X && box.Max.X <= Max.X && box.Min.Y >= Min.Y && box.Max.Y <= Max.Y && box.Min.Z >= Min.Z && box.Max.Z <= Max.Z)
       return ContainmentType::Contains;
     else
       return ContainmentType::Intersects;
@@ -99,7 +95,7 @@ namespace Fsl
   }
 
 
-  //ContainmentType BoundingBox::Contains(const BoundingFrustum& frustum) const
+  // ContainmentType BoundingBox::Contains(const BoundingFrustum& frustum) const
   //{
   //  //TODO: bad done here need a fix.
   //  //Because question is not frustum contain box but reverse and this is not the same
@@ -142,12 +138,8 @@ namespace Fsl
 
   ContainmentType BoundingBox::Contains(const BoundingSphere& sphere) const
   {
-    if (sphere.Center.X - Min.X >= sphere.Radius
-      && sphere.Center.Y - Min.Y >= sphere.Radius
-      && sphere.Center.Z - Min.Z >= sphere.Radius
-      && Max.X - sphere.Center.X >= sphere.Radius
-      && Max.Y - sphere.Center.Y >= sphere.Radius
-      && Max.Z - sphere.Center.Z >= sphere.Radius)
+    if (sphere.Center.X - Min.X >= sphere.Radius && sphere.Center.Y - Min.Y >= sphere.Radius && sphere.Center.Z - Min.Z >= sphere.Radius &&
+        Max.X - sphere.Center.X >= sphere.Radius && Max.Y - sphere.Center.Y >= sphere.Radius && Max.Z - sphere.Center.Z >= sphere.Radius)
       return ContainmentType::Contains;
 
     double dmin = 0;
@@ -240,22 +232,12 @@ namespace Fsl
 
   void BoundingBox::Contains(const Vector3& point, ContainmentType& rResult) const
   {
-    //first we get if point is out of box
-    if (point.X < Min.X
-      || point.X > Max.X
-      || point.Y < Min.Y
-      || point.Y > Max.Y
-      || point.Z < Min.Z
-      || point.Z > Max.Z)
+    // first we get if point is out of box
+    if (point.X < Min.X || point.X > Max.X || point.Y < Min.Y || point.Y > Max.Y || point.Z < Min.Z || point.Z > Max.Z)
     {
       rResult = ContainmentType::Disjoint;
-    }//or if point is on box because coordinate of point is lesser or equal
-    else if (point.X == Min.X
-      || point.X == Max.X
-      || point.Y == Min.Y
-      || point.Y == Max.Y
-      || point.Z == Min.Z
-      || point.Z == Max.Z)
+    }    // or if point is on box because coordinate of point is lesser or equal
+    else if (point.X == Min.X || point.X == Max.X || point.Y == Min.Y || point.Y == Max.Y || point.Z == Min.Z || point.Z == Max.Z)
       rResult = ContainmentType::Intersects;
     else
       rResult = ContainmentType::Contains;
@@ -399,12 +381,8 @@ namespace Fsl
 
   bool BoundingBox::Intersects(const BoundingSphere& sphere) const
   {
-    if (sphere.Center.X - Min.X > sphere.Radius
-      && sphere.Center.Y - Min.Y > sphere.Radius
-      && sphere.Center.Z - Min.Z > sphere.Radius
-      && Max.X - sphere.Center.X > sphere.Radius
-      && Max.Y - sphere.Center.Y > sphere.Radius
-      && Max.Z - sphere.Center.Z > sphere.Radius)
+    if (sphere.Center.X - Min.X > sphere.Radius && sphere.Center.Y - Min.Y > sphere.Radius && sphere.Center.Z - Min.Z > sphere.Radius &&
+        Max.X - sphere.Center.X > sphere.Radius && Max.Y - sphere.Center.Y > sphere.Radius && Max.Z - sphere.Center.Z > sphere.Radius)
       return true;
 
     double dmin = 0;

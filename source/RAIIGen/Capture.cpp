@@ -45,8 +45,6 @@ namespace MB
 
   namespace
   {
-
-
     struct TypeInfo
     {
       std::string Name;
@@ -79,7 +77,7 @@ namespace MB
       case CXType_Invalid:
         throw std::runtime_error("GetTypeName() failed to get type name for CXType_Invalid");
       case CXType_Unexposed:
-        if(log)
+        if (log)
           log->Print("WARNING: CXType_Unexposed not properly supported");
         return TypeInfo(GetTypeSpelling(type), type, originalType);
       case CXType_Void:
@@ -202,7 +200,6 @@ namespace MB
 
     TypeRecord GetType(const CXType type, const std::shared_ptr<CustomLog>& pLog)
     {
-
       TypeRecord typeRecord;
       typeRecord.FullTypeString = GetTypeSpelling(type);
 
@@ -215,10 +212,10 @@ namespace MB
       {
         typeRecord.IsStruct = true;
 
-        //auto cur = clang_getTypeDeclaration(canonicalType);
+        // auto cur = clang_getTypeDeclaration(canonicalType);
       }
 
-      if (typeInfo.Type.kind == CXType_Unexposed && canonicalType.kind == CXType_FunctionProto )
+      if (typeInfo.Type.kind == CXType_Unexposed && canonicalType.kind == CXType_FunctionProto)
       {
         typeRecord.IsFunctionPointer = true;
       }
@@ -228,7 +225,7 @@ namespace MB
       {
         typeRecord.IsPointer = true;
         auto pointerType = clang_getPointeeType(type);
-        //if (pointerType.kind == CXType_Pointer)
+        // if (pointerType.kind == CXType_Pointer)
         //  typeRecord.IsPointerPointer = true;
       }
 
@@ -240,7 +237,6 @@ namespace MB
     {
       return GetType(clang_getCursorType(cursor), pLog);
     }
-
 
 
     std::string EnforcePrefix(const TypeRecord& type, const std::string& name)
@@ -262,8 +258,7 @@ namespace MB
         if (type.Name == "size_t")
           return "size";
         return type.Name;
-      }
-      ;
+      };
       return CaseUtil::LowerCaseFirstCharacter(type.Name.substr(typeNamePrefix.size()));
     }
 
@@ -274,7 +269,9 @@ namespace MB
     }
 
 
-    ParameterRecord GetParameter(const CXCursor cursor, const std::string& typeNamePrefix, const std::vector<FunctionParameterTypeOverride>& functionParameterTypeOverrides, const std::shared_ptr<CustomLog>& pLog)
+    ParameterRecord GetParameter(const CXCursor cursor, const std::string& typeNamePrefix,
+                                 const std::vector<FunctionParameterTypeOverride>& functionParameterTypeOverrides,
+                                 const std::shared_ptr<CustomLog>& pLog)
     {
       ParameterRecord param;
       param.Name = StringHelper::EnforceLowerCamelCaseNameStyle(GetCursorSpelling(cursor));
@@ -296,14 +293,16 @@ namespace MB
     }
 
 
-    void HandleParamNameOverride(ParameterRecord& rParam, const std::vector<FunctionParameterNameOverride>& functionParameterNameOverrides, const std::string& currentfunctionName, const unsigned int parameterIndex)
+    void HandleParamNameOverride(ParameterRecord& rParam, const std::vector<FunctionParameterNameOverride>& functionParameterNameOverrides,
+                                 const std::string& currentfunctionName, const unsigned int parameterIndex)
     {
       for (auto itr = functionParameterNameOverrides.begin(); itr != functionParameterNameOverrides.end(); ++itr)
       {
         if (itr->FunctionName == currentfunctionName && itr->ParameterIndex == parameterIndex)
         {
           if (itr->ParameterOldName != rParam.ArgumentName)
-            throw UsageErrorException(std::string("The argument name '"+ rParam.ArgumentName + "' does not match the expected '" + itr->ParameterOldName + "' name"));
+            throw UsageErrorException(
+              std::string("The argument name '" + rParam.ArgumentName + "' does not match the expected '" + itr->ParameterOldName + "' name"));
 
           rParam.Name = itr->ParameterNewName;
           rParam.ArgumentName = itr->ParameterNewName;
@@ -311,14 +310,16 @@ namespace MB
       }
     }
 
-    void HandleParamTypeOverride(ParameterRecord& rParam, const std::vector<FunctionParameterTypeOverride>& functionParameterTypeOverrides, const std::string& currentfunctionName, const unsigned int parameterIndex)
+    void HandleParamTypeOverride(ParameterRecord& rParam, const std::vector<FunctionParameterTypeOverride>& functionParameterTypeOverrides,
+                                 const std::string& currentfunctionName, const unsigned int parameterIndex)
     {
       for (auto itr = functionParameterTypeOverrides.begin(); itr != functionParameterTypeOverrides.end(); ++itr)
       {
         if (itr->FunctionName == currentfunctionName && itr->ParameterIndex == parameterIndex)
         {
           if (itr->ParameterOldType != rParam.Type.FullTypeString)
-            throw UsageErrorException(std::string("The argument type '" + rParam.Type.FullTypeString + "' does not match the expected '" + itr->ParameterOldType + "' name"));
+            throw UsageErrorException(
+              std::string("The argument type '" + rParam.Type.FullTypeString + "' does not match the expected '" + itr->ParameterOldType + "' name"));
 
           rParam.Type.FullTypeString = itr->ParameterNewType;
         }
@@ -326,7 +327,8 @@ namespace MB
     }
 
 
-    FunctionRecord GetFunction(const CaptureConfig& config, const CXCursor& cursor, const CXCursorKind cursorKind, const std::size_t currentLevel, FunctionErrors& rFuncErrors, const std::shared_ptr<CustomLog>& pLog)
+    FunctionRecord GetFunction(const CaptureConfig& config, const CXCursor& cursor, const CXCursorKind cursorKind, const std::size_t currentLevel,
+                               FunctionErrors& rFuncErrors, const std::shared_ptr<CustomLog>& pLog)
     {
       FunctionRecord currentFunction;
 
@@ -342,7 +344,7 @@ namespace MB
       {
         std::unordered_set<std::string> uniqueArgumentNames;
         const unsigned int numArgs = clang_Cursor_getNumArguments(cursor);
-        for (unsigned int i = 0; i<numArgs; ++i)
+        for (unsigned int i = 0; i < numArgs; ++i)
         {
           const CXCursor argCursor = clang_Cursor_getArgument(cursor, i);
 
@@ -361,7 +363,7 @@ namespace MB
           currentFunction.Parameters.push_back(param);
         }
       }
-      if( rFuncErrors.DuplicatedParameterNames.size() > 0 )
+      if (rFuncErrors.DuplicatedParameterNames.size() > 0)
         rFuncErrors.Name = currentFunction.Name;
       return currentFunction;
     }
@@ -369,7 +371,8 @@ namespace MB
 
     bool MatchesFilter(const std::deque<std::string>& filters, const std::string& functionName)
     {
-      return std::find_if(filters.begin(), filters.end(), [functionName](const std::string& val) { return functionName.find(val) == 0; }) != filters.end();
+      return std::find_if(filters.begin(), filters.end(), [functionName](const std::string& val) { return functionName.find(val) == 0; }) !=
+             filters.end();
     }
 
 
@@ -388,7 +391,7 @@ namespace MB
       return EnumMemberRecord(cursorSpelling, value);
     }
 
-    template<typename T>
+    template <typename T>
     std::string BuildFullName(const std::deque<T>& parents, const std::string& name)
     {
       if (parents.size() == 0)
@@ -421,7 +424,8 @@ namespace MB
     {
       for (auto itrDuplicated = itr->DuplicatedParameterNames.begin(); itrDuplicated != itr->DuplicatedParameterNames.end(); ++itrDuplicated)
       {
-        std::cout << "ERROR: Function '" << itr->Name << "' has duplicated parameter named '" << itrDuplicated->Name << "' at parameter index " << itrDuplicated->Index << "\n";
+        std::cout << "ERROR: Function '" << itr->Name << "' has duplicated parameter named '" << itrDuplicated->Name << "' at parameter index "
+                  << itrDuplicated->Index << "\n";
       }
     }
     throw std::runtime_error("Duplicated parameter names found");
@@ -438,7 +442,7 @@ namespace MB
     CXSourceLocation location = clang_getCursorLocation(cursor);
     if (m_config.OnlyScanMainHeaderFile && clang_Location_isFromMainFile(location) == 0)
       return CXChildVisit_Continue;
-    if( clang_Location_isInSystemHeader(location) != 0 )
+    if (clang_Location_isInSystemHeader(location) != 0)
       return CXChildVisit_Continue;
 
     CXCursorKind cursorKind = clang_getCursorKind(cursor);
@@ -451,7 +455,8 @@ namespace MB
         assert(m_captureStructs.size() > 0);
         if (cursorKind == CXCursor_FieldDecl)
         {
-          //std::cout << std::string(m_level, '-') << " " << GetCursorKindName(cursorKind) << " ('" << typeSpelling << "' '" << cursorSpelling << "')\n";
+          // std::cout << std::string(m_level, '-') << " " << GetCursorKindName(cursorKind) << " ('" << typeSpelling << "' '" << cursorSpelling <<
+          // "')\n";
 
           m_captureStructs.back().Members.push_back(GetMember(cursor, m_log));
         }
@@ -510,7 +515,7 @@ namespace MB
           assert(m_captureStructs.size() > 0);
           auto itrFindName = m_structs.find(m_captureStructs.back().Name);
           m_structs[m_captureStructs.back().Name] = m_captureStructs.back();
-          if(itrFindName == m_structs.end())
+          if (itrFindName == m_structs.end())
             m_structsInCapturedOrder.push_back(m_captureStructs.back());
           m_captureStructs.pop_back();
           break;

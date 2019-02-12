@@ -41,7 +41,6 @@ using namespace Fsl;
 
 namespace MB
 {
-
   namespace
   {
     // OpenVX
@@ -53,97 +52,74 @@ namespace MB
 
     const auto ERRORCODE_TYPE_NAME = "vx_status";
 
-    const std::vector<FunctionNamePair> g_functionPairs
-    {
+    const std::vector<FunctionNamePair> g_functionPairs{
       FunctionNamePair(CREATE_FUNCTION, DESTROY_FUNCTION),
     };
 
 
     // Manual matches for methods that don't follow 'standard' patterns
-    const std::vector<FunctionNamePair> g_manualFunctionMatches
-    {
+    const std::vector<FunctionNamePair> g_manualFunctionMatches{
       // FIX: should be another create method on CommandQueue
-      //FunctionNamePair("clCreateCommandQueueWithProperties", "clReleaseCommandQueue"),
+      // FunctionNamePair("clCreateCommandQueueWithProperties", "clReleaseCommandQueue"),
     };
 
 
-    const std::vector<RAIIClassCustomization> g_arrayRAIIClassCustomization
-    {
-    };
+    const std::vector<RAIIClassCustomization> g_arrayRAIIClassCustomization{};
 
 
-    const std::vector<ClassFunctionAbsorb> g_classFunctionAbsorbtion
-    {
-    };
+    const std::vector<ClassFunctionAbsorb> g_classFunctionAbsorbtion{};
 
 
-    const std::unordered_map<std::string, RAIIClassMethodOverrides> g_classMethodOverride =
-    {
-    };
+    const std::unordered_map<std::string, RAIIClassMethodOverrides> g_classMethodOverride = {};
 
 
-    const std::vector<std::string> g_forceNullParameter
-    {
-    };
+    const std::vector<std::string> g_forceNullParameter{};
 
 
-    const std::vector<FunctionGuard> g_functionGuards
-    {
-    };
+    const std::vector<FunctionGuard> g_functionGuards{};
 
 
-    const std::vector<BlackListEntry> g_functionNameBlacklist
-    {
-    };
+    const std::vector<BlackListEntry> g_functionNameBlacklist{};
 
 
-    const std::vector<BlackListEntry> g_enumNameBlacklist
-    {
-    };
+    const std::vector<BlackListEntry> g_enumNameBlacklist{};
 
 
-    const std::vector<BlackListEntry> g_enumMemberBlacklist
-    {
-    };
+    const std::vector<BlackListEntry> g_enumMemberBlacklist{};
 
 
-    const std::vector<FunctionParameterNameOverride> g_functionParameterNameOverride
-    {
-    };
+    const std::vector<FunctionParameterNameOverride> g_functionParameterNameOverride{};
 
 
-    const std::vector<FunctionParameterTypeOverride> g_functionParameterTypeOverride
-    {
-    };
+    const std::vector<FunctionParameterTypeOverride> g_functionParameterTypeOverride{};
 
 
-    const std::unordered_map<std::string, std::string> g_typeDefaultValues =
-    {
-      { "vx_array", "##HANDLE_CLASS_NAME##::INVALID_ARRAY" },
-      { "vx_context", "##HANDLE_CLASS_NAME##::INVALID_CONTEXT" },
-      { "vx_convolution", "##HANDLE_CLASS_NAME##::INVALID_CONVOLUTION" },
-      { "vx_delay", "##HANDLE_CLASS_NAME##::INVALID_DELAY" },
-      { "vx_distribution", "##HANDLE_CLASS_NAME##::INVALID_DISTRIBUTION" },
-      { "vx_graph", "##HANDLE_CLASS_NAME##::INVALID_GRAPH" },
-      { "vx_image", "##HANDLE_CLASS_NAME##::INVALID_IMAGE" },
-      { "vx_lut", "##HANDLE_CLASS_NAME##::INVALID_LUT" },
-      { "vx_matrix", "##HANDLE_CLASS_NAME##::INVALID_MATRIX" },
-      { "vx_object_array", "##HANDLE_CLASS_NAME##::INVALID_OBJECT_ARRAY" },
-      { "vx_pyramid", "##HANDLE_CLASS_NAME##::INVALID_PYRAMID" },
-      { "vx_remap", "##HANDLE_CLASS_NAME##::INVALID_REMAP" },
-      { "vx_scalar", "##HANDLE_CLASS_NAME##::INVALID_SCALAR" },
-      { "vx_threshold", "##HANDLE_CLASS_NAME##::INVALID_THRESHOLD" },
+    const std::unordered_map<std::string, std::string> g_typeDefaultValues = {
+      {"vx_array", "##HANDLE_CLASS_NAME##::INVALID_ARRAY"},
+      {"vx_context", "##HANDLE_CLASS_NAME##::INVALID_CONTEXT"},
+      {"vx_convolution", "##HANDLE_CLASS_NAME##::INVALID_CONVOLUTION"},
+      {"vx_delay", "##HANDLE_CLASS_NAME##::INVALID_DELAY"},
+      {"vx_distribution", "##HANDLE_CLASS_NAME##::INVALID_DISTRIBUTION"},
+      {"vx_graph", "##HANDLE_CLASS_NAME##::INVALID_GRAPH"},
+      {"vx_image", "##HANDLE_CLASS_NAME##::INVALID_IMAGE"},
+      {"vx_lut", "##HANDLE_CLASS_NAME##::INVALID_LUT"},
+      {"vx_matrix", "##HANDLE_CLASS_NAME##::INVALID_MATRIX"},
+      {"vx_object_array", "##HANDLE_CLASS_NAME##::INVALID_OBJECT_ARRAY"},
+      {"vx_pyramid", "##HANDLE_CLASS_NAME##::INVALID_PYRAMID"},
+      {"vx_remap", "##HANDLE_CLASS_NAME##::INVALID_REMAP"},
+      {"vx_scalar", "##HANDLE_CLASS_NAME##::INVALID_SCALAR"},
+      {"vx_threshold", "##HANDLE_CLASS_NAME##::INVALID_THRESHOLD"},
     };
   }
 
 
-  OpenVXGenerator::OpenVXGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
+  OpenVXGenerator::OpenVXGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot,
+                                   const Fsl::IO::Path& dstPath)
     : SimpleGenerator(capture,
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization,
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
-                                            g_functionGuards, g_functionNameBlacklist,
-                                            g_enumNameBlacklist, g_enumMemberBlacklist,
-                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false,
+                                            g_functionGuards, g_functionNameBlacklist, g_enumNameBlacklist, g_enumMemberBlacklist, TYPE_NAME_PREFIX,
+                                            FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false,
                                             VersionGuardConfig("VX_VERSION >= VX_VERSION_{0}_{1}")),
                       templateRoot, dstPath)
   {

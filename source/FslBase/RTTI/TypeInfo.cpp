@@ -5,7 +5,9 @@ namespace Fsl
 {
   TypeInfo::TypeInfo()
   {
-    class Nil {};
+    class Nil
+    {
+    };
     m_pInfo = &typeid(Nil);
     assert(m_pInfo);
   }
@@ -39,4 +41,3 @@ namespace Fsl
     return m_pInfo->name();
   }
 }
-

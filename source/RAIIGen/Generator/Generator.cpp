@@ -33,7 +33,6 @@ using namespace Fsl;
 
 namespace MB
 {
-
   namespace
   {
   }
@@ -59,7 +58,7 @@ namespace MB
           const auto itrFind = FindByName(functionRecords, destroyMethodName);
           if (itrFind != functionRecords.end())
           {
-            m_functionAnalysis.Matched.push_back( MatchedFunctionPair(objectName, *itr, *itrFind, MatchType::Auto) );
+            m_functionAnalysis.Matched.push_back(MatchedFunctionPair(objectName, *itr, *itrFind, MatchType::Auto));
             matchedFunctionNames.insert(itrFind->Name);
           }
           else
@@ -67,7 +66,8 @@ namespace MB
             bool found = false;
             // Check if its a manual supported function
             const auto name = itr->Name;
-            const auto itrFind2 = std::find_if(config.ManualFunctionMatches.begin(), config.ManualFunctionMatches.end(), [name](const FunctionNamePair& val) { return val.Create == name; });
+            const auto itrFind2 = std::find_if(config.ManualFunctionMatches.begin(), config.ManualFunctionMatches.end(),
+                                               [name](const FunctionNamePair& val) { return val.Create == name; });
             if (itrFind2 != config.ManualFunctionMatches.end())
             {
               const auto itrDestroy = FindByName(functionRecords, itrFind2->Destroy);
@@ -105,7 +105,6 @@ namespace MB
   {
     return std::find_if(records.begin(), records.end(), [name](const FunctionRecord& val) { return val.Name == name; });
   }
-
 
 
 }

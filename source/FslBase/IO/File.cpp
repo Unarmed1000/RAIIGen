@@ -1,33 +1,33 @@
 /****************************************************************************************************************************************************
-* Copyright (c) 2014 Freescale Semiconductor, Inc.
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-*    * Redistributions of source code must retain the above copyright notice,
-*      this list of conditions and the following disclaimer.
-*
-*    * Redistributions in binary form must reproduce the above copyright notice,
-*      this list of conditions and the following disclaimer in the documentation
-*      and/or other materials provided with the distribution.
-*
-*    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
-*      its contributors may be used to endorse or promote products derived from
-*      this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-* ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-****************************************************************************************************************************************************/
+ * Copyright (c) 2014 Freescale Semiconductor, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *    * Redistributions of source code must retain the above copyright notice,
+ *      this list of conditions and the following disclaimer.
+ *
+ *    * Redistributions in binary form must reproduce the above copyright notice,
+ *      this list of conditions and the following disclaimer in the documentation
+ *      and/or other materials provided with the distribution.
+ *
+ *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
+ *      its contributors may be used to endorse or promote products derived from
+ *      this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ****************************************************************************************************************************************************/
 
 #include <FslBase/IO/File.hpp>
 #include <FslBase/System/Platform/PlatformFileSystem.hpp>
@@ -85,7 +85,7 @@ namespace Fsl
       void StreamRead(std::ifstream& rStream, const Path& path, void* pDst, const std::size_t length)
       {
         // Read the entire content of the file
-        if( length > 0 )
+        if (length > 0)
           rStream.read(static_cast<char*>(pDst), length);
         if (!rStream.good())
         {
@@ -159,7 +159,6 @@ namespace Fsl
         return false;
       }
     }
-
 
 
     bool File::Exists(const Path& path)
@@ -260,7 +259,7 @@ namespace Fsl
 
     void File::ReadBytes(std::vector<uint8_t>& rTargetArray, const IO::Path& path, const int64_t fileOffset, const int64_t bytesToRead)
     {
-      if (fileOffset < 0 )
+      if (fileOffset < 0)
         throw std::invalid_argument("fileOffset can not be negative");
       if (bytesToRead < 0)
         throw std::invalid_argument("bytesToRead can not be negative");
@@ -290,7 +289,8 @@ namespace Fsl
     }
 
 
-    int64_t File::ReadBytes(void* pDstArray, const int64_t cbDstArray, const int64_t dstStartIndex, const IO::Path& path, const int64_t fileOffset, const int64_t bytesToRead)
+    int64_t File::ReadBytes(void* pDstArray, const int64_t cbDstArray, const int64_t dstStartIndex, const IO::Path& path, const int64_t fileOffset,
+                            const int64_t bytesToRead)
     {
       if (pDstArray == nullptr)
         throw std::invalid_argument("pDstArray can not be null");
@@ -306,7 +306,7 @@ namespace Fsl
       if (dstStartIndex > cbDstArray && !(dstStartIndex == 0 && cbDstArray == 0))
         throw std::invalid_argument("dstStartIndex can not greater or equal to cbDstArray");
 
-      if (bytesToRead > (cbDstArray - dstStartIndex) )
+      if (bytesToRead > (cbDstArray - dstStartIndex))
         throw std::invalid_argument("the requested number of bytes can not fit in the supplied dstArray at the given location");
 
       const std::size_t fileOffsetEx = ConvertInt64(fileOffset);
@@ -325,14 +325,13 @@ namespace Fsl
         // seek to the desired area of the file
         file.seekg(fileOffsetEx, file.beg);
 
-        StreamRead(file, path, static_cast<uint8_t*>(pDstArray)+dstStartIndex, bytesToReadEx);
+        StreamRead(file, path, static_cast<uint8_t*>(pDstArray) + dstStartIndex, bytesToReadEx);
         return bytesToRead;
       }
       catch (const std::ios_base::failure& ex)
       {
         throw IOException(ex.what());
       }
-
     }
 
 

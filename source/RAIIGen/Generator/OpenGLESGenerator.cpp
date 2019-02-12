@@ -40,7 +40,6 @@ using namespace Fsl;
 
 namespace MB
 {
-
   namespace
   {
     const auto CREATE_FUNCTION = "glGen";
@@ -55,72 +54,50 @@ namespace MB
     const auto DEFAULT_VALUE = "VK_NULL_HANDLE";
 
 
-    const std::vector<FunctionNamePair> g_functionPairs
-    {
+    const std::vector<FunctionNamePair> g_functionPairs{
       FunctionNamePair(CREATE_FUNCTION, DESTROY_FUNCTION),
     };
 
 
     // Manual matches for methods that don't follow 'standard' patterns
-    const std::vector<FunctionNamePair> g_manualFunctionMatches
-    {
+    const std::vector<FunctionNamePair> g_manualFunctionMatches{
       // Pipelines are destroyed with vkDestroyPipeline
-      //FunctionNamePair("vkCreateGraphicsPipelines", "vkDestroyPipeline"),
+      // FunctionNamePair("vkCreateGraphicsPipelines", "vkDestroyPipeline"),
     };
 
 
-    const std::vector<RAIIClassCustomization> g_arrayRAIIClassCustomization
-    {
-    };
+    const std::vector<RAIIClassCustomization> g_arrayRAIIClassCustomization{};
 
 
-    const std::vector<ClassFunctionAbsorb> g_classFunctionAbsorbtion
-    {
-    };
+    const std::vector<ClassFunctionAbsorb> g_classFunctionAbsorbtion{};
 
 
-    const std::unordered_map<std::string, RAIIClassMethodOverrides> g_classMethodOverride =
-    {
-    };
+    const std::unordered_map<std::string, RAIIClassMethodOverrides> g_classMethodOverride = {};
 
 
-    const std::vector<std::string> g_forceNullParameter
-    {
+    const std::vector<std::string> g_forceNullParameter{
       //"VkAllocationCallbacks"
     };
 
 
-    const std::vector<FunctionGuard> g_functionGuards
-    {
-    };
+    const std::vector<FunctionGuard> g_functionGuards{};
 
 
-    const std::vector<BlackListEntry> g_functionNameBlacklist
-    {
-    };
+    const std::vector<BlackListEntry> g_functionNameBlacklist{};
 
 
-    const std::vector<BlackListEntry> g_enumNameBlacklist
-    {
-    };
+    const std::vector<BlackListEntry> g_enumNameBlacklist{};
 
 
-    const std::vector<BlackListEntry> g_enumMemberBlacklist
-    {
-    };
+    const std::vector<BlackListEntry> g_enumMemberBlacklist{};
 
 
-    const std::vector<FunctionParameterNameOverride> g_functionParameterNameOverride
-    {
-    };
+    const std::vector<FunctionParameterNameOverride> g_functionParameterNameOverride{};
 
 
-    const std::vector<FunctionParameterTypeOverride> g_functionParameterTypeOverride
-    {
-    };
+    const std::vector<FunctionParameterTypeOverride> g_functionParameterTypeOverride{};
 
-    const std::unordered_map<std::string, std::string> g_typeDefaultValues =
-    {
+    const std::unordered_map<std::string, std::string> g_typeDefaultValues = {
       //{ "VkBuffer", DEFAULT_VALUE },
       //{ "VkBufferView", DEFAULT_VALUE },
       //{ "VkCommandBuffer", DEFAULT_VALUE },
@@ -151,13 +128,13 @@ namespace MB
   }
 
 
-  OpenGLESGenerator::OpenGLESGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
+  OpenGLESGenerator::OpenGLESGenerator(const Capture& capture, const BasicConfig& basicConfig, const Fsl::IO::Path& templateRoot,
+                                       const Fsl::IO::Path& dstPath)
     : SimpleGenerator(capture,
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization,
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
-                                            g_functionGuards, g_functionNameBlacklist,
-                                            g_enumNameBlacklist, g_enumMemberBlacklist,
-                                            TYPE_NAME_PREFIX, FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false),
+                                            g_functionGuards, g_functionNameBlacklist, g_enumNameBlacklist, g_enumMemberBlacklist, TYPE_NAME_PREFIX,
+                                            FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false),
                       templateRoot, dstPath)
   {
   }

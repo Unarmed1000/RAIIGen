@@ -106,16 +106,19 @@ namespace MB
 
     MemberVariable ToMemberVariable(const ParameterRecord& value)
     {
-      return MemberVariable(value.Type, value.Type.Name, "m_" + value.ArgumentName, value.ArgumentName, CaseUtil::UpperCaseFirstCharacter(value.ArgumentName));
+      return MemberVariable(value.Type, value.Type.Name, "m_" + value.ArgumentName, value.ArgumentName,
+                            CaseUtil::UpperCaseFirstCharacter(value.ArgumentName));
     }
 
     MemberVariable ToMemberVariable(const MemberRecord& value)
     {
-      return MemberVariable(value.Type, value.Type.Name, "m_" + value.ArgumentName, value.ArgumentName, CaseUtil::UpperCaseFirstCharacter(value.ArgumentName));
+      return MemberVariable(value.Type, value.Type.Name, "m_" + value.ArgumentName, value.ArgumentName,
+                            CaseUtil::UpperCaseFirstCharacter(value.ArgumentName));
     }
 
 
-    MethodArgument CPPifyArgument(const TypeRecord& type, const std::string& argumentName, const bool allowPointerToReferenceConversion, const bool allowConstAdd=true)
+    MethodArgument CPPifyArgument(const TypeRecord& type, const std::string& argumentName, const bool allowPointerToReferenceConversion,
+                                  const bool allowConstAdd = true)
     {
       MethodArgument result;
       result.FullType = type;
@@ -147,7 +150,7 @@ namespace MB
     }
 
 
-    MethodArgument ToMethodArgument(const ParameterRecord& value, const bool allowPointerToRefConvert=true)
+    MethodArgument ToMethodArgument(const ParameterRecord& value, const bool allowPointerToRefConvert = true)
     {
       // C++'ify the arguments
       std::string fullTypeString;
@@ -162,7 +165,7 @@ namespace MB
       }
       else if (value.Type.IsConstQualified)
         fullTypeString = value.Type.FullTypeString;
-      else if (! value.Type.IsPointer)
+      else if (!value.Type.IsPointer)
         fullTypeString = "const " + value.Type.FullTypeString;
       else
         fullTypeString = value.Type.FullTypeString;
@@ -177,7 +180,7 @@ namespace MB
     }
 
 
-    MethodArgument ToMethodArgument(const MemberRecord& value, const bool allowPointerToReferenceConversion=true)
+    MethodArgument ToMethodArgument(const MemberRecord& value, const bool allowPointerToReferenceConversion = true)
     {
       return CPPifyArgument(value.Type, value.ArgumentName, allowPointerToReferenceConversion);
     }
@@ -185,12 +188,13 @@ namespace MB
 
     std::string TypeToVariableName(const std::string& typeNamePrefix, const std::string& typeName)
     {
-      if( typeName.find(typeNamePrefix) != 0 )
+      if (typeName.find(typeNamePrefix) != 0)
         return typeName;
       return StringHelper::EnforceLowerCamelCaseNameStyle(typeName.substr(typeNamePrefix.size()));
     }
 
-    ParamInStruct LookupParameterInStruct(const Capture& capture, const std::deque<MethodArgument>& createParameters, const ParameterRecord& findParameter)
+    ParamInStruct LookupParameterInStruct(const Capture& capture, const std::deque<MethodArgument>& createParameters,
+                                          const ParameterRecord& findParameter)
     {
       auto structDict = capture.GetStructDict();
 
@@ -213,7 +217,9 @@ namespace MB
     }
 
 
-    AnalysisResult AnalyzeCreate(std::unordered_map<std::string, MethodArgument>& rDstMap, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const std::vector<std::string>& forceNullParameter, const AnalyzeMode analyzeMode, const std::string& paramMemberArrayCountName, const bool singleElementDelete)
+    AnalysisResult AnalyzeCreate(std::unordered_map<std::string, MethodArgument>& rDstMap, const SimpleGeneratorConfig& config,
+                                 const MatchedFunctionPair& functions, const std::vector<std::string>& forceNullParameter,
+                                 const AnalyzeMode analyzeMode, const std::string& paramMemberArrayCountName, const bool singleElementDelete)
     {
       bool rResourceParameterFound = false;
       AnalysisResult result;
@@ -229,7 +235,8 @@ namespace MB
         }
         else
         {
-          auto itrFind = std::find_if(functions.Destroy.Parameters.begin(), functions.Destroy.Parameters.end(), [typeName](const ParameterRecord& val) { return val.Type.Name == typeName; });
+          auto itrFind = std::find_if(functions.Destroy.Parameters.begin(), functions.Destroy.Parameters.end(),
+                                      [typeName](const ParameterRecord& val) { return val.Type.Name == typeName; });
           if (itrFind != functions.Destroy.Parameters.end())
           {
             if (!IsIgnoreParameter(*itr, forceNullParameter))
@@ -244,7 +251,7 @@ namespace MB
                 result.IntermediaryName = result.ResourceMemberVariable.ArgumentName;
 
 
-                { // Build the create argument
+                {    // Build the create argument
                   auto createArgument = ToMethodArgument(*itr);
                   if (itr->Type.IsPointer)
                   {
@@ -261,7 +268,7 @@ namespace MB
                     createArgument.ParameterValue = result.IntermediaryName;
                   result.CreateArguments.push_back(createArgument);
                 }
-                { // Build the destroy argument
+                {    // Build the destroy argument
                   auto destroyArgument = ToMethodArgument(*itr);
                   if (itrFind->Type.IsPointer)
                   {
@@ -289,7 +296,7 @@ namespace MB
                 auto member = ToMemberVariable(*itr);
                 auto destroyArgument = ToMethodArgument(*itr);
 
-                if (analyzeMode == AnalyzeMode::Normal ||  itr->ArgumentName != paramMemberArrayCountName)
+                if (analyzeMode == AnalyzeMode::Normal || itr->ArgumentName != paramMemberArrayCountName)
                 {
                   result.AdditionalMemberVariables.push_back(member);
                   result.MethodArguments.push_back(ToMethodArgument(*itr));
@@ -348,19 +355,21 @@ namespace MB
       {
         // So no members matched the params to the destroy method, lets check if the return type matches
         const auto typeName = functions.Create.ReturnType.Name;
-        auto itrFind = std::find_if(functions.Destroy.Parameters.begin(), functions.Destroy.Parameters.end(), [typeName](const ParameterRecord& val) { return val.Type.Name == typeName; });
+        auto itrFind = std::find_if(functions.Destroy.Parameters.begin(), functions.Destroy.Parameters.end(),
+                                    [typeName](const ParameterRecord& val) { return val.Type.Name == typeName; });
         if (itrFind == functions.Destroy.Parameters.end())
           throw NotSupportedException(std::string("Could not find created resource parameter for method: ") + functions.Create.Name);
 
         // We found a return type that matches a destroy parameter
         result.IntermediaryName = TypeToVariableName(config.TypeNamePrefix, typeName);
-        result.ResourceMemberVariable = MemberVariable(functions.Create.ReturnType, typeName, "m_" + result.IntermediaryName, result.IntermediaryName, CaseUtil::UpperCaseFirstCharacter(result.IntermediaryName));
+        result.ResourceMemberVariable = MemberVariable(functions.Create.ReturnType, typeName, "m_" + result.IntermediaryName, result.IntermediaryName,
+                                                       CaseUtil::UpperCaseFirstCharacter(result.IntermediaryName));
 
-        { // Build the destroy argument
+        {    // Build the destroy argument
           auto destroyArgument = ToMethodArgument(*itrFind);
           if (itrFind->Type.IsPointer)
           {
-            if(analyzeMode == AnalyzeMode::VectorInstance)
+            if (analyzeMode == AnalyzeMode::VectorInstance)
               destroyArgument.ParameterValue = result.ResourceMemberVariable.Name + ".data()";
             else
               destroyArgument.ParameterValue = "&" + result.ResourceMemberVariable.Name;
@@ -385,10 +394,13 @@ namespace MB
     }
 
 
-    void AnalyzeDestroy(AnalysisResult& rResult, const Capture& capture, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const AnalyzeMode analyzeMode, const std::unordered_map<std::string, MethodArgument>& dstMap)
+    void AnalyzeDestroy(AnalysisResult& rResult, const Capture& capture, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions,
+                        const AnalyzeMode analyzeMode, const std::unordered_map<std::string, MethodArgument>& dstMap)
     {
       const std::string createMethodName = functions.Create.Name;
-      const auto itrCustom = std::find_if(config.RAIIClassCustomizations.begin(), config.RAIIClassCustomizations.end(), [createMethodName](const RAIIClassCustomization& val) { return val.SourceCreateMethod == createMethodName; });
+      const auto itrCustom =
+        std::find_if(config.RAIIClassCustomizations.begin(), config.RAIIClassCustomizations.end(),
+                     [createMethodName](const RAIIClassCustomization& val) { return val.SourceCreateMethod == createMethodName; });
       for (auto itr = functions.Destroy.Parameters.begin(); itr != functions.Destroy.Parameters.end(); ++itr)
       {
         auto itrFindDst = dstMap.find(itr->ArgumentName);
@@ -401,7 +413,8 @@ namespace MB
           asMember.SourceArgumentName = found.SourceParameter.ArgumentName + "." + asMember.ArgumentName;
           auto asArgument = ToMethodArgument(asMember);
 
-          if (itrCustom != config.RAIIClassCustomizations.end() && itrCustom != config.RAIIClassCustomizations.end() && itrCustom->StructMemberArrayCountName == asMember.ArgumentName)
+          if (itrCustom != config.RAIIClassCustomizations.end() && itrCustom != config.RAIIClassCustomizations.end() &&
+              itrCustom->StructMemberArrayCountName == asMember.ArgumentName)
           {
             switch (analyzeMode)
             {
@@ -410,7 +423,9 @@ namespace MB
               rResult.ResourceCountVariableName = asMember.SourceArgumentName;
               break;
             case AnalyzeMode::VectorInstance:
-              rResult.DestroyArguments.push_back(MethodArgument(asArgument.FullType, asArgument.FullTypeString, std::string("static_cast<") + asArgument.FullType.Name + ">(m_" + itrCustom->ResourceName + ".size())"));
+              rResult.DestroyArguments.push_back(
+                MethodArgument(asArgument.FullType, asArgument.FullTypeString,
+                               std::string("static_cast<") + asArgument.FullType.Name + ">(m_" + itrCustom->ResourceName + ".size())"));
               rResult.ResourceCountVariableName = asMember.SourceArgumentName;
               break;
             default:
@@ -428,12 +443,14 @@ namespace MB
     }
 
 
-    AnalysisResult Analyze(const Capture& capture, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const std::string& lowerCamelCaseClassName,
-                           const std::vector<std::string>& forceNullParameter, const AnalyzeMode analyzeMode, const std::string& paramMemberArrayCountName, const bool singleElementDelete)
+    AnalysisResult Analyze(const Capture& capture, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions,
+                           const std::string& lowerCamelCaseClassName, const std::vector<std::string>& forceNullParameter,
+                           const AnalyzeMode analyzeMode, const std::string& paramMemberArrayCountName, const bool singleElementDelete)
     {
       std::unordered_map<std::string, MethodArgument> dstMap;
 
-      AnalysisResult result = AnalyzeCreate(dstMap, config, functions, forceNullParameter, analyzeMode, paramMemberArrayCountName, singleElementDelete);
+      AnalysisResult result =
+        AnalyzeCreate(dstMap, config, functions, forceNullParameter, analyzeMode, paramMemberArrayCountName, singleElementDelete);
       AnalyzeDestroy(result, capture, config, functions, analyzeMode, dstMap);
 
       std::copy(result.AdditionalMemberVariables.begin(), result.AdditionalMemberVariables.end(), std::back_inserter(result.AllMemberVariables));
@@ -452,7 +469,6 @@ namespace MB
       {
         if (function.Parameters[paramIndex].Type.Name != startParameters[paramIndex].Type)
           return false;
-
       }
       return true;
     }
@@ -460,17 +476,15 @@ namespace MB
 
     bool IsManagedType(const std::deque<FullAnalysis>& managed, const ParameterRecord& parameter)
     {
-      auto func = [parameter](const FullAnalysis& val)
-      {
-        return val.Result.ResourceMemberVariable.Type == parameter.Type.Name;
-      };
+      auto func = [parameter](const FullAnalysis& val) { return val.Result.ResourceMemberVariable.Type == parameter.Type.Name; };
       return std::find_if(managed.begin(), managed.end(), func) != managed.end();
     }
 
 
     void AddFunctionGuard(ClassMethod& rClassMethod, const std::vector<FunctionGuard>& functionGuards)
     {
-      const auto itrFind = std::find_if(functionGuards.begin(), functionGuards.end(), [rClassMethod](const FunctionGuard& entry) { return entry.Name == rClassMethod.SourceFunction.Name; });
+      const auto itrFind = std::find_if(functionGuards.begin(), functionGuards.end(),
+                                        [rClassMethod](const FunctionGuard& entry) { return entry.Name == rClassMethod.SourceFunction.Name; });
       if (itrFind == functionGuards.end())
         return;
 
@@ -488,8 +502,8 @@ namespace MB
     }
 
 
-
-    void FindObjectFunctions(const SimpleGeneratorConfig& config, const FunctionAnalysis& functionAnalysis, std::deque<FullAnalysis>& managed, FullAnalysis& rResult)
+    void FindObjectFunctions(const SimpleGeneratorConfig& config, const FunctionAnalysis& functionAnalysis, std::deque<FullAnalysis>& managed,
+                             FullAnalysis& rResult)
     {
       std::cout << "Matching functions to " << rResult.Result.ClassName << "\n";
 
@@ -499,7 +513,7 @@ namespace MB
       {
         // 1. The start parameter types and order must be exactly the same as this objects member variables
         // 2. Any following parameter must not be of a 'managed' type (one that we generate a object for)
-        if (IsExactStartParameterMatch(rResult.Result.AllMemberVariables, *itr) )
+        if (IsExactStartParameterMatch(rResult.Result.AllMemberVariables, *itr))
         {
           const std::size_t numMembers = rResult.Result.AllMemberVariables.size();
           if (itr->Parameters.size() <= numMembers || !IsManagedType(managed, itr->Parameters[numMembers]))
@@ -529,7 +543,7 @@ namespace MB
               }
 
               // Convert all the method arguments
-              for (auto &param : itr->Parameters)
+              for (auto& param : itr->Parameters)
                 classMethod.OriginalMethodArguments.push_back(ToMethodArgument(param, false));
 
               // Add the starting params (the members)
@@ -616,14 +630,18 @@ namespace MB
       return itr != typeDefaultValues.end() ? itr->second : std::string(DEFAULT_VALUE_NOT_FOUND);
     }
 
-    void ReplaceDefaultValue(std::string& rContent, const std::string& type, const std::unordered_map<std::string, std::string>& typeDefaultValues, const Snippets& snippets)
+    void ReplaceDefaultValue(std::string& rContent, const std::string& type, const std::unordered_map<std::string, std::string>& typeDefaultValues,
+                             const Snippets& snippets)
     {
       StringUtil::Replace(rContent, "##DEFAULT_VALUE##", snippets.DefaultValueMod);
       StringUtil::Replace(rContent, "##DEFAULT_VALUE##", GetDefaultValue(typeDefaultValues, type));
     }
 
 
-    std::string GenerateForAllMembersMoveSupport(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables, const std::string snippetTemplate, const std::string& snippetMoveTemplate, const std::unordered_map<std::string, std::string>& typeDefaultValues, const bool useSourceArgument = false)
+    std::string GenerateForAllMembersMoveSupport(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables,
+                                                 const std::string snippetTemplate, const std::string& snippetMoveTemplate,
+                                                 const std::unordered_map<std::string, std::string>& typeDefaultValues,
+                                                 const bool useSourceArgument = false)
     {
       const bool scriptUsesDefaultValue = ContainsDefaultValue(snippetTemplate);
 
@@ -645,7 +663,10 @@ namespace MB
       return result;
     }
 
-    std::string GenerateForAllMembersInvalidate(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables, const SnippetContext& snippetTemplate, const std::unordered_map<std::string, std::string>& typeDefaultValues, const bool useSourceArgument = false)
+    std::string GenerateForAllMembersInvalidate(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables,
+                                                const SnippetContext& snippetTemplate,
+                                                const std::unordered_map<std::string, std::string>& typeDefaultValues,
+                                                const bool useSourceArgument = false)
     {
       std::string result;
       for (auto itr = allMemberVariables.begin(); itr != allMemberVariables.end(); ++itr)
@@ -666,13 +687,18 @@ namespace MB
     }
 
 
-    std::string GenerateForAllMembers(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables, const std::string& snippetTemplate, const std::unordered_map<std::string, std::string>& typeDefaultValues, const bool useSourceArgument = false)
+    std::string GenerateForAllMembers(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables,
+                                      const std::string& snippetTemplate, const std::unordered_map<std::string, std::string>& typeDefaultValues,
+                                      const bool useSourceArgument = false)
     {
       return GenerateForAllMembersMoveSupport(snippets, allMemberVariables, snippetTemplate, snippetTemplate, typeDefaultValues, useSourceArgument);
     }
 
 
-    std::string GenerateAssertForAllMembers(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables, const SnippetContext& snippetTemplate, const std::unordered_map<std::string, std::string>& typeDefaultValues, const bool useSourceArgument = false)
+    std::string GenerateAssertForAllMembers(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables,
+                                            const SnippetContext& snippetTemplate,
+                                            const std::unordered_map<std::string, std::string>& typeDefaultValues,
+                                            const bool useSourceArgument = false)
     {
       std::string result;
       for (auto itr = allMemberVariables.begin(); itr != allMemberVariables.end(); ++itr)
@@ -695,7 +721,9 @@ namespace MB
     }
 
 
-    std::string GenerateConstructorInitializationMoveSupport(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables, const std::string& snippetTemplate, const std::string snippetTemplateMove, const std::unordered_map<std::string, std::string>& typeDefaultValues)
+    std::string GenerateConstructorInitializationMoveSupport(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables,
+                                                             const std::string& snippetTemplate, const std::string snippetTemplateMove,
+                                                             const std::unordered_map<std::string, std::string>& typeDefaultValues)
     {
       std::string result;
       std::string seperator = ":";
@@ -715,7 +743,9 @@ namespace MB
     }
 
 
-    std::string GenerateConstructorInitialization(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables, const SnippetContext& snippetInit, const std::unordered_map<std::string, std::string>& typeDefaultValues)
+    std::string GenerateConstructorInitialization(const Snippets& snippets, const std::deque<MemberVariable>& allMemberVariables,
+                                                  const SnippetContext& snippetInit,
+                                                  const std::unordered_map<std::string, std::string>& typeDefaultValues)
     {
       std::string result;
       std::string seperator = ":";
@@ -735,7 +765,8 @@ namespace MB
     }
 
 
-    void CheckDefaultValues(std::unordered_set<std::string>& rTypesWithoutDefaultValues, const std::deque<MemberVariable>& allMemberVariables, const std::unordered_map<std::string, std::string>& typeDefaultValues)
+    void CheckDefaultValues(std::unordered_set<std::string>& rTypesWithoutDefaultValues, const std::deque<MemberVariable>& allMemberVariables,
+                            const std::unordered_map<std::string, std::string>& typeDefaultValues)
     {
       for (auto itr = allMemberVariables.begin(); itr != allMemberVariables.end(); ++itr)
       {
@@ -752,7 +783,8 @@ namespace MB
       std::cout << "Class " << absorb.ClassName << " absorbing function " << absorb.FunctionName << "\n";
 
       const std::string functionName = absorb.FunctionName;
-      auto itrFindAbsorb = std::find_if(rFullAnalysis.begin(), rFullAnalysis.end(), [functionName](const FullAnalysis& val) { return val.Pair.Create.Name == functionName; });
+      auto itrFindAbsorb = std::find_if(rFullAnalysis.begin(), rFullAnalysis.end(),
+                                        [functionName](const FullAnalysis& val) { return val.Pair.Create.Name == functionName; });
       if (itrFindAbsorb == rFullAnalysis.end())
       {
         std::cout << "WARNING: Could not find the requested class " + functionName << "\n";
@@ -768,7 +800,7 @@ namespace MB
 
       // Alocate a container if needed
       if (!rAbsorbAnalysis.AbsorbedFunctions)
-        rAbsorbAnalysis.AbsorbedFunctions = std::make_shared<std::deque<FullAnalysis> >();
+        rAbsorbAnalysis.AbsorbedFunctions = std::make_shared<std::deque<FullAnalysis>>();
 
       itrFindAbsorb->Result.ClassName = absorb.ClassName;
 
@@ -779,14 +811,14 @@ namespace MB
     }
 
 
-
     void AbsorbFunctions(std::deque<FullAnalysis>& rFullAnalysis, const std::vector<ClassFunctionAbsorb>& classFunctionAbsorbtion)
     {
       for (auto itr = classFunctionAbsorbtion.begin(); itr != classFunctionAbsorbtion.end(); ++itr)
       {
         const std::string className = itr->ClassName;
 
-        const auto itrFindClass = std::find_if(rFullAnalysis.begin(), rFullAnalysis.end(), [className](const FullAnalysis& val) { return val.Result.ClassName == className; });
+        const auto itrFindClass = std::find_if(rFullAnalysis.begin(), rFullAnalysis.end(),
+                                               [className](const FullAnalysis& val) { return val.Result.ClassName == className; });
         if (itrFindClass != rFullAnalysis.end())
         {
           AbsorbFunctions(rFullAnalysis, *itr, *itrFindClass);
@@ -794,10 +826,12 @@ namespace MB
         else
         {
           if (!itr->AllowCreate)
-            throw NotFoundException(std::string("Could not find class ") + className + " and not allowed to create, so function " + itr->FunctionName + " could not be absorbed as requested");
+            throw NotFoundException(std::string("Could not find class ") + className + " and not allowed to create, so function " +
+                                    itr->FunctionName + " could not be absorbed as requested");
 
           const std::string functionName = itr->FunctionName;
-          auto itrFindAltClass = std::find_if(rFullAnalysis.begin(), rFullAnalysis.end(), [functionName](const FullAnalysis& val) { return val.Pair.Create.Name == functionName; });
+          auto itrFindAltClass = std::find_if(rFullAnalysis.begin(), rFullAnalysis.end(),
+                                              [functionName](const FullAnalysis& val) { return val.Pair.Create.Name == functionName; });
           if (itrFindAltClass == rFullAnalysis.end())
             throw NotFoundException(std::string("Could not find the requested class ") + functionName);
 
@@ -813,13 +847,15 @@ namespace MB
     //! Analyze the create parameters and 'unroll' the structs
     void AnalyzeCreateFunctionStructParameters(const Capture& capture, const SimpleGeneratorConfig& config, std::deque<FullAnalysis>& rFullAnalysis)
     {
-      //std::cout << "Create function parameter struct analysis\n";
+      // std::cout << "Create function parameter struct analysis\n";
       {
         auto structDict = capture.GetStructDict();
         for (auto itr = rFullAnalysis.begin(); itr != rFullAnalysis.end(); ++itr)
         {
           const std::string createMethodName = itr->Pair.Create.Name;
-          const auto itrCustom = std::find_if(config.RAIIClassCustomizations.begin(), config.RAIIClassCustomizations.end(), [createMethodName](const RAIIClassCustomization& val) { return val.SourceCreateMethod == createMethodName; });
+          const auto itrCustom =
+            std::find_if(config.RAIIClassCustomizations.begin(), config.RAIIClassCustomizations.end(),
+                         [createMethodName](const RAIIClassCustomization& val) { return val.SourceCreateMethod == createMethodName; });
 
           UnrolledCreateMethod unrolledCreateMethod;
           std::unordered_set<std::string> uniqueNames;
@@ -832,12 +868,12 @@ namespace MB
               if (itrStruct != structDict.end())
               {
                 std::cout << "  CreateFunction: " << itr->Pair.Create.Name << " found struct: " << itrParam->FullType.Name << "\n";
-                const auto & structRecord = itrStruct->second;
+                const auto& structRecord = itrStruct->second;
                 for (auto itrStruct = structRecord.Members.begin(); itrStruct != structRecord.Members.end(); ++itrStruct)
                 {
                   if (itrStruct->Name != "sType" && itrStruct->Name != "pNext")
                   {
-                    if (itrCustom != config.RAIIClassCustomizations.end() && itrCustom->StructMemberArrayCountName == itrStruct->ArgumentName )
+                    if (itrCustom != config.RAIIClassCustomizations.end() && itrCustom->StructMemberArrayCountName == itrStruct->ArgumentName)
                     {
                       const auto argument = ToMethodArgument(*itrStruct, false);
                       switch (itr->Mode)
@@ -865,7 +901,7 @@ namespace MB
                   }
                   else
                     unrolledStruct.Members.push_back(UnrolledStructMember(UnrollMode::Skipped, ToMethodArgument(*itrStruct, false)));
-                  //std::cout << "    " << itrStruct->Type.FullTypeString << " " << itrStruct->Name << "\n";
+                  // std::cout << "    " << itrStruct->Type.FullTypeString << " " << itrStruct->Name << "\n";
                 }
               }
               unrolledCreateMethod.UnrolledStructs.push_back(unrolledStruct);
@@ -885,7 +921,8 @@ namespace MB
     }
 
 
-    std::deque<FullAnalysis> Analyze(const Capture& capture, const SimpleGeneratorConfig& config, const FunctionAnalysis& functionAnalysis, std::unordered_set<std::string>& rTypesWithoutDefaultValues)
+    std::deque<FullAnalysis> Analyze(const Capture& capture, const SimpleGeneratorConfig& config, const FunctionAnalysis& functionAnalysis,
+                                     std::unordered_set<std::string>& rTypesWithoutDefaultValues)
     {
       std::deque<FullAnalysis> managed;
       for (auto itr = functionAnalysis.Matched.begin(); itr != functionAnalysis.Matched.end(); ++itr)
@@ -896,20 +933,26 @@ namespace MB
           std::cout << "Matched: " << itr->Create.Name << " with " << itr->Destroy.Name << "\n";
 
         const std::string createMethodName = itr->Create.Name;
-        const auto itrCustom = std::find_if(config.RAIIClassCustomizations.begin(), config.RAIIClassCustomizations.end(), [createMethodName](const RAIIClassCustomization& val) { return val.SourceCreateMethod == createMethodName; });
+        const auto itrCustom =
+          std::find_if(config.RAIIClassCustomizations.begin(), config.RAIIClassCustomizations.end(),
+                       [createMethodName](const RAIIClassCustomization& val) { return val.SourceCreateMethod == createMethodName; });
         if (itrCustom == config.RAIIClassCustomizations.end())
         {
-          const auto result = Analyze(capture, config, *itr, CaseUtil::LowerCaseFirstCharacter(itr->Name), config.ForceNullParameter, AnalyzeMode::Normal, "", true);
+          const auto result =
+            Analyze(capture, config, *itr, CaseUtil::LowerCaseFirstCharacter(itr->Name), config.ForceNullParameter, AnalyzeMode::Normal, "", true);
           CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
           managed.push_back(FullAnalysis(*itr, result, AnalyzeMode::Normal, SourceTemplateType::NormalResource));
         }
         else
         {
-          auto result = Analyze(capture, config, *itr, itrCustom->SingleInstanceClassName, config.ForceNullParameter, AnalyzeMode::SingleInstance, itrCustom->ParamMemberArrayCountName, true);
+          auto result = Analyze(capture, config, *itr, itrCustom->SingleInstanceClassName, config.ForceNullParameter, AnalyzeMode::SingleInstance,
+                                itrCustom->ParamMemberArrayCountName, true);
           CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
           managed.push_back(FullAnalysis(*itr, result, AnalyzeMode::SingleInstance, SourceTemplateType::NormalResource));
 
-          result = Analyze(capture, config, *itr, itrCustom->VectorInstanceClassName, config.ForceNullParameter, AnalyzeMode::VectorInstance, itrCustom->ParamMemberArrayCountName, itrCustom->VectorInstanceTemplateType == SourceTemplateType::ArrayAllocationButSingleInstanceDestroy);
+          result = Analyze(capture, config, *itr, itrCustom->VectorInstanceClassName, config.ForceNullParameter, AnalyzeMode::VectorInstance,
+                           itrCustom->ParamMemberArrayCountName,
+                           itrCustom->VectorInstanceTemplateType == SourceTemplateType::ArrayAllocationButSingleInstanceDestroy);
           CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
           managed.push_back(FullAnalysis(*itr, result, AnalyzeMode::VectorInstance, itrCustom->VectorInstanceTemplateType));
         }
@@ -918,7 +961,7 @@ namespace MB
       //
       AbsorbFunctions(managed, config.ClassFunctionAbsorbtion);
 
-      if( config.UnrollCreateStructs )
+      if (config.UnrollCreateStructs)
         AnalyzeCreateFunctionStructParameters(capture, config, managed);
 
       for (auto itr = managed.begin(); itr != managed.end(); ++itr)
@@ -941,8 +984,10 @@ namespace MB
       std::string createMethodParameters = GenerateParameterList(fullAnalysis.Result.MethodArguments);
       std::string createMethodParameterNames = GenerateParameterNameList(fullAnalysis.Result.MethodArguments);
       const std::string createFunctionArguments = GenerateExpandedParameterNameList(fullAnalysis.Result.CreateArguments);
-      const std::string resetParamValidation = GenerateForAllMembers(snippets, fullAnalysis.Result.AdditionalMemberVariables, snippets.ResetParamValidation, config.TypeDefaultValues, true);
-      std::string resetParamAsserts = GenerateAssertForAllMembers(snippets, fullAnalysis.Result.AdditionalMemberVariables, snippets.ResetParamAssertCondition, config.TypeDefaultValues, true);
+      const std::string resetParamValidation =
+        GenerateForAllMembers(snippets, fullAnalysis.Result.AdditionalMemberVariables, snippets.ResetParamValidation, config.TypeDefaultValues, true);
+      std::string resetParamAsserts = GenerateAssertForAllMembers(snippets, fullAnalysis.Result.AdditionalMemberVariables,
+                                                                  snippets.ResetParamAssertCondition, config.TypeDefaultValues, true);
 
       if (fullAnalysis.Mode == AnalyzeMode::SingleInstance && !fullAnalysis.Result.ResourceCountVariableName.empty())
       {
@@ -972,8 +1017,9 @@ namespace MB
     }
 
 
-    GeneratedMethodCode GenerateExtraCreates(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetHeader, const std::string& snippetSource,
-                                             const std::string& snippetVoidHeader, const std::string& snippetVoidSource, const FullAnalysis& fullAnalysis)
+    GeneratedMethodCode GenerateExtraCreates(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetHeader,
+                                             const std::string& snippetSource, const std::string& snippetVoidHeader,
+                                             const std::string& snippetVoidSource, const FullAnalysis& fullAnalysis)
     {
       std::string resultHeader = GenerateExtraCreate(config, snippets, snippetHeader, snippetVoidHeader, fullAnalysis, true);
       std::string resultSource = GenerateExtraCreate(config, snippets, snippetSource, snippetVoidSource, fullAnalysis, true);
@@ -990,12 +1036,11 @@ namespace MB
     }
 
 
-
-
     std::string GenerateUnrolledStructLocalVariables(const std::string& snippet, const std::string& snippetSet, const FullAnalysis& fullAnalysis)
     {
       std::string result;
-      for (auto itr = fullAnalysis.Result.UnrolledCreateMethod.UnrolledStructs.begin(); itr != fullAnalysis.Result.UnrolledCreateMethod.UnrolledStructs.end(); ++itr)
+      for (auto itr = fullAnalysis.Result.UnrolledCreateMethod.UnrolledStructs.begin();
+           itr != fullAnalysis.Result.UnrolledCreateMethod.UnrolledStructs.end(); ++itr)
       {
         std::string setMembers;
         std::string variable = itr->Source.ArgumentName + ".";
@@ -1042,7 +1087,8 @@ namespace MB
     }
 
 
-    std::string GenerateUnrolledCreate(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetFunction, const FullAnalysis& fullAnalysis, const bool allowAbsorb, const bool isConstructor)
+    std::string GenerateUnrolledCreate(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetFunction,
+                                       const FullAnalysis& fullAnalysis, const bool allowAbsorb, const bool isConstructor)
     {
       if (!allowAbsorb && fullAnalysis.AbsorbedFunctions && fullAnalysis.AbsorbedFunctions->size() > 0)
         throw NotSupportedException("Absorbed functions can not contain absorbed functions");
@@ -1051,9 +1097,11 @@ namespace MB
       if (fullAnalysis.Result.UnrolledCreateMethod.MethodArguments.size() <= 0)
         return std::string();
 
-      std::string localVariables = GenerateUnrolledStructLocalVariables(snippets.ResetUnrollStructVariable, snippets.ResetSetMemberVariable, fullAnalysis);
+      std::string localVariables =
+        GenerateUnrolledStructLocalVariables(snippets.ResetUnrollStructVariable, snippets.ResetSetMemberVariable, fullAnalysis);
       std::string createMethodParameters = GenerateParameterList(fullAnalysis.Result.UnrolledCreateMethod.MethodArguments);
-      std::string createMethodParameterNames = GenerateParameterNameList(isConstructor ? fullAnalysis.Result.UnrolledCreateMethod.MethodArguments : fullAnalysis.Result.MethodArguments);
+      std::string createMethodParameterNames =
+        GenerateParameterNameList(isConstructor ? fullAnalysis.Result.UnrolledCreateMethod.MethodArguments : fullAnalysis.Result.MethodArguments);
       const std::string createFunctionArguments = GenerateExpandedParameterNameList(fullAnalysis.Result.CreateArguments);
 
       std::string content(snippetFunction);
@@ -1077,7 +1125,8 @@ namespace MB
       return content;
     }
 
-    GeneratedMethodCode GenerateUnrolledCreates(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetHeader, const std::string& snippetSource, const FullAnalysis& fullAnalysis, const bool isConstructor)
+    GeneratedMethodCode GenerateUnrolledCreates(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetHeader,
+                                                const std::string& snippetSource, const FullAnalysis& fullAnalysis, const bool isConstructor)
     {
       std::string resultHeader = GenerateUnrolledCreate(config, snippets, snippetHeader, fullAnalysis, true, isConstructor);
       std::string resultSource = GenerateUnrolledCreate(config, snippets, snippetSource, fullAnalysis, true, isConstructor);
@@ -1087,7 +1136,7 @@ namespace MB
         for (auto itr = fullAnalysis.AbsorbedFunctions->begin(); itr != fullAnalysis.AbsorbedFunctions->end(); ++itr)
         {
           const auto tmpHeader = GenerateUnrolledCreate(config, snippets, snippetHeader, *itr, false, isConstructor);
-          if(tmpHeader.size() > 0)
+          if (tmpHeader.size() > 0)
             resultHeader += END_OF_LINE + END_OF_LINE + tmpHeader;
           const auto tmpSource = GenerateUnrolledCreate(config, snippets, snippetSource, *itr, false, isConstructor);
           if (tmpSource.size() > 0)
@@ -1154,7 +1203,8 @@ namespace MB
     }
 
 
-    std::string GenerateAdditionalIncludes(const SimpleGeneratorConfig& config, const Snippets& snippets, const FullAnalysis& fullAnalysis, const std::string& additionalHeaders)
+    std::string GenerateAdditionalIncludes(const SimpleGeneratorConfig& config, const Snippets& snippets, const FullAnalysis& fullAnalysis,
+                                           const std::string& additionalHeaders)
     {
       std::string result;
 
@@ -1225,8 +1275,9 @@ namespace MB
     }
 
 
-    std::string GenerateContent(const SimpleGeneratorConfig& config, const FullAnalysis& fullAnalysis, const std::string& contentTemplate, const std::string*const pSnippetMemberVariable,
-                                const std::string*const pSnippetMemberVariableGet, const Snippets& snippets, const AdditionalContent& additionalContent)
+    std::string GenerateContent(const SimpleGeneratorConfig& config, const FullAnalysis& fullAnalysis, const std::string& contentTemplate,
+                                const std::string* const pSnippetMemberVariable, const std::string* const pSnippetMemberVariableGet,
+                                const Snippets& snippets, const AdditionalContent& additionalContent)
     {
       // Generate the RAII resource class header file
       std::string content = contentTemplate;
@@ -1282,22 +1333,39 @@ namespace MB
 
       const std::string memberParameters = GenerateMemberAsParameters(fullAnalysis.Result.AllMemberVariables, config.OwnershipTransferUseClaimMode);
       const std::string memberParameterNames = GenerateMemberAsNames(fullAnalysis.Result.AllMemberVariables, config.OwnershipTransferUseClaimMode);
-      const std::string resetSetMembers = GenerateForAllMembersMoveSupport(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetSetMemberVariable, snippets.ResetSetMemberVariableMove, config.TypeDefaultValues, true);
-      const std::string resetSetMembersNormal = GenerateForAllMembersMoveSupport(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetSetMemberVariable, snippets.ResetSetMemberVariableMove, config.TypeDefaultValues);
-      const std::string defaultConstructorInitialization = GenerateConstructorInitialization(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ConstructorMemberInitialization, config.TypeDefaultValues);
-      const std::string moveConstructorMemberInitialization = GenerateConstructorInitializationMoveSupport(snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveConstructorClaimMember, snippets.MoveConstructorClaimMemberMove, config.TypeDefaultValues);
-      const std::string moveAssignmentClaimMembers = GenerateForAllMembersMoveSupport(snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveAssignmentClaimMember, snippets.MoveAssignmentClaimMemberMove, config.TypeDefaultValues);
-      const std::string moveAssignmentInvalidateMembers = GenerateForAllMembersMoveSupport(snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveAssignmentInvalidateMember, "", config.TypeDefaultValues);
-      const std::string moveConstructorInvalidateMembers = GenerateForAllMembersMoveSupport(snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveConstructorInvalidateMember, "", config.TypeDefaultValues);
-      const std::string resetInvalidateMembers = GenerateForAllMembersInvalidate(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetInvalidateMemberVariable, config.TypeDefaultValues);
-      const std::string resetMemberAssertions = GenerateAssertForAllMembers(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetMemberAssertCondition, config.TypeDefaultValues);
+      const std::string resetSetMembers =
+        GenerateForAllMembersMoveSupport(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetSetMemberVariable,
+                                         snippets.ResetSetMemberVariableMove, config.TypeDefaultValues, true);
+      const std::string resetSetMembersNormal =
+        GenerateForAllMembersMoveSupport(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetSetMemberVariable,
+                                         snippets.ResetSetMemberVariableMove, config.TypeDefaultValues);
+      const std::string defaultConstructorInitialization = GenerateConstructorInitialization(
+        snippets, fullAnalysis.Result.AllMemberVariables, snippets.ConstructorMemberInitialization, config.TypeDefaultValues);
+      const std::string moveConstructorMemberInitialization =
+        GenerateConstructorInitializationMoveSupport(snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveConstructorClaimMember,
+                                                     snippets.MoveConstructorClaimMemberMove, config.TypeDefaultValues);
+      const std::string moveAssignmentClaimMembers =
+        GenerateForAllMembersMoveSupport(snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveAssignmentClaimMember,
+                                         snippets.MoveAssignmentClaimMemberMove, config.TypeDefaultValues);
+      const std::string moveAssignmentInvalidateMembers = GenerateForAllMembersMoveSupport(
+        snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveAssignmentInvalidateMember, "", config.TypeDefaultValues);
+      const std::string moveConstructorInvalidateMembers = GenerateForAllMembersMoveSupport(
+        snippets, fullAnalysis.Result.AllMemberVariables, snippets.MoveConstructorInvalidateMember, "", config.TypeDefaultValues);
+      const std::string resetInvalidateMembers = GenerateForAllMembersInvalidate(snippets, fullAnalysis.Result.AllMemberVariables,
+                                                                                 snippets.ResetInvalidateMemberVariable, config.TypeDefaultValues);
+      const std::string resetMemberAssertions =
+        GenerateAssertForAllMembers(snippets, fullAnalysis.Result.AllMemberVariables, snippets.ResetMemberAssertCondition, config.TypeDefaultValues);
 
       const std::string destroyFunctionArguments = GenerateExpandedParameterNameList(fullAnalysis.Result.DestroyArguments);
 
-      auto classExtraConstructors = GenerateExtraCreates(config, snippets, snippets.CreateConstructorHeader, snippets.CreateConstructorSource, snippets.CreateVoidConstructorHeader, snippets.CreateVoidConstructorSource, fullAnalysis);
-      auto classExtraResetMethods = GenerateExtraCreates(config, snippets, resetMemberHeader, resetMemberSource, snippets.ResetVoidMemberHeader, snippets.ResetVoidMemberSource, fullAnalysis);
-      auto classUnrolledConstructors = GenerateUnrolledCreates(config, snippets, snippets.CreateConstructorHeader, snippets.CreateConstructorSource, fullAnalysis, true);
-      auto classUnrolledResetMethods = GenerateUnrolledCreates(config, snippets, snippets.ResetUnrollMemberHeader, snippets.ResetUnrollMemberSource, fullAnalysis, false);
+      auto classExtraConstructors = GenerateExtraCreates(config, snippets, snippets.CreateConstructorHeader, snippets.CreateConstructorSource,
+                                                         snippets.CreateVoidConstructorHeader, snippets.CreateVoidConstructorSource, fullAnalysis);
+      auto classExtraResetMethods = GenerateExtraCreates(config, snippets, resetMemberHeader, resetMemberSource, snippets.ResetVoidMemberHeader,
+                                                         snippets.ResetVoidMemberSource, fullAnalysis);
+      auto classUnrolledConstructors =
+        GenerateUnrolledCreates(config, snippets, snippets.CreateConstructorHeader, snippets.CreateConstructorSource, fullAnalysis, true);
+      auto classUnrolledResetMethods =
+        GenerateUnrolledCreates(config, snippets, snippets.ResetUnrollMemberHeader, snippets.ResetUnrollMemberSource, fullAnalysis, false);
 
       if (classUnrolledConstructors.Header.size() > 0)
       {
@@ -1375,7 +1443,7 @@ namespace MB
 
       IO::PathDeque files;
       IO::Directory::GetFiles(files, pathDir, IO::SearchOptions::TopDirectoryOnly);
-      if( files.size() <= 0 )
+      if (files.size() <= 0)
         return AddtionalContentMap();
 
       AddtionalContentMap map;
@@ -1422,7 +1490,8 @@ namespace MB
       const auto pathHeaderSnippetMemberVariableGet = IO::Path::Combine(templateRoot, "TemplateSnippet_MemberVariableGet.txt");
       const auto pathSnippetResetAssertCommand = IO::Path::Combine(templateRoot, "TemplateSnippet_AssertCommand.txt");
       const auto pathSnippetConstructorMemberInitialization = IO::Path::Combine(templateRoot, "TemplateSnippet_ConstructorMemberInitialization.txt");
-      const auto pathSnippetConstructorMemberInitializationPOD = IO::Path::Combine(templateRoot, "TemplateSnippet_ConstructorMemberInitializationPOD.txt");
+      const auto pathSnippetConstructorMemberInitializationPOD =
+        IO::Path::Combine(templateRoot, "TemplateSnippet_ConstructorMemberInitializationPOD.txt");
       const auto pathSnippetAdditionalErrorMethodHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_AdditionalErrorMethodHeader.txt");
       const auto pathSnippetAdditionalErrorMethodSource = IO::Path::Combine(templateRoot, "TemplateSnippet_AdditionalErrorMethodSource.txt");
       const auto pathSnippetAdditionalTypeMethodHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_AdditionalTypeMethodHeader.txt");
@@ -1434,9 +1503,11 @@ namespace MB
       const auto pathSnippetResetSetMemberVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetSetMemberVariable.txt");
       const auto pathSnippetResetSetMemberVariableMove = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetSetMemberVariableMove.txt");
       const auto pathSnippetResetInvalidateMemberVariable = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetInvalidateMemberVariable.txt");
-      const auto pathSnippetResetInvalidateMemberVariablePOD = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetInvalidateMemberVariablePOD.txt");
+      const auto pathSnippetResetInvalidateMemberVariablePOD =
+        IO::Path::Combine(templateRoot, "TemplateSnippet_ResetInvalidateMemberVariablePOD.txt");
       const auto pathSnippetResetMemberAssertConditionPOD = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberAssertConditionPOD.txt");
-      const auto pathSnippetResetMemberAssertConditionVector = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberAssertConditionVector.txt");
+      const auto pathSnippetResetMemberAssertConditionVector =
+        IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberAssertConditionVector.txt");
       const auto pathSnippetResetMemberHeader = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberHeader.txt");
       const auto pathSnippetResetMemberSource = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberSource.txt");
       const auto pathSnippetResetMemberHeaderVector = IO::Path::Combine(templateRoot, "TemplateSnippet_ResetMemberHeaderVector.txt");
@@ -1517,7 +1588,7 @@ namespace MB
 
     std::string ResolveMethodOverride(const IO::Path& snippetRoot, const std::string& overrideValue, const std::string& defaultValue)
     {
-      if(overrideValue.size() <= 0)
+      if (overrideValue.size() <= 0)
         return defaultValue;
 
       const auto fullPath = IO::Path::Combine(snippetRoot, overrideValue);
@@ -1534,7 +1605,8 @@ namespace MB
     }
 
 
-    std::unordered_map<std::string, RAIIClassMethodOverrides> ResolveOverrides(const std::unordered_map<std::string, RAIIClassMethodOverrides>& classMethodOverrides, const Snippets& snippets)
+    std::unordered_map<std::string, RAIIClassMethodOverrides>
+      ResolveOverrides(const std::unordered_map<std::string, RAIIClassMethodOverrides>& classMethodOverrides, const Snippets& snippets)
     {
       std::unordered_map<std::string, RAIIClassMethodOverrides> map;
       for (auto& value : classMethodOverrides)
@@ -1557,7 +1629,8 @@ namespace MB
   // - Handle 'create array' of resources, example: CommandBuffers
   // - Add helper methods
 
-  SimpleGenerator::SimpleGenerator(const Capture& capture, const SimpleGeneratorConfig& config, const Fsl::IO::Path& templateRoot, const Fsl::IO::Path& dstPath)
+  SimpleGenerator::SimpleGenerator(const Capture& capture, const SimpleGeneratorConfig& config, const Fsl::IO::Path& templateRoot,
+                                   const Fsl::IO::Path& dstPath)
     : Generator(capture, config)
   {
     const auto additionalFileContent = LoadAdditionalContent(templateRoot);
@@ -1609,7 +1682,8 @@ namespace MB
         auto fileName = IO::Path::Combine(dstPath, itr->Result.ClassName + ".hpp");
 
         const auto additionalContent = GetAdditionalContent(additionalFileContent, fileName);
-        auto headerContent = GenerateContent(config, *itr, activeHeaderTemplate, &classSnippets.HeaderSnippetMemberVariable, &classSnippets.HeaderSnippetMemberVariableGet, classSnippets, additionalContent);
+        auto headerContent = GenerateContent(config, *itr, activeHeaderTemplate, &classSnippets.HeaderSnippetMemberVariable,
+                                             &classSnippets.HeaderSnippetMemberVariableGet, classSnippets, additionalContent);
         IOUtil::WriteAllTextIfChanged(fileName, headerContent);
       }
       assert(static_cast<std::size_t>(itr->TemplateType) < sourceTemplates.size());
@@ -1668,7 +1742,10 @@ namespace MB
 
     // Write 'Readme.txt'
     {
-      std::string content("Auto-generated ##API_NAME## ##API_VERSION## C++11 RAII classes by ##PROGRAM_NAME## ##PROGRAM_VERSION## (https://github.com/Unarmed1000/RAIIGen)" + END_OF_LINE);
+      std::string content(
+        "Auto-generated ##API_NAME## ##API_VERSION## C++11 RAII classes by ##PROGRAM_NAME## ##PROGRAM_VERSION## "
+        "(https://github.com/Unarmed1000/RAIIGen)" +
+        END_OF_LINE);
 
       StringUtil::Replace(content, "##API_NAME##", config.APIName);
       StringUtil::Replace(content, "##API_VERSION##", config.APIVersion);
@@ -1696,8 +1773,8 @@ namespace MB
       CStructToCpp test(capture, config.ToolStatement, config.NamespaceName, templateRoot, dstFileNameStructTypes);
 
 
-      //auto dstFileNameFormat = IO::Path::Combine(dstPath, "Vk/Formats.hpp");
-      //FormatToCpp test2(capture, config.NamespaceName, templateRoot, dstFileNameFormat);
+      // auto dstFileNameFormat = IO::Path::Combine(dstPath, "Vk/Formats.hpp");
+      // FormatToCpp test2(capture, config.NamespaceName, templateRoot, dstFileNameFormat);
     }
 
     {

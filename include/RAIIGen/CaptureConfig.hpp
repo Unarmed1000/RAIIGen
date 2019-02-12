@@ -49,8 +49,7 @@ namespace MB
 
     CaptureConfig(const std::string& typeNamePrefix, const std::deque<std::string>& filters,
                   const std::vector<FunctionParameterNameOverride>& functionParameterNameOverrides,
-                  const std::vector<FunctionParameterTypeOverride>& functionParameterTypeOverrides,
-                  const bool onlyScanMainHeaderFile)
+                  const std::vector<FunctionParameterTypeOverride>& functionParameterTypeOverrides, const bool onlyScanMainHeaderFile)
       : TypeNamePrefix(typeNamePrefix)
       , Filters(filters)
       , FunctionParameterNameOverrides(functionParameterNameOverrides)

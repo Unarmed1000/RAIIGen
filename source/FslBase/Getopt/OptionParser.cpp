@@ -1,33 +1,33 @@
 /****************************************************************************************************************************************************
-* Copyright (c) 2014 Freescale Semiconductor, Inc.
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-*    * Redistributions of source code must retain the above copyright notice,
-*      this list of conditions and the following disclaimer.
-*
-*    * Redistributions in binary form must reproduce the above copyright notice,
-*      this list of conditions and the following disclaimer in the documentation
-*      and/or other materials provided with the distribution.
-*
-*    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
-*      its contributors may be used to endorse or promote products derived from
-*      this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-* ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-****************************************************************************************************************************************************/
+ * Copyright (c) 2014 Freescale Semiconductor, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *    * Redistributions of source code must retain the above copyright notice,
+ *      this list of conditions and the following disclaimer.
+ *
+ *    * Redistributions in binary form must reproduce the above copyright notice,
+ *      this list of conditions and the following disclaimer in the documentation
+ *      and/or other materials provided with the distribution.
+ *
+ *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
+ *      its contributors may be used to endorse or promote products derived from
+ *      this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ****************************************************************************************************************************************************/
 
 #include <algorithm>
 #include <cassert>
@@ -93,8 +93,8 @@ namespace Fsl
       rCombinedOptions.push_back(Option("h", "help", OptionArgument::OptionNone, 'h', "Display options"));
       rCombinedOptions.push_back(Option("ghelp", OptionArgument::OptionRequired, 1, "Display option groups: all, demo or host"));
       rCombinedOptions.push_back(Option("v", "verbose", OptionArgument::OptionNone, 'v', "Enable verbose output"));
-      //rCombinedOptions.push_back(Option("Test1", OptionArgument::Required, nullptr, 10, "test required arg"));
-      //rCombinedOptions.push_back(Option("Test2", OptionArgument::Optional, nullptr, 11, "test required arg"));
+      // rCombinedOptions.push_back(Option("Test1", OptionArgument::Required, nullptr, 10, "test required arg"));
+      // rCombinedOptions.push_back(Option("Test2", OptionArgument::Optional, nullptr, 11, "test required arg"));
 
       // Add the options from the supplied parsers
       std::deque<Option> options;
@@ -134,9 +134,9 @@ namespace Fsl
           switch (itr->HasArg)
           {
           case OptionArgument::OptionRequired:
-            len += 6;  // " <arg>"
+            len += 6;    // " <arg>"
             break;
-          //case OptionArgument::OptionOptional:
+          // case OptionArgument::OptionOptional:
           //  len += 6;  // " [arg]"
           //  break;
           case OptionArgument::OptionNone:
@@ -153,13 +153,13 @@ namespace Fsl
     }
 
 
-    const char* SafeString(const char*const psz)
+    const char* SafeString(const char* const psz)
     {
       return psz != nullptr ? psz : "";
     }
 
 
-    const std::string GetFormattedDescription(const char*const psz, const int indentation)
+    const std::string GetFormattedDescription(const char* const psz, const int indentation)
     {
       std::string str(psz);
       std::stringstream stream;
@@ -197,7 +197,7 @@ namespace Fsl
 
       if (option.ShortName != nullptr)
       {
-        if ( ! option.IsPositional )
+        if (!option.IsPositional)
           str += "-";
         str += option.ShortName;
         if (option.Name != nullptr)
@@ -215,7 +215,7 @@ namespace Fsl
       case OptionArgument::OptionRequired:
         str += " <arg>";
         break;
-      //case OptionArgument::OptionOptional:
+      // case OptionArgument::OptionOptional:
       //  str += " [arg]";
       //  break;
       case OptionArgument::OptionNone:
@@ -225,7 +225,7 @@ namespace Fsl
       return str;
     }
 
-    void ShowHelp(const char*const pszHelpCaption, const std::deque<Option>& options, const int32_t optionGroupFlags)
+    void ShowHelp(const char* const pszHelpCaption, const std::deque<Option>& options, const int32_t optionGroupFlags)
     {
       const int maxNameLength = FindMaxNameLength(options, optionGroupFlags);
       std::stringstream stream;
@@ -258,7 +258,7 @@ namespace Fsl
     }
 
 
-    bool ProcessHelpOption(const char*const pszOptionParam, int32_t& rShowHelpOptionGroupFlags)
+    bool ProcessHelpOption(const char* const pszOptionParam, int32_t& rShowHelpOptionGroupFlags)
     {
       bool bSuccess = true;
       if (pszOptionParam == nullptr)
@@ -284,14 +284,14 @@ namespace Fsl
   }
 
 
-  bool OptionParser::Parse(int argc, char** argv, const char*const pszHelpCaption)
+  bool OptionParser::Parse(int argc, char** argv, const char* const pszHelpCaption)
   {
     std::deque<ParserRecord> inputOptionParsers;
     return Parse(argc, argv, inputOptionParsers, pszHelpCaption);
   }
 
 
-  bool OptionParser::Parse(int argc, char** argv, IOptionParser& inputOptionParser, const char*const pszHelpCaption)
+  bool OptionParser::Parse(int argc, char** argv, IOptionParser& inputOptionParser, const char* const pszHelpCaption)
   {
     std::deque<ParserRecord> inputOptionParsers;
     inputOptionParsers.push_back(ParserRecord(&inputOptionParser, 0));
@@ -299,7 +299,7 @@ namespace Fsl
   }
 
 
-  bool OptionParser::Parse(int argc, char** argv, const std::deque<IOptionParser*>& inputOptionParsers, const char*const pszHelpCaption)
+  bool OptionParser::Parse(int argc, char** argv, const std::deque<IOptionParser*>& inputOptionParsers, const char* const pszHelpCaption)
   {
     std::deque<ParserRecord> inputOptionParsersEx;
     for (auto itr = inputOptionParsers.begin(); itr != inputOptionParsers.end(); ++itr)
@@ -308,7 +308,7 @@ namespace Fsl
   }
 
 
-  bool OptionParser::Parse(int argc, char** argv, const std::deque<ParserRecord>& inputOptionParsers, const char*const pszHelpCaption)
+  bool OptionParser::Parse(int argc, char** argv, const std::deque<ParserRecord>& inputOptionParsers, const char* const pszHelpCaption)
   {
     std::deque<Option> combinedOptions;
     ArgumentSetup(inputOptionParsers, combinedOptions);
@@ -316,7 +316,7 @@ namespace Fsl
     bool bForceExit = false;
     int32_t showHelpOptionGroupFlags = 0;
     int optionErrors = 0;
-    { // Parse input arguments
+    {    // Parse input arguments
       int value;
       std::string strOptArg;
       OptionParserTCLAP parser(argc, argv, combinedOptions);
@@ -324,40 +324,40 @@ namespace Fsl
       {
         switch (value)
         {
-        case 'v': // verbose
+        case 'v':    // verbose
           // FIX: enable verbose mode
           break;
         case 'h':
           showHelpOptionGroupFlags |= (0x7FFFFFFF & (~OptionGroup::Hidden));
           break;
-        case 1: // ghelp
+        case 1:    // ghelp
           if (!ProcessHelpOption(strOptArg.c_str(), showHelpOptionGroupFlags))
             ++optionErrors;
           break;
         default:
+        {
+          // Parse the unknown option off to the supplied parsers
+          OptionParseResult::Enum result = OptionParseResult::NotHandled;
+          auto itr = inputOptionParsers.begin();
+          while (itr != inputOptionParsers.end() && result == OptionParseResult::NotHandled)
           {
-            // Parse the unknown option off to the supplied parsers
-            OptionParseResult::Enum result = OptionParseResult::NotHandled;
-            auto itr = inputOptionParsers.begin();
-            while (itr != inputOptionParsers.end() && result == OptionParseResult::NotHandled)
+            try
             {
-              try
-              {
-                // Remove the offset before we call the parser
-                const int32_t cmdId = value - itr->CmdIdOffset;
-                result = itr->Parser->Parse(cmdId, strOptArg.c_str());
-              }
-              catch (const std::exception& ex)
-              {
-                FSLLOG("ERROR: Parse option failed with: " << ex.what());
-                result = OptionParseResult::Failed;
-              }
-              ++itr;
+              // Remove the offset before we call the parser
+              const int32_t cmdId = value - itr->CmdIdOffset;
+              result = itr->Parser->Parse(cmdId, strOptArg.c_str());
             }
-            if (result != OptionParseResult::Parsed)
-              ++optionErrors;
-            break;
+            catch (const std::exception& ex)
+            {
+              FSLLOG("ERROR: Parse option failed with: " << ex.what());
+              result = OptionParseResult::Failed;
+            }
+            ++itr;
           }
+          if (result != OptionParseResult::Parsed)
+            ++optionErrors;
+          break;
+        }
         }
       }
 
@@ -380,6 +380,4 @@ namespace Fsl
   }
 
 
-
 }
-

@@ -48,11 +48,8 @@ namespace MB
     {
     }
 
-    RAIIClassCustomization(const std::string& sourceCreateMethod,
-                           const std::string& singleInstanceClassName,
-                           const std::string& vectorInstanceClassName,
-                           const std::string& resourceName,
-                           const std::string& structArrayCountName,
+    RAIIClassCustomization(const std::string& sourceCreateMethod, const std::string& singleInstanceClassName,
+                           const std::string& vectorInstanceClassName, const std::string& resourceName, const std::string& structArrayCountName,
                            const std::string& paramArrayCountName,
                            const SourceTemplateType vectorInstanceTemplateType = SourceTemplateType::ArrayResource)
       : SourceCreateMethod(sourceCreateMethod)

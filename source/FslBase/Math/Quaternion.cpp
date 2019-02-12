@@ -1,33 +1,33 @@
 /****************************************************************************************************************************************************
-* Copyright (c) 2015 Freescale Semiconductor, Inc.
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-*    * Redistributions of source code must retain the above copyright notice,
-*      this list of conditions and the following disclaimer.
-*
-*    * Redistributions in binary form must reproduce the above copyright notice,
-*      this list of conditions and the following disclaimer in the documentation
-*      and/or other materials provided with the distribution.
-*
-*    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
-*      its contributors may be used to endorse or promote products derived from
-*      this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-* ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-****************************************************************************************************************************************************/
+ * Copyright (c) 2015 Freescale Semiconductor, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *    * Redistributions of source code must retain the above copyright notice,
+ *      this list of conditions and the following disclaimer.
+ *
+ *    * Redistributions in binary form must reproduce the above copyright notice,
+ *      this list of conditions and the following disclaimer in the documentation
+ *      and/or other materials provided with the distribution.
+ *
+ *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
+ *      its contributors may be used to endorse or promote products derived from
+ *      this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ****************************************************************************************************************************************************/
 
 // The functions in this file are a port of an MIT licensed library: MonaGame - Vector2.cs.
 
@@ -74,7 +74,6 @@ namespace Fsl
     , W(0)
   {
   }
-
 
 
   Quaternion::Quaternion(const OptimizationFlag flag)
@@ -141,7 +140,6 @@ namespace Fsl
     quaternion.Z = ((z * num) + (num2 * w)) + num10;
     quaternion.W = (w * num) - num9;
     return quaternion;
-
   }
 
 
@@ -221,7 +219,7 @@ namespace Fsl
 
   Quaternion Quaternion::CreateFromRotationMatrix(const Matrix& matrix)
   {
-    const float*const pMatrix = matrix.DirectAccess();
+    const float* const pMatrix = matrix.DirectAccess();
 
     float num8 = (pMatrix[_M11] + pMatrix[_M22]) + pMatrix[_M33];
     Quaternion quaternion(OptimizationFlag::NoInitialization);
@@ -267,7 +265,7 @@ namespace Fsl
 
   void Quaternion::CreateFromRotationMatrix(Quaternion& rResult, const Matrix& matrix)
   {
-    const float*const pMatrix = matrix.DirectAccess();
+    const float* const pMatrix = matrix.DirectAccess();
 
     const float num8 = (pMatrix[_M11] + pMatrix[_M22]) + pMatrix[_M33];
     if (num8 > 0.0f)
@@ -409,13 +407,13 @@ namespace Fsl
   }
 
 
-  //public bool Equals(Quaternion other)
+  // public bool Equals(Quaternion other)
   //{
   //  return ((((this.X == other.X) && (this.Y == other.Y)) && (this.Z == other.Z)) && (this.W == other.W));
   //}
 
 
-  //public override int GetHashCode()
+  // public override int GetHashCode()
   //{
   //  return (((this.X.GetHashCode() + this.Y.GetHashCode()) + this.Z.GetHashCode()) + this.W.GetHashCode());
   //}
@@ -423,7 +421,8 @@ namespace Fsl
 
   Quaternion Quaternion::Inverse(const Quaternion& quaternion)
   {
-    const float num2 = (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
+    const float num2 =
+      (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
     const float num = 1.0f / num2;
 
     Quaternion result(OptimizationFlag::NoInitialization);
@@ -437,7 +436,8 @@ namespace Fsl
 
   void Quaternion::Inverse(Quaternion& rResult, const Quaternion& quaternion)
   {
-    const float num2 = (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
+    const float num2 =
+      (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
     const float num = 1.0f / num2;
     rResult.X = -quaternion.X * num;
     rResult.Y = -quaternion.Y * num;
@@ -464,7 +464,8 @@ namespace Fsl
     const float num = amount;
     const float num2 = 1.0f - num;
     Quaternion quaternion(OptimizationFlag::NoInitialization);
-    float num5 = (((quaternion1.X * quaternion2.X) + (quaternion1.Y * quaternion2.Y)) + (quaternion1.Z * quaternion2.Z)) + (quaternion1.W * quaternion2.W);
+    float num5 =
+      (((quaternion1.X * quaternion2.X) + (quaternion1.Y * quaternion2.Y)) + (quaternion1.Z * quaternion2.Z)) + (quaternion1.W * quaternion2.W);
     if (num5 >= 0.0f)
     {
       quaternion.X = (num2 * quaternion1.X) + (num * quaternion2.X);
@@ -493,7 +494,8 @@ namespace Fsl
   {
     const float num = amount;
     const float num2 = 1.0f - num;
-    const float num5 = (((quaternion1.X * quaternion2.X) + (quaternion1.Y * quaternion2.Y)) + (quaternion1.Z * quaternion2.Z)) + (quaternion1.W * quaternion2.W);
+    const float num5 =
+      (((quaternion1.X * quaternion2.X) + (quaternion1.Y * quaternion2.Y)) + (quaternion1.Z * quaternion2.Z)) + (quaternion1.W * quaternion2.W);
     if (num5 >= 0.0f)
     {
       rResult.X = (num2 * quaternion1.X) + (num * quaternion2.X);
@@ -522,7 +524,8 @@ namespace Fsl
     float num2;
     float num3;
     float num = amount;
-    float num4 = (((quaternion1.X * quaternion2.X) + (quaternion1.Y * quaternion2.Y)) + (quaternion1.Z * quaternion2.Z)) + (quaternion1.W * quaternion2.W);
+    float num4 =
+      (((quaternion1.X * quaternion2.X) + (quaternion1.Y * quaternion2.Y)) + (quaternion1.Z * quaternion2.Z)) + (quaternion1.W * quaternion2.W);
     bool flag = false;
     if (num4 < 0.0f)
     {
@@ -556,7 +559,8 @@ namespace Fsl
     float num2;
     float num3;
     float num = amount;
-    float num4 = (((quaternion1.X * quaternion2.X) + (quaternion1.Y * quaternion2.Y)) + (quaternion1.Z * quaternion2.Z)) + (quaternion1.W * quaternion2.W);
+    float num4 =
+      (((quaternion1.X * quaternion2.X) + (quaternion1.Y * quaternion2.Y)) + (quaternion1.Z * quaternion2.Z)) + (quaternion1.W * quaternion2.W);
     bool flag = false;
     if (num4 < 0.0f)
     {
@@ -700,7 +704,8 @@ namespace Fsl
 
   Quaternion Quaternion::Normalize(const Quaternion& quaternion)
   {
-    const float num2 = (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
+    const float num2 =
+      (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
     const float num = 1.0f / ((float)std::sqrt((double)num2));
 
     Quaternion result(OptimizationFlag::NoInitialization);
@@ -714,7 +719,8 @@ namespace Fsl
 
   void Quaternion::Normalize(Quaternion& rResult, const Quaternion& quaternion)
   {
-    const float num2 = (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
+    const float num2 =
+      (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
     const float num = 1.0f / ((float)std::sqrt((double)num2));
     rResult.X = quaternion.X * num;
     rResult.Y = quaternion.Y * num;
@@ -722,7 +728,7 @@ namespace Fsl
     rResult.W = quaternion.W * num;
   }
 
-  //public static Quaternion Quaternion::operator -(Quaternion quaternion)
+  // public static Quaternion Quaternion::operator -(Quaternion quaternion)
   //{
   //  Quaternion result;
   //  result.X = -quaternion.X;
@@ -732,7 +738,7 @@ namespace Fsl
   //  return result;
   //}
 
-  //internal string Quaternion::DebugDisplayString
+  // internal string Quaternion::DebugDisplayString
   //{
   //  get
   //  {
@@ -750,7 +756,7 @@ namespace Fsl
   //  }
   //}
 
-  //public override string Quaternion::ToString()
+  // public override string Quaternion::ToString()
   //  {
   //    System.Text.StringBuilder sb = new System.Text.StringBuilder(32);
   //    sb.Append("{X:");
@@ -884,5 +890,3 @@ Fsl::Quaternion operator*(const Fsl::Quaternion lhs, const Fsl::Quaternion& rhs)
   quaternion.W = (w * num) - num9;
   return quaternion;
 }
-
-
