@@ -428,7 +428,8 @@ namespace MB
     }
 
 
-    AnalysisResult Analyze(const Capture& capture, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const std::string& lowerCamelCaseClassName, const std::vector<std::string>& forceNullParameter, const AnalyzeMode analyzeMode, const std::string& paramMemberArrayCountName, const bool singleElementDelete)
+    AnalysisResult Analyze(const Capture& capture, const SimpleGeneratorConfig& config, const MatchedFunctionPair& functions, const std::string& lowerCamelCaseClassName,
+                           const std::vector<std::string>& forceNullParameter, const AnalyzeMode analyzeMode, const std::string& paramMemberArrayCountName, const bool singleElementDelete)
     {
       std::unordered_map<std::string, MethodArgument> dstMap;
 
@@ -908,7 +909,7 @@ namespace MB
           CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
           managed.push_back(FullAnalysis(*itr, result, AnalyzeMode::SingleInstance, SourceTemplateType::NormalResource));
 
-          result = Analyze(capture, config, *itr, itrCustom->VectorInstanceClassName, config.ForceNullParameter, AnalyzeMode::VectorInstance, "", itrCustom->VectorInstanceTemplateType == SourceTemplateType::ArrayAllocationButSingleInstanceDestroy);
+          result = Analyze(capture, config, *itr, itrCustom->VectorInstanceClassName, config.ForceNullParameter, AnalyzeMode::VectorInstance, itrCustom->ParamMemberArrayCountName, itrCustom->VectorInstanceTemplateType == SourceTemplateType::ArrayAllocationButSingleInstanceDestroy);
           CheckDefaultValues(rTypesWithoutDefaultValues, result.AllMemberVariables, config.TypeDefaultValues);
           managed.push_back(FullAnalysis(*itr, result, AnalyzeMode::VectorInstance, itrCustom->VectorInstanceTemplateType));
         }
@@ -943,7 +944,7 @@ namespace MB
       const std::string resetParamValidation = GenerateForAllMembers(snippets, fullAnalysis.Result.AdditionalMemberVariables, snippets.ResetParamValidation, config.TypeDefaultValues, true);
       std::string resetParamAsserts = GenerateAssertForAllMembers(snippets, fullAnalysis.Result.AdditionalMemberVariables, snippets.ResetParamAssertCondition, config.TypeDefaultValues, true);
 
-      if (fullAnalysis.Mode == AnalyzeMode::SingleInstance)
+      if (fullAnalysis.Mode == AnalyzeMode::SingleInstance && !fullAnalysis.Result.ResourceCountVariableName.empty())
       {
         std::string snippetCommand = snippets.ResetAssertCommand;
         StringUtil::Replace(snippetCommand, "##ASSERT_CONDITION##", fullAnalysis.Result.ResourceCountVariableName + " == 1");
