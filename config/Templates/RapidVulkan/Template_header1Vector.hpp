@@ -49,7 +49,9 @@ namespace RapidVulkan
       {
         // Free existing resources then transfer the content of other to this one and fill other with default values
         if (IsValid())
+        {
           Reset();
+        }
 
         // Claim ownership here##MOVE_ASSIGNMENT_CLAIM_MEMBERS##
 
@@ -95,7 +97,9 @@ namespace RapidVulkan
     void Reset() noexcept
     {
       if (! IsValid())
+      {
         return;
+      }
 ##RESET_MEMBER_ASSERTIONS##
 
       ##DESTROY_FUNCTION##(##DESTROY_FUNCTION_ARGUMENTS##);##RESET_INVALIDATE_MEMBERS##
@@ -135,11 +139,11 @@ namespace RapidVulkan
     }
 
 
-      ##RESOURCE_TYPE## Get(const std::size_t arrayIndex) const
-      {
-        assert(arrayIndex < ##RESOURCE_MEMBER_NAME##.size());
-        return ##RESOURCE_MEMBER_NAME##[arrayIndex];
-      }
+    ##RESOURCE_TYPE## Get(const std::size_t arrayIndex) const
+    {
+      assert(arrayIndex < ##RESOURCE_MEMBER_NAME##.size());
+      return ##RESOURCE_MEMBER_NAME##[arrayIndex];
+    }
 
 
     //! @brief Access the resource at a given index
@@ -159,7 +163,7 @@ namespace RapidVulkan
     //! @brief Check if this object contains a valid resource
     inline bool IsValid() const
     {
-      return ##RESOURCE_MEMBER_NAME##.size() > 0;
+      return ! ##RESOURCE_MEMBER_NAME##.empty();
     }##ADDITIONAL_METHODS_HEADER##
   };
 }

@@ -47,7 +47,9 @@ namespace RapidVulkan
       {
         // Free existing resources then transfer the content of other to this one and fill other with default values
         if (IsValid())
+        {
           Reset();
+        }
 
         // Claim ownership here##MOVE_ASSIGNMENT_CLAIM_MEMBERS##
 
@@ -93,7 +95,9 @@ namespace RapidVulkan
     void Reset() noexcept
     {
       if (! IsValid())
+      {
         return;
+      }
 ##RESET_MEMBER_ASSERTIONS##
 
       ##DESTROY_FUNCTION##(##DESTROY_FUNCTION_ARGUMENTS##);##RESET_INVALIDATE_MEMBERS##
@@ -103,7 +107,9 @@ namespace RapidVulkan
     void Reset(##MEMBER_PARAMETERS##)
     {
       if (IsValid())
+      {
         Reset();
+      }
 
 ##RESET_SET_MEMBERS_NORMAL##
     }

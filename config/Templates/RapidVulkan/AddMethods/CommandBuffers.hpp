@@ -23,7 +23,9 @@
     void Begin(const std::size_t index, const VkCommandBufferBeginInfo& commandBufferBeginInfo)
     {
       if (index >= m_commandBuffers.size() || m_commandBuffers[index] == VK_NULL_HANDLE)
+      {
         throw VulkanUsageErrorException("Index must be valid and/or can not call Begin on a NULL handle");
+      }
 
       CheckError(vkBeginCommandBuffer(m_commandBuffers[index], &commandBufferBeginInfo), "vkBeginCommandBuffer", __FILE__, __LINE__);
     }
@@ -31,7 +33,9 @@
     void End(const std::size_t index)
     {
       if (index >= m_commandBuffers.size() || m_commandBuffers[index] == VK_NULL_HANDLE)
+      {
         throw VulkanUsageErrorException("Index must be valid and/or can not call End on a NULL handle");
+      }
 
       CheckError(vkEndCommandBuffer(m_commandBuffers[index]), "vkEndCommandBuffer", __FILE__, __LINE__);
     }
@@ -39,7 +43,9 @@
     void CmdBeginRenderPass(const std::size_t index, const VkRenderPassBeginInfo* pRenderPassBeginInfo, const VkSubpassContents contents)
     {
       if (index >= m_commandBuffers.size() || m_commandBuffers[index] == VK_NULL_HANDLE)
+      {
         throw VulkanUsageErrorException("Index must be valid and/or can not call CmdBeginRenderPass on a NULL handle");
+      }
 
       vkCmdBeginRenderPass(m_commandBuffers[index], pRenderPassBeginInfo, contents);
     }
@@ -47,7 +53,9 @@
     void CmdEndRenderPass(const std::size_t index)
     {
       if (index >= m_commandBuffers.size() || m_commandBuffers[index] == VK_NULL_HANDLE)
+      {
         throw VulkanUsageErrorException("Index must be valid and/or can not call CmdEndRenderPass on a NULL handle");
+      }
 
       vkCmdEndRenderPass(m_commandBuffers[index]);
     }

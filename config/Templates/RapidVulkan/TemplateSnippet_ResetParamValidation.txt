@@ -1,2 +1,4 @@
       if (##MEMBER_ARGUMENT_NAME## == ##DEFAULT_VALUE##)
+      {
         throw std::invalid_argument("##MEMBER_ARGUMENT_NAME## can not be ##DEFAULT_VALUE##");
+      }

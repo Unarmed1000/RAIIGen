@@ -8,7 +8,9 @@
 
       // Free any currently allocated resource
       if (IsValid())
+      {
         Reset();
+      }
 
       // Since we want to ensure that the resource is left untouched on error we use a local variable as a intermediary
       std::vector<##RESOURCE_TYPE##> ##RESOURCE_INTERMEDIARY_NAME##(##RESOURCE_COUNT##);

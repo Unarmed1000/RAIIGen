@@ -23,7 +23,9 @@
     void Begin(const VkCommandBufferBeginInfo& commandBufferBeginInfo)
     {
       if (m_commandBuffers == VK_NULL_HANDLE)
+      {
         throw VulkanUsageErrorException("Can not call Begin on a NULL handle");
+      }
 
       CheckError(vkBeginCommandBuffer(m_commandBuffers, &commandBufferBeginInfo), "vkBeginCommandBuffer", __FILE__, __LINE__);
     }
@@ -32,7 +34,9 @@
     void End()
     {
       if (m_commandBuffers == VK_NULL_HANDLE)
+      {
         throw VulkanUsageErrorException("Can not call End on a NULL handle");
+      }
 
       CheckError(vkEndCommandBuffer(m_commandBuffers), "vkEndCommandBuffer", __FILE__, __LINE__);
     }

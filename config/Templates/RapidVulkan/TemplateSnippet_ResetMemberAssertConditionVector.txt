@@ -1,1 +1,1 @@
-##MEMBER_NAME##.size() > 0
+! ##MEMBER_NAME##.empty()
