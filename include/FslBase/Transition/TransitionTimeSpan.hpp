@@ -42,14 +42,11 @@ namespace Fsl
     //! The smallest unit of time is the tick, which is equal to 100 nanoseconds or one ten-millionth of a second.
     //! There are 10,000 ticks in a millisecond. The value of the Ticks property can be negative or positive to represent
     //! a negative or positive time interval
-    int64_t Ticks;
+    int64_t Ticks{0};
 
-    TransitionTimeSpan()
-      : Ticks(0)
-    {
-    }
+    TransitionTimeSpan() = default;
 
-    TransitionTimeSpan(const int64_t ticks)
+    constexpr explicit TransitionTimeSpan(const int64_t ticks)
       : Ticks(ticks)
     {
     }
@@ -58,6 +55,16 @@ namespace Fsl
     TransitionTimeSpan(const uint32_t time, TransitionTimeUnit unit);
     TransitionTimeSpan(const int64_t time, TransitionTimeUnit unit);
     TransitionTimeSpan(const uint64_t time, TransitionTimeUnit unit);
+
+    constexpr bool operator==(const TransitionTimeSpan& rhs) const
+    {
+      return Ticks == rhs.Ticks;
+    }
+
+    constexpr bool operator!=(const TransitionTimeSpan& rhs) const
+    {
+      return Ticks != rhs.Ticks;
+    }
   };
 }
 

@@ -22,48 +22,51 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RAIIGen/Generator/BlackListEntry.hpp>
-#include <deque>
-
-namespace MB
-{
-  namespace Util
-  {
-    bool CheckMatchRequirement(const BlackListEntry& entry, const CurrentEntityInfo& currentEntityInfo)
-    {
-      switch (entry.MatchRequirement)
-      {
-      case BlackListMatch::Always:
-        return true;
-      case BlackListMatch::NotPostfixClassName:
-        return !StringUtil::EndsWith(currentEntityInfo.ClassName, entry.Name);
-      default:
-        throw NotSupportedException("BlackListMatch type not supported");
-      }
-    }
-
-
-    bool HasPostfix(const std::string& str, const std::vector<BlackListEntry>& postfixes, const CurrentEntityInfo& currentEntityInfo)
-    {
-      for (const auto& entry : postfixes)
-      {
-        if (StringUtil::EndsWith(str, entry.Name) && CheckMatchRequirement(entry, currentEntityInfo))
-          return true;
-      }
-      return false;
-    }
-
-
-    bool HasEntry(const std::string& str, const std::vector<BlackListEntry>& postfixes, const CurrentEntityInfo& currentEntityInfo)
-    {
-      for (const auto& entry : postfixes)
-      {
-        if (str == entry.Name && CheckMatchRequirement(entry, currentEntityInfo))
-          return true;
-      }
-      return false;
-    }
-  }
-}
+//#include <FslBase/String/StringUtil.hpp>
+//#include <FslBase/Exceptions.hpp>
+//#include <RAIIGen/Generator/BlackListEntry.hpp>
+//#include <deque>
+//#include <vector>
+//
+//namespace MB
+//{
+//  namespace Util
+//  {
+//    bool CheckMatchRequirement(const BlackListEntry& entry, const CurrentEntityInfo& currentEntityInfo)
+//    {
+//      switch (entry.MatchRequirement)
+//      {
+//      case BlackListMatch::Always:
+//        return true;
+//      case BlackListMatch::NotPostfixClassName:
+//        return !Fsl::StringUtil::EndsWith(currentEntityInfo.ClassName, entry.Name);
+//      default:
+//        throw NotSupportedException("BlackListMatch type not supported");
+//      }
+//    }
+//
+//
+//    bool HasPostfix(const std::string& str, const std::vector<BlackListEntry>& postfixes, const CurrentEntityInfo& currentEntityInfo)
+//    {
+//      for (const auto& entry : postfixes)
+//      {
+//        if (Fsl::StringUtil::EndsWith(str, entry.Name) && CheckMatchRequirement(entry, currentEntityInfo))
+//          return true;
+//      }
+//      return false;
+//    }
+//
+//
+//    bool HasEntry(const std::string& str, const std::vector<BlackListEntry>& postfixes, const CurrentEntityInfo& currentEntityInfo)
+//    {
+//      for (const auto& entry : postfixes)
+//      {
+//        if (str == entry.Name && CheckMatchRequirement(entry, currentEntityInfo))
+//          return true;
+//      }
+//      return false;
+//    }
+//  }
+//}
 
 #endif

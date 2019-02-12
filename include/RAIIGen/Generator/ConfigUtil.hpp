@@ -25,6 +25,7 @@
 #include <FslBase/Exceptions.hpp>
 #include <FslBase/String/StringUtil.hpp>
 #include <RAIIGen/Generator/BlackListEntry.hpp>
+#include <vector>
 
 namespace MB
 {

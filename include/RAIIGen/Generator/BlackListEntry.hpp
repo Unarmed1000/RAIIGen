@@ -26,13 +26,13 @@
 
 namespace MB
 {
-  enum BlackListMatch
+  enum class BlackListMatch
   {
     Exact,
     Contains,
     Postfix,
     PostfixNotEntityName,
-    PostfixNotEntityNameEx,
+    PostfixNotEntityNameEx
   };
 
   struct BlackListEntry

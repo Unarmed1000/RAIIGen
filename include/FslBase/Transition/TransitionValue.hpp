@@ -47,14 +47,14 @@ namespace Fsl
   class TransitionValue
   {
     std::shared_ptr<std::vector<float>> m_transition;
-    TransitionType m_transitionType;
-    float m_val;
-    float m_from;
-    float m_target;
+    TransitionType m_transitionType{TransitionType::Smooth};
+    float m_val{0};
+    float m_from{0};
+    float m_target{0};
 
-    int64_t m_currentTime;
-    int64_t m_endTime;
-    int32_t m_startDelay;
+    int64_t m_currentTime{0};
+    int64_t m_endTime{0};
+    int32_t m_startDelay{0};
 
   public:
     TransitionValue();
@@ -98,7 +98,6 @@ namespace Fsl
   private:
     void CalcTransition();
   };
-
 }
 
 #endif
