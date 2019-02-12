@@ -87,6 +87,19 @@ namespace MB
     {
       return !(*this == rhs);
     }
+
+    bool operator>(const VersionRecord& rhs) const
+    {
+      return Major > rhs.Major || (Major == rhs.Major && Minor > rhs.Minor) || (Major == rhs.Major && Minor == rhs.Minor && Build > rhs.Build) ||
+             (Major == rhs.Major && Minor == rhs.Minor && Build == rhs.Build && Hotfix > rhs.Hotfix);
+    }
+
+    bool operator<(const VersionRecord& rhs) const
+    {
+      return Major < rhs.Major || (Major == rhs.Major && Minor < rhs.Minor) || (Major == rhs.Major && Minor == rhs.Minor && Build < rhs.Build) ||
+             (Major == rhs.Major && Minor == rhs.Minor && Build == rhs.Build && Hotfix < rhs.Hotfix);
+    }
+
   };
 }
 #endif

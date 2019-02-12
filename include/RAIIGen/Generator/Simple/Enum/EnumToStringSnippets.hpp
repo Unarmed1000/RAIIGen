@@ -31,6 +31,7 @@ namespace MB
     std::string Header;
     std::string Method;
     std::string CaseEntry;
+    std::string CaseEntryReturn;
   };
 }
 #endif

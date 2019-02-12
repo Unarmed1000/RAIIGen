@@ -1,0 +1,1 @@
+        return "##ENUM_MEMBER_NAME##";

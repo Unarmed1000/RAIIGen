@@ -1,2 +1,1 @@
       case ##ENUM_MEMBER_NAME##:
-        return "##ENUM_MEMBER_NAME##";

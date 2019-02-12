@@ -33,7 +33,7 @@
 #include <FslBase/IO/Path.hpp>
 #include <FslBase/String/StringUtil.hpp>
 #include <algorithm>
-#include <algorithm>
+#include <unordered_map>
 #include <iostream>
 #include <fmt/format.h>
 
@@ -43,6 +43,13 @@ namespace MB
 
   namespace
   {
+    struct EnumValueMemberInfo
+    {
+      std::deque<EnumMemberRecord> MemberRecord;
+      bool Generated{false};
+    };
+
+
     std::string GetRelativeIncludeGuard(const IO::Path& rootPath, const IO::Path& dstFilename)
     {
       auto filename = dstFilename.ToUTF8String();
@@ -68,23 +75,88 @@ namespace MB
       const auto pathHeader = IO::Path::Combine(templateRoot, "enumDebugStrings/Template_header.hpp");
       const auto pathMethod = IO::Path::Combine(templateRoot, "enumDebugStrings/Template_method.txt");
       const auto pathCaseEntry = IO::Path::Combine(templateRoot, "enumDebugStrings/Template_case_entry.txt");
+      const auto pathCaseEntryReturn = IO::Path::Combine(templateRoot, "enumDebugStrings/Template_case_entry_return.txt");
 
       snippets.Header = IO::File::ReadAllText(pathHeader);
       snippets.Method = IO::File::ReadAllText(pathMethod);
       snippets.CaseEntry = IO::File::ReadAllText(pathCaseEntry);
+      snippets.CaseEntryReturn = IO::File::ReadAllText(pathCaseEntryReturn);
       return snippets;
     }
 
-    std::string GenerateEnumMember(const VersionGuardConfig& versionGuard, const std::string& snippet, const EnumMemberRecord& enumMember)
+    std::string GenerateEnumMember(const VersionGuardConfig& versionGuard, const std::string& snippet, const std::string& snippetReturn,
+                                   const EnumMemberRecord& enumMember, EnumValueMemberInfo& rDuplicationInfo)
     {
-      // guardConfig.ToGuardString(version);
-      std::string content(snippet);
-      StringUtil::Replace(content, "##ENUM_MEMBER_NAME##", enumMember.Name);
-
-      if (versionGuard.IsValid && enumMember.Version != VersionRecord())
+      if (rDuplicationInfo.Generated)
       {
-        content = fmt::format("#if {0}{1}{2}{1}#endif", versionGuard.ToGuardString(enumMember.Version), END_OF_LINE, content);
+        return "";
       }
+
+      std::string content;
+      if (rDuplicationInfo.MemberRecord.size() == 1)
+      {
+        // The simple normal case
+        content = snippet + END_OF_LINE + snippetReturn;
+        StringUtil::Replace(content, "##ENUM_MEMBER_NAME##", enumMember.Name);
+
+        if (versionGuard.IsValid && enumMember.Version != VersionRecord())
+        {
+          content = fmt::format("#if {0}{1}{2}{1}#endif", versionGuard.ToGuardString(enumMember.Version), END_OF_LINE, content);
+        }
+      }
+      else
+      {
+        content.clear();
+        auto lastVersion = VersionRecord();
+        std::string lastName;
+        uint32_t countIf = 0;
+        bool addReturn = false;
+        bool addEndIf = false;
+        for (auto entry : rDuplicationInfo.MemberRecord)
+        {
+          if (lastVersion != entry.Version)
+          {
+            if (addReturn)
+            {
+              std::string entryContent = snippetReturn;
+              StringUtil::Replace(entryContent, "##ENUM_MEMBER_NAME##", lastName);
+              content += entryContent + END_OF_LINE;
+              addReturn = false;
+            }
+            if (countIf > 0)
+            {
+              content += fmt::format("#elif {0}{1}", versionGuard.ToGuardString(entry.Version), END_OF_LINE);
+            }
+            else
+            {
+              content += fmt::format("#if {0}{1}", versionGuard.ToGuardString(entry.Version), END_OF_LINE);
+            }
+            lastVersion = entry.Version;
+            addEndIf = true;
+            ++countIf;
+          }
+          // There are duplicated entries
+          std::string entryContent(snippet);    // +END_OF_LINE + snippetReturn;
+          StringUtil::Replace(entryContent, "##ENUM_MEMBER_NAME##", entry.Name);
+          addReturn = true;
+          lastName = entry.Name;
+
+          content += entryContent + END_OF_LINE;
+        }
+        if (addReturn)
+        {
+          std::string entryContent = snippetReturn;
+          StringUtil::Replace(entryContent, "##ENUM_MEMBER_NAME##", lastName);
+          content += entryContent + END_OF_LINE;
+          addReturn = false;
+        }
+        if (addEndIf)
+        {
+          content += "#endif" + END_OF_LINE;
+          addEndIf = false;
+        }
+      }
+      rDuplicationInfo.Generated = true;
       return content;
     }
 
@@ -112,6 +184,42 @@ namespace MB
       StringUtil::Replace(headerContent, "##VERSION_GUARD_BEGIN##", strVersinGuardBegin);
       StringUtil::Replace(headerContent, "##VERSION_GUARD_END##", strVersinGuardEnd);
       return headerContent;
+    }
+
+    std::unordered_map<uint64_t, EnumValueMemberInfo> FindDuplicatedValues(const std::deque<EnumMemberRecord>& members,
+                                                                           const std::vector<BlackListEntry>& enumMemberBlacklist,
+                                                                           const ConfigUtil::CurrentEntityInfo& currentEnumEntityInfo)
+    {
+      std::unordered_map<uint64_t, EnumValueMemberInfo> valueToNameLookup;
+      for (const auto& enumMember : members)
+      {
+        if (!ConfigUtil::HasMatchingEntry(enumMember.Name, enumMemberBlacklist, currentEnumEntityInfo))
+        {
+          auto itrFind = valueToNameLookup.find(enumMember.UnsignedValue);
+          if (itrFind == valueToNameLookup.end())
+          {
+            // first entry
+            EnumValueMemberInfo record;
+            record.MemberRecord.push_back(enumMember);
+            valueToNameLookup.emplace(std::make_pair(enumMember.UnsignedValue, std::move(record)));
+          }
+          else
+          {
+            // Duplicated entry found
+            itrFind->second.MemberRecord.push_back(enumMember);
+          }
+        }
+      }
+
+      for (auto& rEntries : valueToNameLookup)
+      {
+        if (rEntries.second.MemberRecord.size() > 1)
+        {
+          std::sort(rEntries.second.MemberRecord.begin(), rEntries.second.MemberRecord.end(),
+                    [](const EnumMemberRecord& lhs, const EnumMemberRecord& rhs) -> bool { return lhs.Version > rhs.Version; });
+        }
+      }
+      return valueToNameLookup;
     }
 
 
@@ -145,12 +253,20 @@ namespace MB
         {
           const auto itrFind = enumDict.find(entryName);
           std::string switchCaseContent;
+
+          auto valueToNameLookup = FindDuplicatedValues(itrFind->second.Members, config.EnumMemberBlacklist, currentEnumEntityInfo);
+
           for (const auto& enumMember : itrFind->second.Members)
           {
-            if (!ConfigUtil::HasMatchingEntry(enumMember.Name, config.EnumMemberBlacklist, currentEnumEntityInfo))
+            auto itrDuplication = valueToNameLookup.find(enumMember.UnsignedValue);
+            if (itrDuplication != valueToNameLookup.end())
             {
-              switchCaseContent += END_OF_LINE + GenerateEnumMember(config.VersionGuard, snippets.CaseEntry, enumMember);
-              ++caseCount;
+              auto enumContent = GenerateEnumMember(config.VersionGuard, snippets.CaseEntry, snippets.CaseEntryReturn, enumMember, itrDuplication->second);
+              if (!enumContent.empty())
+              {
+                switchCaseContent += END_OF_LINE + enumContent;
+                ++caseCount;
+              }
             }
           }
           if (caseCount > 0)
@@ -194,13 +310,23 @@ namespace MB
         ConfigUtil::CurrentEntityInfo currentEnumEntityInfo(entry.first);
         if (!ConfigUtil::HasMatchingEntry(entry.first, config.EnumNameBlacklist, currentEnumEntityInfo))
         {
+          auto valueToNameLookup = FindDuplicatedValues(entry.second.Members, config.EnumMemberBlacklist, currentEnumEntityInfo);
+
           std::string switchCaseContent;
           for (const auto& enumMember : entry.second.Members)
           {
-            if (!ConfigUtil::HasMatchingEntry(enumMember.Name, config.EnumMemberBlacklist, currentEnumEntityInfo))
+            auto itrDuplication = valueToNameLookup.find(enumMember.UnsignedValue);
+            assert(itrDuplication != valueToNameLookup.end());
+
+            if (itrDuplication != valueToNameLookup.end())
             {
-              switchCaseContent += END_OF_LINE + GenerateEnumMember(config.VersionGuard, snippets.CaseEntry, enumMember);
-              ++caseCount;
+              auto enumContent =
+                GenerateEnumMember(config.VersionGuard, snippets.CaseEntry, snippets.CaseEntryReturn, enumMember, itrDuplication->second);
+              if (!enumContent.empty())
+              {
+                switchCaseContent += END_OF_LINE + enumContent;
+                ++caseCount;
+              }
             }
           }
           if (caseCount > 0)
@@ -217,7 +343,6 @@ namespace MB
         }
       }
     }
-
   }
 
 
@@ -231,5 +356,4 @@ namespace MB
     else
       ProcessMultipleFile(snippets, capture, config, dstRootPath, dstFileName, useSeperateFiles);
   }
-
 }
