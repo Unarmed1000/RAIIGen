@@ -181,6 +181,10 @@ namespace MB
       {"VkIndirectCommandsLayoutNVX", DEFAULT_VALUE},
       {"VkObjectTableNVX", DEFAULT_VALUE},
       {"VkValidationCacheEXT", DEFAULT_VALUE},
+      {"VkAccelerationStructureNV", DEFAULT_VALUE},
+      {"VkDebugUtilsMessengerEXT", DEFAULT_VALUE},
+      {"VkDescriptorUpdateTemplate", DEFAULT_VALUE},
+      {"VkSamplerYcbcrConversion", DEFAULT_VALUE},
     };
   }
 
