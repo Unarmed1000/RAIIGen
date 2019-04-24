@@ -19,9 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\fmt\chrono.h" />
+    <ClInclude Include="include\fmt\color.h" />
+    <ClInclude Include="include\fmt\core.h" />
+    <ClInclude Include="include\fmt\format-inl.h" />
     <ClInclude Include="include\fmt\format.h" />
+    <ClInclude Include="include\fmt\locale.h" />
     <ClInclude Include="include\fmt\ostream.h" />
     <ClInclude Include="include\fmt\posix.h" />
+    <ClInclude Include="include\fmt\printf.h" />
+    <ClInclude Include="include\fmt\ranges.h" />
     <ClInclude Include="include\fmt\time.h" />
     <ClInclude Include="include\FslBase\Attributes.hpp" />
     <ClInclude Include="include\FslBase\BasicTypes.hpp" />
@@ -222,7 +229,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\fmt\format.cc" />
-    <ClCompile Include="source\fmt\ostream.cc" />
+    <ClCompile Include="source\fmt\posix.cc" />
     <ClCompile Include="source\FslBase\Bits\ByteArrayUtil.cpp" />
     <ClCompile Include="source\FslBase\Compression\ValueCompression.cpp" />
     <ClCompile Include="source\FslBase\Debug\Math\DebugContainmentType.cpp" />
