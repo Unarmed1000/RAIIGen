@@ -272,20 +272,28 @@ namespace MB
 
       const auto captureConfig = TGenerator::GetCaptureConfig();
 
-      VersionRecord version;
-      CapturedData capturedData(basicConfig, filename, includePaths, captureConfig, customLog, version);
-
+      std::deque<std::shared_ptr<CapturedData>> history;
+      IO::Path fileToLoad = filename;
       if (useAPIHistory)
       {
-        auto history = RunCaptureHistory(basicConfig, relativeFilename, apiHistoryPath, captureConfig);
-        if (history.size() > 0)
+        history = RunCaptureHistory(basicConfig, relativeFilename, apiHistoryPath, captureConfig);
+        if (! history.empty())
         {
           std::cout << "Version tagging elements using history\n";
           // Always use 0.0.0 for the first version
           history.front()->Version = VersionRecord();
-          TagWithHistory(capturedData, history);
+		  // use the latest version from history
+          fileToLoad = history.back()->FileData.Filename;
         }
       }
+
+	  VersionRecord version;
+      CapturedData capturedData(basicConfig, fileToLoad, includePaths, captureConfig, customLog, version);
+
+	  if (useAPIHistory && !history.empty())
+	  {
+		TagWithHistory(capturedData, history);
+	  }
 
       // captureConfig.GetCapture().Dump();
       TGenerator generator(capturedData.TheCapture, basicConfig, templatePath, dstPath);

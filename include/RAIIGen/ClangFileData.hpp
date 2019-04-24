@@ -37,7 +37,10 @@ namespace MB
     CXCursor m_rootCursor;
 
   public:
-    ClangFileData(const BasicConfig& basicConfig, const Fsl::IO::Path& filename, const std::vector<Fsl::IO::Path>& includePaths)
+    Fsl::IO::Path Filename;
+
+	ClangFileData(const BasicConfig& basicConfig, const Fsl::IO::Path& filename, const std::vector<Fsl::IO::Path>& includePaths)
+      : Filename(filename)
     {
       using namespace MB;
 
