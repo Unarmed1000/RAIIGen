@@ -1733,8 +1733,13 @@ namespace MB
         {
           auto content = IO::File::ReadAllText(**itr);
 
+
           StringUtil::Replace(content, "##API_NAME##", config.APIName);
           StringUtil::Replace(content, "##API_VERSION##", config.APIVersion);
+          StringUtil::Replace(content, "##CURRENT_API_VERSION_MAJOR##", std::to_string(config.CurrentAPIVersion.Major));
+          StringUtil::Replace(content, "##CURRENT_API_VERSION_MINOR##", std::to_string(config.CurrentAPIVersion.Minor));
+          StringUtil::Replace(content, "##CURRENT_API_VERSION_BUILD##", std::to_string(config.CurrentAPIVersion.Build));
+          StringUtil::Replace(content, "##CURRENT_API_VERSION_HOTFIX##", std::to_string(config.CurrentAPIVersion.Hotfix));
           StringUtil::Replace(content, "##PROGRAM_NAME##", config.Program.Name);
           StringUtil::Replace(content, "##PROGRAM_VERSION##", config.Program.Version);
           StringUtil::Replace(content, "##NAMESPACE_NAME##", config.NamespaceName);

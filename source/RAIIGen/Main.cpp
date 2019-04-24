@@ -47,7 +47,7 @@ namespace MB
   namespace
   {
     const std::string g_programName = "RAIIGen";
-    const std::string g_programVersion = "V0.5.1";
+    const std::string g_programVersion = "V0.5.2";
 
     using namespace Fsl;
 
@@ -278,35 +278,35 @@ namespace MB
       if (useAPIHistory)
       {
         history = RunCaptureHistory(basicConfig, relativeFilename, apiHistoryPath, captureConfig);
-        if (! history.empty())
+        if (!history.empty())
         {
           std::cout << "Version tagging elements using history\n";
           // Always use 0.0.0 for the first version
           history.front()->Version = VersionRecord();
-		  // use the latest version from history
+          // use the latest version from history
           fileToLoad = history.back()->FileData.Filename;
           currentConfig.CurrentAPIVersion = history.back()->Version;
         }
       }
 
-	  VersionRecord version;
-      CapturedData capturedData(basicConfig, fileToLoad, includePaths, captureConfig, customLog, version);
+      VersionRecord version;
+      CapturedData capturedData(currentConfig, fileToLoad, includePaths, captureConfig, customLog, version);
 
-	  if (useAPIHistory && !history.empty())
-	  {
-		TagWithHistory(capturedData, history);
-	  }
+      if (useAPIHistory && !history.empty())
+      {
+        TagWithHistory(capturedData, history);
+      }
 
       // captureConfig.GetCapture().Dump();
-      TGenerator generator(capturedData.TheCapture, basicConfig, templatePath, dstPath);
+      TGenerator generator(capturedData.TheCapture, currentConfig, templatePath, dstPath);
     }
 
 
     template <typename TGenerator>
     void RunGenerator(const ProgramInfo& programInfo, const Config& config, const std::string& filename, const std::string& templateName,
-                      const std::string& baseApiName, const VersionRecord& apiVersion, const bool useAPIHistory = false)
+                      const std::string& baseApiName, const std::string& strApiVersion, const bool useAPIHistory = false)
     {
-      const auto strApiVersion = apiVersion.ToMinimalString();
+      const auto apiVersion = VersionRecord(strApiVersion, true);
       const auto apiNameAndVersion = baseApiName + strApiVersion;
       const auto templateNameAndVersion = templateName + strApiVersion;
       const auto apiHeaderPath = IO::Path::Combine(config.HeaderRoot, IO::Path::Combine("khronos", apiNameAndVersion));
@@ -339,43 +339,43 @@ namespace MB
 
       Config config(headerRoot, templateRoot, outputRoot);
 
-      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", VersionRecord(1, 1));
-      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", VersionRecord(1, 2));
-      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", VersionRecord(2, 0));
-      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", VersionRecord(2, 1));
-      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "OpenVX", "OpenVX", VersionRecord(1, 0, 1));
-      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "OpenVX", "OpenVX", VersionRecord(1, 1));
-      // RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "Vulkan", "Vulkan", VersionRecord(1, 0));
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "1.1");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "1.2");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "2.0");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "OpenCL", "OpenCL", "2.1");
+      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "OpenVX", "OpenVX", "1.0.1");
+      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "OpenVX", "OpenVX", "1.1");
+      // RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "Vulkan", "Vulkan", "1.0");
 
-      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", VersionRecord(1, 1));
-      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", VersionRecord(2, 0));
-      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", VersionRecord(2, 1));
-      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", VersionRecord(1, 0, 1));
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "1.1");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2.0");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2.1");
+      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.0.1");
 
       // RapidOpenCL1
-      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", VersionRecord(1), true);
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "1", true);
 
       // RapidOpenCL2
-      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", VersionRecord(2), true);
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "RapidOpenCL", "OpenCL", "2", true);
 
       // RapidOpenVX
-      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", VersionRecord(1, 0, 1), true);
-      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", VersionRecord(1, 1), true);
+      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.0.1", true);
+      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.1", true);
 
       // RapidVulkan
-      RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", VersionRecord(1, 0), true);
-      // RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", VersionRecord(1, 1), true);
+      RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.0", true);
+      // RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.1", true);
 
-      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", VersionRecord(1, 1));
-      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", VersionRecord(1, 2));
-      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "FslUtilOpenVX", "OpenVX", VersionRecord(1, 0, 1));
-      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "FslUtilOpenVX", "OpenVX", VersionRecord(1, 1));
-      // RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "FslUtil.Vulkan", "Vulkan", VersionRecord(1, 0));
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.1");
+      // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.2");
+      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "FslUtilOpenVX", "OpenVX", "1.0.1");
+      // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "FslUtilOpenVX", "OpenVX", "1.1");
+      // RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "FslUtil.Vulkan", "Vulkan", "1.0");
 
-      // RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES2/gl2.h", "RapidOpenGLES", "OpenGLES", VersionRecord(2, 0));
-      // RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl3.h", "RapidOpenGLES", "OpenGLES", VersionRecord(3, 0));
-      // RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl31.h", "RapidOpenGLES", "OpenGLES", VersionRecord(3, 1));
-      // RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl32.h", "RapidOpenGLES", "OpenGLES", VersionRecord(3, 2));
+      // RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES2/gl2.h", "RapidOpenGLES", "OpenGLES", "2.0");
+      // RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl3.h", "RapidOpenGLES", "OpenGLES", "3.0");
+      // RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl31.h", "RapidOpenGLES", "OpenGLES", "3.1");
+      // RunGenerator<MB::OpenGLESGenerator>(programInfo, config, "GLES3/gl32.h", "RapidOpenGLES", "OpenGLES", "3.2");
     }
   }
 }

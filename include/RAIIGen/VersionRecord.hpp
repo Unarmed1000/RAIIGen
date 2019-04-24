@@ -68,32 +68,70 @@ namespace MB
     {
     }
 
-    explicit VersionRecord(const std::string& version)
+    explicit VersionRecord(const std::string& version, const bool allowMinimal = false)
       : Major(0)
       , Minor(0)
       , Build(0)
       , Hotfix(0)
     {
       using namespace Fsl;
-      const auto indexFirstDot = StringUtil::IndexOf(version, '.');
-      if (indexFirstDot < 0)
-        throw std::invalid_argument("Version format is incorrect");
-      const auto indexSecondDot = StringUtil::IndexOf(version, '.', indexFirstDot + 1);
-      if (indexSecondDot < 0)
-        throw std::invalid_argument("Version format is incorrect");
-      const auto indexThirdDot = StringUtil::IndexOf(version, '.', indexSecondDot + 1);
-      if (indexThirdDot < 0)
-        throw std::invalid_argument("Version format is incorrect");
-      if (StringUtil::IndexOf(version, '.', indexThirdDot + 1) >= 0)
-        throw std::invalid_argument("Version format is incorrect");
+      if (!allowMinimal)
+      {
+        const auto indexFirstDot = StringUtil::IndexOf(version, '.');
+        if (indexFirstDot < 0)
+          throw std::invalid_argument("Version format is incorrect");
+        const auto indexSecondDot = StringUtil::IndexOf(version, '.', indexFirstDot + 1);
+        if (indexSecondDot < 0)
+          throw std::invalid_argument("Version format is incorrect");
+        const auto indexThirdDot = StringUtil::IndexOf(version, '.', indexSecondDot + 1);
+        if (indexThirdDot < 0)
+          throw std::invalid_argument("Version format is incorrect");
+        if (StringUtil::IndexOf(version, '.', indexThirdDot + 1) >= 0)
+          throw std::invalid_argument("Version format is incorrect");
 
 
-      const auto stringLength = static_cast<int>(version.size());
+        const auto stringLength = static_cast<int>(version.size());
 
-      StringParseUtil::Parse(Major, version.c_str(), 0, indexFirstDot);
-      StringParseUtil::Parse(Minor, version.c_str(), indexFirstDot + 1, (indexSecondDot - indexFirstDot - 1));
-      StringParseUtil::Parse(Build, version.c_str(), indexSecondDot + 1, (indexThirdDot - indexSecondDot - 1));
-      StringParseUtil::Parse(Hotfix, version.c_str(), indexThirdDot + 1, (stringLength - indexThirdDot - 1));
+        StringParseUtil::Parse(Major, version.c_str(), 0, indexFirstDot);
+        StringParseUtil::Parse(Minor, version.c_str(), indexFirstDot + 1, (indexSecondDot - indexFirstDot - 1));
+        StringParseUtil::Parse(Build, version.c_str(), indexSecondDot + 1, (indexThirdDot - indexSecondDot - 1));
+        StringParseUtil::Parse(Hotfix, version.c_str(), indexThirdDot + 1, (stringLength - indexThirdDot - 1));
+      }
+      else
+      {
+        const auto indexFirstDot = StringUtil::IndexOf(version, '.');
+        const auto stringLength = static_cast<int>(version.size());
+        if (indexFirstDot >= 0)
+        {
+          const auto indexSecondDot = StringUtil::IndexOf(version, '.', indexFirstDot + 1);
+          if (indexSecondDot >= 0)
+          {
+            const auto indexThirdDot = StringUtil::IndexOf(version, '.', indexSecondDot + 1);
+            if (indexThirdDot >= 0)
+            {
+              StringParseUtil::Parse(Major, version.c_str(), 0, indexFirstDot);
+              StringParseUtil::Parse(Minor, version.c_str(), indexFirstDot + 1, (indexSecondDot - indexFirstDot - 1));
+              StringParseUtil::Parse(Build, version.c_str(), indexSecondDot + 1, (indexThirdDot - indexSecondDot - 1));
+              StringParseUtil::Parse(Hotfix, version.c_str(), indexThirdDot + 1, (stringLength - indexThirdDot - 1));
+            }
+            else
+            {
+              StringParseUtil::Parse(Major, version.c_str(), 0, indexFirstDot);
+              StringParseUtil::Parse(Minor, version.c_str(), indexFirstDot + 1, (indexSecondDot - indexFirstDot - 1));
+              StringParseUtil::Parse(Build, version.c_str(), indexSecondDot + 1, (stringLength - indexSecondDot - 1));
+            }
+          }
+          else
+          {
+            StringParseUtil::Parse(Major, version.c_str(), 0, indexFirstDot);
+            StringParseUtil::Parse(Minor, version.c_str(), indexFirstDot + 1, (stringLength - indexFirstDot - 1));
+          }
+        }
+        else
+        {
+          StringParseUtil::Parse(Major, version.c_str(), 0, stringLength);
+        }
+      }
     }
 
 
