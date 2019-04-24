@@ -22,9 +22,10 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <string>
 #include <FslBase/String/StringParseUtil.hpp>
 #include <FslBase/String/StringUtil.hpp>
+#include <string>
+#include <fmt/format.h>
 
 namespace MB
 {
@@ -40,6 +41,30 @@ namespace MB
       , Minor(0)
       , Build(0)
       , Hotfix(0)
+    {
+    }
+
+    explicit VersionRecord(const uint32_t major)
+      : VersionRecord(major, 0, 0, 0)
+    {
+    }
+
+    VersionRecord(const uint32_t major, const uint32_t minor)
+      : VersionRecord(major, minor, 0, 0)
+    {
+    }
+
+    VersionRecord(const uint32_t major, const uint32_t minor, const uint32_t build)
+      : VersionRecord(major, minor, build, 0)
+    {
+    }
+
+
+    explicit VersionRecord(const uint32_t major, const uint32_t minor, const uint32_t build, const uint32_t hotfix)
+      : Major(major)
+      , Minor(minor)
+      , Build(build)
+      , Hotfix(hotfix)
     {
     }
 
@@ -100,6 +125,22 @@ namespace MB
              (Major == rhs.Major && Minor == rhs.Minor && Build == rhs.Build && Hotfix < rhs.Hotfix);
     }
 
+    std::string ToMinimalString() const
+    {
+      if (Hotfix == 0)
+      {
+        if (Build == 0)
+        {
+          if (Minor == 0)
+          {
+            return fmt::format("{}", Major, Minor, Build, Hotfix);
+          }
+          return fmt::format("{}.{}", Major, Minor);
+        }
+        return fmt::format("{}.{}.{}", Major, Minor, Build);
+      }
+      return fmt::format("{}.{}.{}.{}", Major, Minor, Build, Hotfix);
+    }
   };
 }
 #endif

@@ -24,6 +24,7 @@
 
 #include <string>
 #include <RAIIGen/ProgramInfo.hpp>
+#include <RAIIGen/VersionRecord.hpp>
 
 namespace MB
 {
@@ -34,6 +35,8 @@ namespace MB
     std::string NamespaceName;
     std::string APIName;
     std::string APIVersion;
+	// The header file version this is based upon
+    VersionRecord CurrentAPIVersion;
 
     BasicConfig()
       : Program()
@@ -41,12 +44,13 @@ namespace MB
     }
 
     BasicConfig(const ProgramInfo& programInfo, const std::string& toolStatement, const std::string& namespaceName, const std::string& apiName,
-                const std::string& apiVersion)
+                const std::string& apiVersion, const VersionRecord& currentAPIVersion)
       : Program(programInfo)
       , ToolStatement(toolStatement)
       , NamespaceName(namespaceName)
       , APIName(apiName)
       , APIVersion(apiVersion)
+      , CurrentAPIVersion(currentAPIVersion)
     {
     }
   };

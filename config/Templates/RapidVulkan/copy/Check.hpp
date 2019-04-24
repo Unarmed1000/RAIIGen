@@ -31,4 +31,7 @@
 #define RAPIDVULKAN_CHECK(X)                  RapidVulkan::CheckError((X), #X, __FILE__, __LINE__)
 #define RAPIDVULKAN_CHECK2(X, mESSAGE)        RapidVulkan::CheckError((X), (mESSAGE), __FILE__, __LINE__)
 
+// The Vulkan version this was based on
+#define RAPIDVULKAN_VULKAN_VERSION  ##API_VERSION##
+
 #endif
