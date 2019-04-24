@@ -48,16 +48,17 @@ namespace Fsl
 
     public:
       // move assignment operator
-      Path& operator=(Path&& other);
+      Path& operator=(Path&& other) noexcept;
       // move constructor
-      Path(Path&& other);
+      Path(Path&& other) noexcept;
       // Request that the compiler generates a copy constructor and assignment operator
       Path(const Path&) = default;
       Path& operator=(const Path&) = default;
 
 
-      Path();
-      Path(const UTF8String& str);
+      Path() = default;
+
+      Path(UTF8String str);
       Path(const std::string& str);
       Path(const char* const psz);
       ~Path();
@@ -66,61 +67,78 @@ namespace Fsl
       {
         return m_content.IsEmpty();
       }
+
       bool Contains(const char ch) const
       {
         return m_content.Contains(ch);
       }
+
       bool Contains(const char* const psz) const
       {
         return m_content.Contains(psz);
       }
+
       bool Contains(const UTF8String& str) const
       {
         return m_content.Contains(str);
       }
+
       bool Contains(const Path& path) const
       {
         return m_content.Contains(path.m_content);
       }
+
       bool StartsWith(const char ch) const
       {
         return m_content.StartsWith(ch);
       }
+
       bool StartsWith(const char* const psz) const
       {
         return m_content.StartsWith(psz);
       }
+
       bool StartsWith(const UTF8String& path) const
       {
         return m_content.StartsWith(path);
       }
+
       bool StartsWith(const Path& path) const
       {
         return m_content.StartsWith(path.m_content);
       }
+
       bool EndsWith(const char ch) const
       {
         return m_content.EndsWith(ch);
       }
+
       bool EndsWith(const char* const psz) const
       {
         return m_content.EndsWith(psz);
       }
+
       bool EndsWith(const UTF8String& path) const
       {
         return m_content.EndsWith(path);
       }
+
       bool EndsWith(const Path& path) const
       {
         return m_content.EndsWith(path.m_content);
+      }
+
+      int32_t IndexOf(const char ch, const std::size_t fromIndex = 0) const
+      {
+        return m_content.IndexOf(ch, fromIndex);
       }
 
       std::string ToUTF8String() const
       {
         return m_content.ToUTF8String();
       };
+
       std::string ToAsciiString() const;
-      std::wstring ToWString() const;
 
       int32_t GetByteSize() const
       {

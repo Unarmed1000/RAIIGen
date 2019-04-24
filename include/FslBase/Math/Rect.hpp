@@ -45,27 +45,19 @@ namespace Fsl
   struct Rect
   {
   private:
-    float m_left;
-    float m_top;
-    float m_right;
-    float m_bottom;
+    float m_left{0};
+    float m_top{0};
+    float m_right{0};
+    float m_bottom{0};
 
   public:
-    Rect()
-      : m_left(0)
-      , m_top(0)
-      , m_right(0)
-      , m_bottom(0)
-    {
-    }
-
-
+    Rect() = default;
     Rect(const float x, const float y, const float width, const float height);
     Rect(const float left, const float top, const float right, const float bottom, const bool reserved);
 
     static Rect Empty()
     {
-      return Rect();
+      return {};
     }
 
     //! @brief Check if the rectangle is considered t be valid
@@ -90,30 +82,37 @@ namespace Fsl
     {
       return m_left;
     }
+
     float Y() const
     {
       return m_top;
     }
+
     float Width() const
     {
       return m_right - m_left;
     }
+
     float Height() const
     {
       return m_bottom - m_top;
     }
+
     float Left() const
     {
       return m_left;
     }
+
     float Top() const
     {
       return m_top;
     }
+
     float Right() const
     {
       return m_right;
     }
+
     float Bottom() const
     {
       return m_bottom;
@@ -128,14 +127,17 @@ namespace Fsl
     {
       return Vector2(m_left, m_top);
     }
+
     inline Vector2 TopRight() const
     {
       return Vector2(m_right, m_top);
     }
+
     inline Vector2 BottomLeft() const
     {
       return Vector2(m_left, m_bottom);
     }
+
     inline Vector2 BottomRight() const
     {
       return Vector2(m_right, m_bottom);
@@ -237,10 +239,7 @@ namespace Fsl
         const float bottomSide = std::min(rect1.Bottom(), rect2.Bottom());
         return Rect(leftSide, topSide, rightSide - leftSide, bottomSide - topSide);
       }
-      else
-      {
-        return Rect();
-      }
+      return Rect();
     }
 
 

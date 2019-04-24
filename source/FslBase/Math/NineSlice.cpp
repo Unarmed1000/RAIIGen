@@ -42,6 +42,8 @@ namespace Fsl
     , m_sliceFromBottomRightY(sliceFromBottomRightY)
   {
     if (m_sliceFromTopLeftX < 0 || m_sliceFromTopLeftY < 0 || m_sliceFromBottomRightX < 0 || m_sliceFromBottomRightY < 0)
+    {
       throw std::invalid_argument("the slice point values can not be negative");
+    }
   }
 }

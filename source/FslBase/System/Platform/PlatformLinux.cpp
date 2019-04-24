@@ -32,8 +32,8 @@
 
 #include "Platform.hpp"
 #include <stdexcept>
-#include <time.h>
-#include <stdlib.h>
+#include <ctime>
+#include <cstdlib>
 #include <unistd.h>
 
 namespace Fsl
@@ -42,7 +42,9 @@ namespace Fsl
   {
     char buffer[FILENAME_MAX];
     if (getcwd(buffer, sizeof(buffer)) == nullptr)
+    {
       throw std::runtime_error("Failed to retrieve the current working directory");
+    }
     return std::string(buffer);
   }
 
@@ -51,22 +53,24 @@ namespace Fsl
   {
     char* pPath = realpath(path.c_str(), nullptr);
     if (pPath == nullptr)
+    {
       throw std::runtime_error("failed to create the full path");
+    }
 
-    std::string fullPath;
     try
     {
+      std::string fullPath;
       fullPath = pPath;
-      free(pPath);
+      free(pPath);    // NOLINT(cppcoreguidelines-no-malloc)
       pPath = nullptr;
+      return fullPath;
     }
-    catch (std::exception)
+    catch (const std::exception&)
     {
-      free(pPath);
+      free(pPath);    // NOLINT(cppcoreguidelines-no-malloc)
       pPath = nullptr;
       throw;
     }
-    return fullPath;
   }
 
   //  int64_t Platform::GetPerformanceFrequency()
@@ -85,12 +89,6 @@ namespace Fsl
   //    //time += (currentTime.tv_nsec / 1000);
   //    //return time;
   //  }
-
-  std::wstring Platform::UTF8ToWString(const std::string& str)
-  {
-    throw std::logic_error("not supported on this platform");
-  }
-
 }
 
 #endif

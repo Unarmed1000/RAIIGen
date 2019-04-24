@@ -1744,7 +1744,7 @@ namespace MB
           auto relativeName = (*itr)->ToUTF8String().erase(0, copyRoot.GetByteSize() + 1);
           auto dstDirectory = IO::Path::Combine(dstPath, IO::Path::GetDirectoryName(relativeName));
           auto dstFileName = IO::Path::Combine(dstDirectory, IO::Path::GetFileName(**itr));
-          IO::Directory::CreateDirectory(dstDirectory);
+          IO::Directory::CreateDir(dstDirectory);
           IOUtil::WriteAllTextIfChanged(dstFileName, content);
         }
       }

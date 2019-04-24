@@ -45,12 +45,9 @@ namespace Fsl
         File = 0x02,
       };
 
-      uint32_t Flags;
+      uint32_t Flags{0};
 
-      FileAttributes()
-        : Flags(0)
-      {
-      }
+      FileAttributes() = default;
 
       FileAttributes(const Enum flag)
         : Flags(static_cast<uint32_t>(flag))

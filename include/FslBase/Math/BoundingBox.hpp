@@ -1,41 +1,8 @@
 #ifndef FSLBASE_MATH_BOUNDINGBOX_HPP
 #define FSLBASE_MATH_BOUNDINGBOX_HPP
-/****************************************************************************************************************************************************
- * Copyright (c) 2016 Freescale Semiconductor, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *    * Redistributions of source code must retain the above copyright notice,
- *      this list of conditions and the following disclaimer.
- *
- *    * Redistributions in binary form must reproduce the above copyright notice,
- *      this list of conditions and the following disclaimer in the documentation
- *      and/or other materials provided with the distribution.
- *
- *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
- *      its contributors may be used to endorse or promote products derived from
- *      this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- ****************************************************************************************************************************************************/
-
-// The functions in this file are a port of an MIT licensed library: MonaGame - BoundingBox.cs.
-
 /*
 MIT License
-Copyright © 2006 The Mono.Xna Team
+Copyright (C) 2006 The Mono.Xna Team
 
 All rights reserved.
 
@@ -58,10 +25,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// The functions in this file are a port of an MIT licensed library: MonoGame - BoundingBox.cs.
+
 #include <FslBase/BasicTypes.hpp>
 #include <FslBase/Math/ContainmentType.hpp>
 #include <FslBase/Math/PlaneIntersectionType.hpp>
 #include <FslBase/Math/Vector3.hpp>
+#include <array>
 #include <vector>
 
 namespace Fsl
@@ -78,25 +48,18 @@ namespace Fsl
     Vector3 Min;
     Vector3 Max;
 
-    BoundingBox()
-      : Min()
-      , Max()
-    {
-    }
+    constexpr BoundingBox() = default;
 
-    BoundingBox(const Vector3& min, const Vector3& max)
+    constexpr BoundingBox(const Vector3& min, const Vector3& max)
       : Min(min)
       , Max(max)
     {
     }
 
     ContainmentType Contains(const BoundingBox& box) const;
-    void Contains(const BoundingBox& box, ContainmentType& rResult) const;
     // ContainmentType Contains(const BoundingFrustum& frustum) const;
     ContainmentType Contains(const BoundingSphere& sphere) const;
-    void Contains(const BoundingSphere& sphere, ContainmentType& rResult) const;
     ContainmentType Contains(const Vector3& point) const;
-    void Contains(const Vector3& point, ContainmentType& rResult) const;
 
     //! @brief Create a bounding box from the given list of points.
     //! @param points The list of Vector3 instances defining the point cloud to bound
@@ -110,14 +73,13 @@ namespace Fsl
 
     std::vector<Vector3> GetCorners() const;
     void GetCorners(std::vector<Vector3>& corners) const;
+    void GetCorners(std::array<Vector3, 8>& corners) const;
 
     bool Intersects(const BoundingBox& box) const;
     void Intersects(const BoundingBox& box, bool& rResult) const;
     bool Intersects(const BoundingFrustum& frustum) const;
     bool Intersects(const BoundingSphere& sphere) const;
-    void Intersects(const BoundingSphere& sphere, bool& rResult) const;
     PlaneIntersectionType Intersects(const Plane& plane) const;
-    void Intersects(const Plane& plane, PlaneIntersectionType& rResult) const;
     bool Intersects(const Ray& ray, float& rResult) const;
 
     //! @brief Tests for equality.
@@ -132,7 +94,6 @@ namespace Fsl
       return Min != rhs.Min || Max != rhs.Max;
     }
   };
-
 }
 
 #endif

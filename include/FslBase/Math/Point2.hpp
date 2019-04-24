@@ -38,16 +38,14 @@ namespace Fsl
   struct Point2
   {
   public:
-    int32_t X;
-    int32_t Y;
+    using element_type = int32_t;
 
-    Point2()
-      : X(0)
-      , Y(0)
-    {
-    }
+    int32_t X{0};
+    int32_t Y{0};
 
-    Point2(const int32_t x, const int32_t y)
+    constexpr Point2() = default;
+
+    constexpr Point2(const int32_t x, const int32_t y)
       : X(x)
       , Y(y)
     {
@@ -81,20 +79,20 @@ namespace Fsl
       return *this;
     }
 
-    bool operator==(const Point2& rhs) const
+    constexpr bool operator==(const Point2& rhs) const
     {
       return X == rhs.X && Y == rhs.Y;
     }
 
-    bool operator!=(const Point2& rhs) const
+    constexpr bool operator!=(const Point2& rhs) const
     {
       return X != rhs.X || Y != rhs.Y;
     }
 
     // @brief Returns a Point2 with all components being zero (0, 0)
-    static Point2 Zero()
+    static constexpr Point2 Zero()
     {
-      return Point2();
+      return {};
     }
   };
 }

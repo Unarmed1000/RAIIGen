@@ -1,7 +1,7 @@
-#ifndef FSLBASE_MATH_MATRIXFIELDS_HPP
-#define FSLBASE_MATH_MATRIXFIELDS_HPP
+#ifndef FSLBASE_LOG_MATH_LOGBOUNDINGBOX_HPP
+#define FSLBASE_LOG_MATH_LOGBOUNDINGBOX_HPP
 /****************************************************************************************************************************************************
- * Copyright (c) 2014 Freescale Semiconductor, Inc.
+ * Copyright 2017 NXP
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *      this list of conditions and the following disclaimer in the documentation
  *      and/or other materials provided with the distribution.
  *
- *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
+ *    * Neither the name of the NXP. nor the names of
  *      its contributors may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
@@ -31,21 +31,16 @@
  *
  ****************************************************************************************************************************************************/
 
-#define _M11 (4 * 0 + 0)
-#define _M12 (4 * 0 + 1)
-#define _M13 (4 * 0 + 2)
-#define _M14 (4 * 0 + 3)
-#define _M21 (4 * 1 + 0)
-#define _M22 (4 * 1 + 1)
-#define _M23 (4 * 1 + 2)
-#define _M24 (4 * 1 + 3)
-#define _M31 (4 * 2 + 0)
-#define _M32 (4 * 2 + 1)
-#define _M33 (4 * 2 + 2)
-#define _M34 (4 * 2 + 3)
-#define _M41 (4 * 3 + 0)
-#define _M42 (4 * 3 + 1)
-#define _M43 (4 * 3 + 2)
-#define _M44 (4 * 3 + 3)
+#include <FslBase/Math/BoundingBox.hpp>
+#include <FslBase/Log/Math/LogVector3.hpp>
+#include <ostream>
+
+namespace Fsl
+{
+  inline std::ostream& operator<<(std::ostream& o, const BoundingBox& value)
+  {
+    return o << "{Min=" << value.Min << " Max=" << value.Max << "}";
+  }
+}
 
 #endif

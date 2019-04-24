@@ -34,6 +34,7 @@
 #include "../System/Platform/Platform.hpp"
 #include <algorithm>
 #include <cassert>
+#include <utility>
 //#include <locale>
 
 namespace Fsl
@@ -41,7 +42,7 @@ namespace Fsl
   namespace IO
   {
     // move assignment operator
-    Path& Path::operator=(Path&& other)
+    Path& Path::operator=(Path&& other) noexcept
     {
       if (this != &other)
       {
@@ -52,7 +53,7 @@ namespace Fsl
 
 
     // Transfer ownership from other to this
-    Path::Path(Path&& other)
+    Path::Path(Path&& other) noexcept
       : m_content(std::move(other.m_content))
     {
     }
@@ -64,14 +65,8 @@ namespace Fsl
     }
 
 
-    Path::Path()
-      : m_content()
-    {
-    }
-
-
-    Path::Path(const UTF8String& str)
-      : m_content(str)
+    Path::Path(UTF8String str)
+      : m_content(std::move(str))
     {
       m_content.Replace('\\', '/');
     }
@@ -91,20 +86,12 @@ namespace Fsl
     }
 
 
-    Path::~Path()
-    {
-    }
+    Path::~Path() = default;
 
 
     std::string Path::ToAsciiString() const
     {
       return m_content.ToAsciiString();
-    }
-
-
-    std::wstring Path::ToWString() const
-    {
-      return m_content.ToWString();
     }
 
 
@@ -129,16 +116,25 @@ namespace Fsl
     Path Path::Combine(const Path& path1, const Path& path2)
     {
       if (Path::IsPathRooted(path2))
+      {
         return path2;
+      }
 
       if (path1.IsEmpty())
+      {
         return path2;
-      else if (path2.IsEmpty())
+      }
+      if (path2.IsEmpty())
+      {
         return path1;
-      else if (!path1.EndsWith('/'))
+      }
+      if (!path1.EndsWith('/'))
+      {
         return Path(path1.ToUTF8String() + '/' + path2.ToUTF8String(), true);
-      else
-        return Path(path1.ToUTF8String() + path2.ToUTF8String(), true);
+      }
+
+
+      return Path(path1.ToUTF8String() + path2.ToUTF8String(), true);
     }
 
 
@@ -146,7 +142,9 @@ namespace Fsl
     {
       const int32_t index = path.m_content.LastIndexOf('/');
       if (index <= 0)
+      {
         return Path();
+      }
       return Path(UTF8String(path.m_content, 0, index));
     }
 
@@ -155,7 +153,9 @@ namespace Fsl
     {
       int32_t index = path.m_content.LastIndexOf('/');
       if (index < 0)
+      {
         return path;
+      }
       // +1 to skip the '/'
       ++index;
       return Path(UTF8String(path.m_content, index, path.m_content.GetByteSize() - index));
@@ -166,11 +166,15 @@ namespace Fsl
     {
       const int32_t dotIndex = path.m_content.LastIndexOf('.');
       if (dotIndex < 0)
+      {
         return Path();
+      }
 
       const int32_t index = std::max(path.m_content.LastIndexOf('/'), 0);
       if (dotIndex < index)
+      {
         return Path();
+      }
 
 
       return Path(path.m_content.ToUTF8String().substr(dotIndex, path.GetByteSize() - dotIndex));
@@ -181,7 +185,5 @@ namespace Fsl
     {
       return Path(Platform::GetFullPath(path.m_content.ToUTF8String()));
     }
-
-
   }
 }

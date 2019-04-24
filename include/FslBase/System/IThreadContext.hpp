@@ -37,9 +37,7 @@ namespace Fsl
   class IThreadContext
   {
   public:
-    virtual ~IThreadContext()
-    {
-    }
+    virtual ~IThreadContext() = default;
   };
 }
 

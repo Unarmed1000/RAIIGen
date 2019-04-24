@@ -37,16 +37,12 @@ namespace Fsl
 {
   struct VersionInfo
   {
-    uint16_t Major;
-    uint16_t Minor;
+    uint16_t Major{0};
+    uint16_t Minor{0};
 
-    VersionInfo()
-      : Major(0)
-      , Minor(0)
-    {
-    }
+    constexpr VersionInfo() = default;
 
-    VersionInfo(const uint16_t major, const uint16_t minor)
+    constexpr VersionInfo(const uint16_t major, const uint16_t minor)
       : Major(major)
       , Minor(minor)
     {

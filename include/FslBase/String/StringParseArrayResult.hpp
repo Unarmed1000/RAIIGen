@@ -32,17 +32,20 @@
  ****************************************************************************************************************************************************/
 
 #include <FslBase/BasicTypes.hpp>
+#include <cstring>
 
 namespace Fsl
 {
   struct StringParseArrayResult
   {
     //! The number of characters that was consumed from psz
-    int CharactersConsumed;
+    std::size_t CharactersConsumed{0};
     //! The number of entries that was written to pDst
-    int ArrayEntries;
+    std::size_t ArrayEntries{0};
 
-    StringParseArrayResult(const int charactersConsumed, const int arrayEntries)
+    StringParseArrayResult() = default;
+
+    StringParseArrayResult(const std::size_t charactersConsumed, const std::size_t arrayEntries)
       : CharactersConsumed(charactersConsumed)
       , ArrayEntries(arrayEntries)
     {

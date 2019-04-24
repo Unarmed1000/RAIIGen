@@ -33,6 +33,7 @@
 #include "Platform.hpp"
 #include <FslBase/System/Platform/PlatformWin32.hpp>
 #include <cassert>
+#include <limits>
 #include <stdexcept>
 #include <vector>
 #include <Windows.h>
@@ -48,11 +49,13 @@ namespace Fsl
     //! @brief Convert the character to from UTF16 to UTF8
     //! @param psz the UTF16 string to convert
     //! @param srcLen the length of psz (-1 a unknown null terminated string else the length of the string)
-    inline const std::string DoNarrow(const wchar_t* psz, const int32_t srcLen)
+    inline const std::string DoNarrow(const wchar_t* psz, const int srcLen)
     {
       assert(psz != nullptr);
       if (srcLen == 0)
+      {
         return std::string();
+      }
 
       assert(srcLen > 0 || srcLen == -1);
 
@@ -60,7 +63,7 @@ namespace Fsl
       {
         // Try a conversion with minimal heap allocations
         char tmpBuffer[DEFAULT_CONV_BUFFER_SIZE + 1];
-        const int dstLen = WideCharToMultiByte(CP_UTF8, 0, psz, srcLen, tmpBuffer, DEFAULT_CONV_BUFFER_SIZE, 0, 0);
+        const int dstLen = WideCharToMultiByte(CP_UTF8, 0, psz, srcLen, tmpBuffer, DEFAULT_CONV_BUFFER_SIZE, nullptr, nullptr);
         if (dstLen > 0)
         {
           assert(dstLen <= DEFAULT_CONV_BUFFER_SIZE);
@@ -70,49 +73,19 @@ namespace Fsl
       }
 
       // Query the required buffer size
-      const int dstLen = WideCharToMultiByte(CP_UTF8, 0, psz, srcLen, nullptr, 0, 0, 0);
+      const int dstLen = WideCharToMultiByte(CP_UTF8, 0, psz, srcLen, nullptr, 0, nullptr, nullptr);
       if (dstLen <= 0)
+      {
         throw std::runtime_error("UTF16 to UTF8 conversion failed");
+      }
 
       // Try again with a buffer of the correct size
       std::vector<char> buffer(dstLen + 1);
-      if (WideCharToMultiByte(CP_UTF8, 0, psz, srcLen, buffer.data(), dstLen, 0, 0) <= 0)
-        throw std::runtime_error("UTF16 to UTF8 conversion failed");
-      return std::string(buffer.data());
-    }
-
-
-    inline const std::wstring DoWiden(const char* psz, const std::size_t srcLen)
-    {
-      assert(psz != nullptr);
-      if (srcLen == 0)
-        return std::wstring();
-
-      assert(srcLen > 0 || srcLen == -1);
-
-      if (srcLen > 0 && srcLen <= DEFAULT_CONV_BUFFER_SIZE)
+      if (WideCharToMultiByte(CP_UTF8, 0, psz, srcLen, buffer.data(), dstLen, nullptr, nullptr) <= 0)
       {
-        // Try a conversion with minimal heap allocations
-        wchar_t tmpBuffer[DEFAULT_CONV_BUFFER_SIZE + 1];
-        const int dstLen = MultiByteToWideChar(CP_UTF8, 0, psz, srcLen, tmpBuffer, DEFAULT_CONV_BUFFER_SIZE);
-        if (dstLen > 0)
-        {
-          assert(dstLen <= DEFAULT_CONV_BUFFER_SIZE);
-          tmpBuffer[dstLen] = 0;
-          return std::wstring(tmpBuffer);
-        }
+        throw std::runtime_error("UTF16 to UTF8 conversion failed");
       }
-
-      // Query the required buffer size
-      const int dstLen = MultiByteToWideChar(CP_UTF8, 0, psz, srcLen, nullptr, 0);
-      if (dstLen <= 0)
-        throw std::runtime_error("UTF8 to UTF16 conversion failed");
-
-      // Try again with a buffer of the correct size
-      std::vector<wchar_t> buffer(dstLen + 1);
-      if (MultiByteToWideChar(CP_UTF8, 0, psz, srcLen, buffer.data(), dstLen) <= 0)
-        throw std::runtime_error("UTF8 to UTF16 conversion failed");
-      return std::wstring(buffer.data());
+      return std::string(buffer.data());
     }
   }
 
@@ -120,28 +93,44 @@ namespace Fsl
   std::string PlatformWin32::Narrow(const wchar_t* psz)
   {
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return DoNarrow(psz, -1);
   }
 
 
   std::string PlatformWin32::Narrow(const std::wstring& str)
   {
-    return DoNarrow(str.c_str(), str.size());
+    if (str.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()))
+    {
+      throw std::runtime_error("string is too large");
+    }
+    return DoNarrow(str.c_str(), static_cast<int>(str.size()));
   }
 
 
   std::wstring PlatformWin32::Widen(const char* psz)
   {
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
-    return DoWiden(psz, -1);
+    }
+
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> convl;
+    return convl.from_bytes(psz);
   }
 
 
   std::wstring PlatformWin32::Widen(const std::string& str)
   {
-    return DoWiden(str.c_str(), str.size());
+    if (str.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()))
+    {
+      throw std::runtime_error("string is too large");
+    }
+
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> convl;
+    return convl.from_bytes(str);
   }
 
 
@@ -162,8 +151,10 @@ namespace Fsl
 
     // our stack buffer was too small, so lets try the recommended size
     std::vector<TCHAR> buffer(expectedBufferLength);
-    if (GetCurrentDirectory(buffer.size(), buffer.data()) >= expectedBufferLength)
+    if (GetCurrentDirectory(static_cast<DWORD>(buffer.size()), buffer.data()) >= expectedBufferLength)
+    {
       throw std::runtime_error("Failed to retrieve the current working directory");
+    }
 
     return PlatformWin32::Narrow(buffer.data());
   }
@@ -175,16 +166,18 @@ namespace Fsl
 
     wchar_t* pPath = _wfullpath(nullptr, widePath.c_str(), 0);
     if (pPath == nullptr)
+    {
       throw std::runtime_error("failed to create the full path");
+    }
     try
     {
       widePath = pPath;
-      free(pPath);
+      free(pPath);    // NOLINT(cppcoreguidelines-no-malloc)
       pPath = nullptr;
     }
-    catch (std::exception)
+    catch (const std::exception&)
     {
-      free(pPath);
+      free(pPath);    // NOLINT(cppcoreguidelines-no-malloc)
       pPath = nullptr;
       throw;
     }
@@ -209,13 +202,5 @@ namespace Fsl
   //    throw std::runtime_error("Failed to QueryPerformanceCounter");
   //  return value.QuadPart;
   //}
-
-  std::wstring Platform::UTF8ToWString(const std::string& str)
-  {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> convl;
-    return convl.from_bytes(str);
-  }
-
-
 }
 #endif

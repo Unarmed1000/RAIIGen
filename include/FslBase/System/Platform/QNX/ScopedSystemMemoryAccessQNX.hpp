@@ -33,12 +33,11 @@
  ****************************************************************************************************************************************************/
 
 #include <FslBase/BasicTypes.hpp>
-#include <FslBase/Noncopyable.hpp>
 #include <cstddef>
 
 namespace Fsl
 {
-  class ScopedSystemMemoryAccessQNX : private Noncopyable
+  class ScopedSystemMemoryAccessQNX
   {
     int m_fd;
     void* m_pMem;
@@ -46,6 +45,9 @@ namespace Fsl
     int m_lastValue;
 
   public:
+    ScopedSystemMemoryAccessQNX(const ScopedSystemMemoryAccessQNX&) = delete;
+    ScopedSystemMemoryAccessQNX& operator=(const ScopedSystemMemoryAccessQNX&) = delete;
+
     ScopedSystemMemoryAccessQNX(const std::size_t targetAddress);
     ~ScopedSystemMemoryAccessQNX();
     uint8_t GetUInt8() const;

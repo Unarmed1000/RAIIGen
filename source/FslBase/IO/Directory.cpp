@@ -46,18 +46,29 @@ namespace Fsl
       {
         auto tmpPath = Path::GetDirectoryName(path);
         if (tmpPath.GetByteSize() > 0)
+        {
           RecursiveCreate(tmpPath);
+        }
 
         if (!path.EndsWith(":"))
+        {
           PlatformFileSystem::CreateDir(path);
+        }
       }
     }
 
-
-    void Directory::CreateDirectory(const Path& path)
+    void Directory::CreateDir(const Path& path)
     {
       if (path.EndsWith(":"))
+      {
         throw IOException("Invalid path name");
+      }
+
+      const auto indexOfSlash = path.IndexOf('/');
+      if (indexOfSlash >= 0 && path.IndexOf(':', indexOfSlash) > 0)
+      {
+        throw NotSupportedException("A path can only contain ':' in the drive label");
+      }
 
       RecursiveCreate(path);
     }
@@ -67,7 +78,9 @@ namespace Fsl
     {
       FileAttributes attr;
       if (!File::TryGetAttributes(path, attr))
+      {
         return false;
+      }
       return (attr.HasFlag(FileAttributes::Directory));
     }
 

@@ -33,7 +33,7 @@
 #include <FslBase/System/Platform/PlatformThread.hpp>
 #include <FslBase/Log/Log.hpp>
 #include <pthread.h>
-#include <time.h>
+#include <ctime>
 
 namespace Fsl
 {
@@ -55,7 +55,7 @@ namespace Fsl
     std::function<void(const std::shared_ptr<IThreadContext>)> m_fnRun;
     std::shared_ptr<IThreadContext> m_threadContext;
     bool m_isStarted;
-    pthread_t m_thread;
+    pthread_t m_thread{};
 
   public:
     PlatformThreadImpl(const std::function<void(const std::shared_ptr<IThreadContext>)>& fnRun, const std::shared_ptr<IThreadContext>& threadContext)
@@ -68,9 +68,11 @@ namespace Fsl
     void Start(const std::weak_ptr<PlatformThreadImpl>& weakThisObject)
     {
       if (m_isStarted)
+      {
         return;
+      }
 
-      ObjectThreadContext* pThreadContext = new ObjectThreadContext(weakThisObject);
+      auto* pThreadContext = new ObjectThreadContext(weakThisObject);
       pthread_create(&m_thread, nullptr, PlatformThreadImpl::RunOnThread, pThreadContext);
       m_isStarted = true;
     }
@@ -79,7 +81,9 @@ namespace Fsl
     void Join()
     {
       if (m_isStarted)
+      {
         pthread_join(m_thread, nullptr);
+      }
     }
 
 
@@ -92,15 +96,19 @@ namespace Fsl
     static void* RunOnThread(void* pThreadParam)
     {
       if (pThreadParam == nullptr)
+      {
         return nullptr;
-      ObjectThreadContext* pThreadContext = static_cast<ObjectThreadContext*>(pThreadParam);
+      }
+      auto* pThreadContext = static_cast<ObjectThreadContext*>(pThreadParam);
       ObjectThreadContext threadContext = *pThreadContext;
       delete pThreadContext;
-      pThreadContext = nullptr;
+      // pThreadContext = nullptr;  // not necessary and coverity complained
 
       const std::shared_ptr<PlatformThreadImpl> context = threadContext.Object.lock();
       if (context)
+      {
         context->OnThreadRunning();
+      }
       return nullptr;
     }
   };
@@ -108,16 +116,14 @@ namespace Fsl
 
   PlatformThread::PlatformThread(const std::function<void(const std::shared_ptr<IThreadContext>)>& fnRun,
                                  const std::shared_ptr<IThreadContext>& threadContext)
-    : m_impl()
+
   {
     m_impl = std::make_shared<PlatformThreadImpl>(fnRun, threadContext);
     m_impl->Start(m_impl);
   }
 
 
-  PlatformThread::~PlatformThread()
-  {
-  }
+  PlatformThread::~PlatformThread() = default;
 
 
   void PlatformThread::Join()
@@ -128,12 +134,12 @@ namespace Fsl
 
   void PlatformThread::SleepMilliseconds(const uint32_t milliseconds)
   {
-    struct timespec tIME;
-    tIME.tv_sec = ((milliseconds) / 1000);
-    tIME.tv_nsec = ((milliseconds) % 1000) * 1000000;
-    nanosleep(&tIME, nullptr);
+    using SafeTimespec = struct timespec;
+    SafeTimespec time{};
+    time.tv_sec = ((milliseconds) / 1000);
+    time.tv_nsec = ((milliseconds) % 1000) * 1000000;
+    nanosleep(&time, nullptr);
   }
-
 }
 
 #endif

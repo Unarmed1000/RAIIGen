@@ -1,5 +1,5 @@
 /****************************************************************************************************************************************************
- * Copyright (c) 2014 Freescale Semiconductor, Inc.
+ * Copyright (c) 2016 Freescale Semiconductor, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,14 +29,30 @@
  *
  ****************************************************************************************************************************************************/
 
-#include <FslBase/Log/LogLocation.hpp>
+#include <FslBase/Math/Extent2D.hpp>
+#include <FslBase/Exceptions.hpp>
+#include <FslBase/Math/Point2.hpp>
+#include <limits>
 
 namespace Fsl
 {
-  LogLocation::LogLocation(const char* const _pszFile, const char* const _pszFunction, const int _line)
-    : pszFile(_pszFile)
-    , pszFunction(_pszFunction)
-    , line(_line)
+  Extent2D::Extent2D(const int32_t width, const int32_t height)
+    : Width(static_cast<element_type>(width))
+    , Height(static_cast<element_type>(height))
+  {
+    if (width < 0)
+    {
+      throw std::invalid_argument("width is out of bounds");
+    }
+    if (height < 0)
+    {
+      throw std::invalid_argument("height is out of bounds");
+    }
+  }
+
+
+  Extent2D::Extent2D(const Point2& value)
+    : Extent2D(value.X, value.Y)
   {
   }
 }

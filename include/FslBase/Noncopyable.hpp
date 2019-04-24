@@ -44,9 +44,7 @@ namespace Fsl
     Noncopyable& operator=(const Noncopyable&) = delete;
 
   protected:
-    Noncopyable()
-    {
-    }
+    Noncopyable() = default;
   };
 }
 

@@ -358,7 +358,7 @@ namespace MB
     // std::cout << headerContent << "\n";
 
     auto dirName = IO::Path::GetDirectoryName(dstFileName);
-    IO::Directory::CreateDirectory(dirName);
+    IO::Directory::CreateDir(dirName);
 
     IOUtil::WriteAllTextIfChanged(dstFileName, headerContent);
   }

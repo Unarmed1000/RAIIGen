@@ -1,39 +1,6 @@
-/****************************************************************************************************************************************************
- * Copyright (c) 2015 Freescale Semiconductor, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *    * Redistributions of source code must retain the above copyright notice,
- *      this list of conditions and the following disclaimer.
- *
- *    * Redistributions in binary form must reproduce the above copyright notice,
- *      this list of conditions and the following disclaimer in the documentation
- *      and/or other materials provided with the distribution.
- *
- *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
- *      its contributors may be used to endorse or promote products derived from
- *      this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- ****************************************************************************************************************************************************/
-
-// The functions in this file are a port of an MIT licensed library: MonaGame - Vector2.cs.
-
 /*
 MIT License
-Copyright © 2006 The Mono.Xna Team
+Copyright (C) 2006 The Mono.Xna Team
 
 All rights reserved.
 
@@ -56,39 +23,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// The functions in this file are a port of an MIT licensed library: MonoGame - Vector2.cs.
+
 #include <FslBase/Math/Quaternion.hpp>
 #include <FslBase/Math/Vector3.hpp>
 #include <FslBase/Math/Matrix.hpp>
+#include <FslBase/Math/MatrixFields.hpp>
 #include <FslBase/Exceptions.hpp>
 #include <cassert>
 #include <cmath>
 #include <cstddef>
-#include "MatrixFields.hpp"
 
 namespace Fsl
 {
-  Quaternion::Quaternion()
-    : X(0)
-    , Y(0)
-    , Z(0)
-    , W(0)
-  {
-  }
-
-
-  Quaternion::Quaternion(const OptimizationFlag flag)
-  {
-  }
-
-
-  Quaternion::Quaternion(const float x, const float y, const float z, const float w)
-    : X(x)
-    , Y(y)
-    , Z(z)
-    , W(w)
-  {
-  }
-
+  using namespace MatrixFields;
 
   Quaternion::Quaternion(const Vector3& vectorPart, const float scalarPart)
     : X(vectorPart.X)
@@ -101,12 +49,7 @@ namespace Fsl
 
   Quaternion Quaternion::Add(const Quaternion& lhs, const Quaternion& rhs)
   {
-    Quaternion quaternion(OptimizationFlag::NoInitialization);
-    quaternion.X = lhs.X + rhs.X;
-    quaternion.Y = lhs.Y + rhs.Y;
-    quaternion.Z = lhs.Z + rhs.Z;
-    quaternion.W = lhs.W + rhs.W;
-    return quaternion;
+    return {lhs.X + rhs.X, lhs.Y + rhs.Y, lhs.Z + rhs.Z, lhs.W + rhs.W};
   }
 
 
@@ -134,7 +77,8 @@ namespace Fsl
     float num10 = (x * num3) - (y * num4);
     float num9 = ((x * num4) + (y * num3)) + (z * num2);
 
-    Quaternion quaternion(OptimizationFlag::NoInitialization);
+    // Quaternion quaternion(OptimizationFlag::NoInitialization);
+    Quaternion quaternion;
     quaternion.X = ((x * num) + (num4 * w)) + num12;
     quaternion.Y = ((y * num) + (num3 * w)) + num11;
     quaternion.Z = ((z * num) + (num2 * w)) + num10;
@@ -174,7 +118,8 @@ namespace Fsl
 
   Quaternion Quaternion::Conjugate(const Quaternion& value)
   {
-    Quaternion quaternion(OptimizationFlag::NoInitialization);
+    // Quaternion quaternion(OptimizationFlag::NoInitialization);
+    Quaternion quaternion;
     quaternion.X = -value.X;
     quaternion.Y = -value.Y;
     quaternion.Z = -value.Z;
@@ -195,13 +140,14 @@ namespace Fsl
   Quaternion Quaternion::CreateFromAxisAngle(const Vector3& axis, const float angle)
   {
     const float num2 = angle * 0.5f;
-    const float num = (float)std::sin((double)num2);
+    const auto num = static_cast<float>(std::sin(static_cast<double>(num2)));
 
-    Quaternion quaternion(OptimizationFlag::NoInitialization);
+    // Quaternion quaternion(OptimizationFlag::NoInitialization);
+    Quaternion quaternion;
     quaternion.X = axis.X * num;
     quaternion.Y = axis.Y * num;
     quaternion.Z = axis.Z * num;
-    quaternion.W = (float)std::cos((double)num2);
+    quaternion.W = static_cast<float>(std::cos(static_cast<double>(num2)));
     return quaternion;
   }
 
@@ -209,11 +155,11 @@ namespace Fsl
   void Quaternion::CreateFromAxisAngle(Quaternion& rResult, const Vector3& axis, const float angle)
   {
     const float num2 = angle * 0.5f;
-    const float num = (float)std::sin((double)num2);
+    const auto num = static_cast<float>(std::sin(static_cast<double>(num2)));
     rResult.X = axis.X * num;
     rResult.Y = axis.Y * num;
     rResult.Z = axis.Z * num;
-    rResult.W = (float)std::cos((double)num2);
+    rResult.W = static_cast<float>(std::cos(static_cast<double>(num2)));
   }
 
 
@@ -222,10 +168,11 @@ namespace Fsl
     const float* const pMatrix = matrix.DirectAccess();
 
     float num8 = (pMatrix[_M11] + pMatrix[_M22]) + pMatrix[_M33];
-    Quaternion quaternion(OptimizationFlag::NoInitialization);
+    // Quaternion quaternion(OptimizationFlag::NoInitialization);
+    Quaternion quaternion;
     if (num8 > 0.0f)
     {
-      float num = (float)std::sqrt(num8 + 1.0f);
+      auto num = std::sqrt(num8 + 1.0f);
       quaternion.W = num * 0.5f;
       num = 0.5f / num;
       quaternion.X = (pMatrix[_M23] - pMatrix[_M32]) * num;
@@ -235,7 +182,7 @@ namespace Fsl
     }
     if ((pMatrix[_M11] >= pMatrix[_M22]) && (pMatrix[_M11] >= pMatrix[_M33]))
     {
-      const float num7 = (float)std::sqrt(((1.0f + pMatrix[_M11]) - pMatrix[_M22]) - pMatrix[_M33]);
+      const auto num7 = std::sqrt(((1.0f + pMatrix[_M11]) - pMatrix[_M22]) - pMatrix[_M33]);
       const float num4 = 0.5f / num7;
       quaternion.X = 0.5f * num7;
       quaternion.Y = (pMatrix[_M12] + pMatrix[_M21]) * num4;
@@ -245,7 +192,7 @@ namespace Fsl
     }
     if (pMatrix[_M22] > pMatrix[_M33])
     {
-      const float num6 = (float)std::sqrt(((1.0f + pMatrix[_M22]) - pMatrix[_M11]) - pMatrix[_M33]);
+      const auto num6 = std::sqrt(((1.0f + pMatrix[_M22]) - pMatrix[_M11]) - pMatrix[_M33]);
       const float num3 = 0.5f / num6;
       quaternion.X = (pMatrix[_M21] + pMatrix[_M12]) * num3;
       quaternion.Y = 0.5f * num6;
@@ -253,7 +200,7 @@ namespace Fsl
       quaternion.W = (pMatrix[_M31] - pMatrix[_M13]) * num3;
       return quaternion;
     }
-    const float num5 = (float)std::sqrt(((1.0f + pMatrix[_M33]) - pMatrix[_M11]) - pMatrix[_M22]);
+    const auto num5 = std::sqrt(((1.0f + pMatrix[_M33]) - pMatrix[_M11]) - pMatrix[_M22]);
     const float num2 = 0.5f / num5;
     quaternion.X = (pMatrix[_M31] + pMatrix[_M13]) * num2;
     quaternion.Y = (pMatrix[_M32] + pMatrix[_M23]) * num2;
@@ -270,7 +217,7 @@ namespace Fsl
     const float num8 = (pMatrix[_M11] + pMatrix[_M22]) + pMatrix[_M33];
     if (num8 > 0.0f)
     {
-      float num = (float)std::sqrt((double)(num8 + 1.0f));
+      auto num = static_cast<float>(std::sqrt(static_cast<double>(num8 + 1.0f)));
       rResult.W = num * 0.5f;
       num = 0.5f / num;
       rResult.X = (pMatrix[_M23] - pMatrix[_M32]) * num;
@@ -279,7 +226,7 @@ namespace Fsl
     }
     else if ((pMatrix[_M11] >= pMatrix[_M22]) && (pMatrix[_M11] >= pMatrix[_M33]))
     {
-      const float num7 = (float)std::sqrt((double)(((1.0f + pMatrix[_M11]) - pMatrix[_M22]) - pMatrix[_M33]));
+      const auto num7 = static_cast<float>(std::sqrt(static_cast<double>(((1.0f + pMatrix[_M11]) - pMatrix[_M22]) - pMatrix[_M33])));
       const float num4 = 0.5f / num7;
       rResult.X = 0.5f * num7;
       rResult.Y = (pMatrix[_M12] + pMatrix[_M21]) * num4;
@@ -288,7 +235,7 @@ namespace Fsl
     }
     else if (pMatrix[_M22] > pMatrix[_M33])
     {
-      const float num6 = (float)std::sqrt((double)(((1.0f + pMatrix[_M22]) - pMatrix[_M11]) - pMatrix[_M33]));
+      const auto num6 = static_cast<float>(std::sqrt(static_cast<double>(((1.0f + pMatrix[_M22]) - pMatrix[_M11]) - pMatrix[_M33])));
       const float num3 = 0.5f / num6;
       rResult.X = (pMatrix[_M21] + pMatrix[_M12]) * num3;
       rResult.Y = 0.5f * num6;
@@ -297,7 +244,7 @@ namespace Fsl
     }
     else
     {
-      const float num5 = (float)std::sqrt((double)(((1.0f + pMatrix[_M33]) - pMatrix[_M11]) - pMatrix[_M22]));
+      const auto num5 = static_cast<float>(std::sqrt(static_cast<double>(((1.0f + pMatrix[_M33]) - pMatrix[_M11]) - pMatrix[_M22])));
       const float num2 = 0.5f / num5;
       rResult.X = (pMatrix[_M31] + pMatrix[_M13]) * num2;
       rResult.Y = (pMatrix[_M32] + pMatrix[_M23]) * num2;
@@ -310,16 +257,17 @@ namespace Fsl
   Quaternion Quaternion::CreateFromYawPitchRoll(const float yaw, const float pitch, const float roll)
   {
     const float num9 = roll * 0.5f;
-    const float num6 = (float)std::sin((double)num9);
-    const float num5 = (float)std::cos((double)num9);
+    const auto num6 = static_cast<float>(std::sin(static_cast<double>(num9)));
+    const auto num5 = static_cast<float>(std::cos(static_cast<double>(num9)));
     const float num8 = pitch * 0.5f;
-    const float num4 = (float)std::sin((double)num8);
-    const float num3 = (float)std::cos((double)num8);
+    const auto num4 = static_cast<float>(std::sin(static_cast<double>(num8)));
+    const auto num3 = static_cast<float>(std::cos(static_cast<double>(num8)));
     const float num7 = yaw * 0.5f;
-    const float num2 = (float)std::sin((double)num7);
-    const float num = (float)std::cos((double)num7);
+    const auto num2 = static_cast<float>(std::sin(static_cast<double>(num7)));
+    const auto num = static_cast<float>(std::cos(static_cast<double>(num7)));
 
-    Quaternion quaternion(OptimizationFlag::NoInitialization);
+    // Quaternion quaternion(OptimizationFlag::NoInitialization);
+    Quaternion quaternion;
     quaternion.X = ((num * num4) * num5) + ((num2 * num3) * num6);
     quaternion.Y = ((num2 * num3) * num5) - ((num * num4) * num6);
     quaternion.Z = ((num * num3) * num6) - ((num2 * num4) * num5);
@@ -331,14 +279,14 @@ namespace Fsl
   void Quaternion::CreateFromYawPitchRoll(Quaternion& rResult, const float yaw, const float pitch, const float roll)
   {
     const float num9 = roll * 0.5f;
-    const float num6 = (float)std::sin((double)num9);
-    const float num5 = (float)std::cos((double)num9);
+    const auto num6 = static_cast<float>(std::sin(static_cast<double>(num9)));
+    const auto num5 = static_cast<float>(std::cos(static_cast<double>(num9)));
     const float num8 = pitch * 0.5f;
-    const float num4 = (float)std::sin((double)num8);
-    const float num3 = (float)std::cos((double)num8);
+    const auto num4 = static_cast<float>(std::sin(static_cast<double>(num8)));
+    const auto num3 = static_cast<float>(std::cos(static_cast<double>(num8)));
     const float num7 = yaw * 0.5f;
-    const float num2 = (float)std::sin((double)num7);
-    const float num = (float)std::cos((double)num7);
+    const auto num2 = static_cast<float>(std::sin(static_cast<double>(num7)));
+    const auto num = static_cast<float>(std::cos(static_cast<double>(num7)));
     rResult.X = ((num * num4) * num5) + ((num2 * num3) * num6);
     rResult.Y = ((num2 * num3) * num5) - ((num * num4) * num6);
     rResult.Z = ((num * num3) * num6) - ((num2 * num4) * num5);
@@ -363,7 +311,8 @@ namespace Fsl
     const float num11 = (x * num3) - (y * num4);
     const float num10 = ((x * num4) + (y * num3)) + (z * num2);
 
-    Quaternion quaternion(OptimizationFlag::NoInitialization);
+    // Quaternion quaternion(OptimizationFlag::NoInitialization);
+    Quaternion quaternion;
     quaternion.X = ((x * num) + (num4 * w)) + num13;
     quaternion.Y = ((y * num) + (num3 * w)) + num12;
     quaternion.Z = ((z * num) + (num2 * w)) + num11;
@@ -425,7 +374,8 @@ namespace Fsl
       (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
     const float num = 1.0f / num2;
 
-    Quaternion result(OptimizationFlag::NoInitialization);
+    // Quaternion result(OptimizationFlag::NoInitialization);
+    Quaternion result;
     result.X = -quaternion.X * num;
     result.Y = -quaternion.Y * num;
     result.Z = -quaternion.Z * num;
@@ -449,7 +399,7 @@ namespace Fsl
   float Quaternion::Length() const
   {
     const float lenSquared = (((X * X) + (Y * Y)) + (Z * Z)) + (W * W);
-    return (float)std::sqrt(lenSquared);
+    return std::sqrt(lenSquared);
   }
 
 
@@ -463,7 +413,8 @@ namespace Fsl
   {
     const float num = amount;
     const float num2 = 1.0f - num;
-    Quaternion quaternion(OptimizationFlag::NoInitialization);
+    // Quaternion quaternion(OptimizationFlag::NoInitialization);
+    Quaternion quaternion;
     float num5 =
       (((quaternion1.X * quaternion2.X) + (quaternion1.Y * quaternion2.Y)) + (quaternion1.Z * quaternion2.Z)) + (quaternion1.W * quaternion2.W);
     if (num5 >= 0.0f)
@@ -481,7 +432,7 @@ namespace Fsl
       quaternion.W = (num2 * quaternion1.W) - (num * quaternion2.W);
     }
     float num4 = (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
-    float num3 = 1.0f / ((float)std::sqrt(num4));
+    float num3 = 1.0f / (std::sqrt(num4));
     quaternion.X *= num3;
     quaternion.Y *= num3;
     quaternion.Z *= num3;
@@ -511,7 +462,7 @@ namespace Fsl
       rResult.W = (num2 * quaternion1.W) - (num * quaternion2.W);
     }
     const float num4 = (((rResult.X * rResult.X) + (rResult.Y * rResult.Y)) + (rResult.Z * rResult.Z)) + (rResult.W * rResult.W);
-    const float num3 = 1.0f / ((float)std::sqrt((double)num4));
+    const float num3 = 1.0f / (static_cast<float>(std::sqrt(static_cast<double>(num4))));
     rResult.X *= num3;
     rResult.Y *= num3;
     rResult.Z *= num3;
@@ -539,13 +490,15 @@ namespace Fsl
     }
     else
     {
-      float num5 = (float)std::acos((double)num4);
-      float num6 = (float)(1.0 / std::sin((double)num5));
-      num3 = ((float)std::sin((double)((1.0f - num) * num5))) * num6;
-      num2 = flag ? (((float)-std::sin((double)(num * num5))) * num6) : (((float)std::sin((double)(num * num5))) * num6);
+      auto num5 = static_cast<float>(std::acos(static_cast<double>(num4)));
+      auto num6 = static_cast<float>(1.0 / std::sin(static_cast<double>(num5)));
+      num3 = (static_cast<float>(std::sin(static_cast<double>((1.0f - num) * num5)))) * num6;
+      num2 = flag ? ((static_cast<float>(-std::sin(static_cast<double>(num * num5)))) * num6)
+                  : ((static_cast<float>(std::sin(static_cast<double>(num * num5)))) * num6);
     }
 
-    Quaternion quaternion(OptimizationFlag::NoInitialization);
+    // Quaternion quaternion(OptimizationFlag::NoInitialization);
+    Quaternion quaternion;
     quaternion.X = (num3 * quaternion1.X) + (num2 * quaternion2.X);
     quaternion.Y = (num3 * quaternion1.Y) + (num2 * quaternion2.Y);
     quaternion.Z = (num3 * quaternion1.Z) + (num2 * quaternion2.Z);
@@ -554,7 +507,7 @@ namespace Fsl
   }
 
 
-  void Quaternion::Slerp(Quaternion rResult, const Quaternion& quaternion1, const Quaternion& quaternion2, const float amount)
+  void Quaternion::Slerp(Quaternion& rResult, const Quaternion& quaternion1, const Quaternion& quaternion2, const float amount)
   {
     float num2;
     float num3;
@@ -574,10 +527,11 @@ namespace Fsl
     }
     else
     {
-      float num5 = (float)std::acos((double)num4);
-      float num6 = (float)(1.0 / std::sin((double)num5));
-      num3 = ((float)std::sin((double)((1.0f - num) * num5))) * num6;
-      num2 = flag ? (((float)-std::sin((double)(num * num5))) * num6) : (((float)std::sin((double)(num * num5))) * num6);
+      auto num5 = static_cast<float>(std::acos(static_cast<double>(num4)));
+      auto num6 = static_cast<float>(1.0 / std::sin(static_cast<double>(num5)));
+      num3 = (static_cast<float>(std::sin(static_cast<double>((1.0f - num) * num5)))) * num6;
+      num2 = flag ? ((static_cast<float>(-std::sin(static_cast<double>(num * num5)))) * num6)
+                  : ((static_cast<float>(std::sin(static_cast<double>(num * num5)))) * num6);
     }
     rResult.X = (num3 * quaternion1.X) + (num2 * quaternion2.X);
     rResult.Y = (num3 * quaternion1.Y) + (num2 * quaternion2.Y);
@@ -588,7 +542,8 @@ namespace Fsl
 
   Quaternion Quaternion::Subtract(const Quaternion& lhs, const Quaternion& rhs)
   {
-    Quaternion quaternion(OptimizationFlag::NoInitialization);
+    // Quaternion quaternion(OptimizationFlag::NoInitialization);
+    Quaternion quaternion;
     quaternion.X = lhs.X - rhs.X;
     quaternion.Y = lhs.Y - rhs.Y;
     quaternion.Z = lhs.Z - rhs.Z;
@@ -621,7 +576,8 @@ namespace Fsl
     const float num10 = (x * num3) - (y * num4);
     const float num9 = ((x * num4) + (y * num3)) + (z * num2);
 
-    Quaternion quaternion(OptimizationFlag::NoInitialization);
+    // Quaternion quaternion(OptimizationFlag::NoInitialization);
+    Quaternion quaternion;
     quaternion.X = ((x * num) + (num4 * w)) + num12;
     quaternion.Y = ((y * num) + (num3 * w)) + num11;
     quaternion.Z = ((z * num) + (num2 * w)) + num10;
@@ -632,7 +588,8 @@ namespace Fsl
 
   Quaternion Quaternion::Multiply(const Quaternion& lhs, const float scaleFactor)
   {
-    Quaternion quaternion(OptimizationFlag::NoInitialization);
+    // Quaternion quaternion(OptimizationFlag::NoInitialization);
+    Quaternion quaternion;
     quaternion.X = lhs.X * scaleFactor;
     quaternion.Y = lhs.Y * scaleFactor;
     quaternion.Z = lhs.Z * scaleFactor;
@@ -673,7 +630,8 @@ namespace Fsl
 
   Quaternion Quaternion::Negate(const Quaternion& quaternion)
   {
-    Quaternion result(OptimizationFlag::NoInitialization);
+    // Quaternion result(OptimizationFlag::NoInitialization);
+    Quaternion result;
     result.X = -quaternion.X;
     result.Y = -quaternion.Y;
     result.Z = -quaternion.Z;
@@ -694,7 +652,7 @@ namespace Fsl
   void Quaternion::Normalize()
   {
     const float num2 = (((X * X) + (Y * Y)) + (Z * Z)) + (W * W);
-    const float num = 1.0f / ((float)std::sqrt((double)num2));
+    const float num = 1.0f / (static_cast<float>(std::sqrt(static_cast<double>(num2))));
     X *= num;
     Y *= num;
     Z *= num;
@@ -706,9 +664,10 @@ namespace Fsl
   {
     const float num2 =
       (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
-    const float num = 1.0f / ((float)std::sqrt((double)num2));
+    const float num = 1.0f / (static_cast<float>(std::sqrt(static_cast<double>(num2))));
 
-    Quaternion result(OptimizationFlag::NoInitialization);
+    // Quaternion result(OptimizationFlag::NoInitialization);
+    Quaternion result;
     result.X = quaternion.X * num;
     result.Y = quaternion.Y * num;
     result.Z = quaternion.Z * num;
@@ -721,7 +680,7 @@ namespace Fsl
   {
     const float num2 =
       (((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y)) + (quaternion.Z * quaternion.Z)) + (quaternion.W * quaternion.W);
-    const float num = 1.0f / ((float)std::sqrt((double)num2));
+    const float num = 1.0f / (static_cast<float>(std::sqrt(static_cast<double>(num2))));
     rResult.X = quaternion.X * num;
     rResult.Y = quaternion.Y * num;
     rResult.Z = quaternion.Z * num;
@@ -859,7 +818,8 @@ Fsl::Quaternion operator/(const Fsl::Quaternion lhs, const Fsl::Quaternion& rhs)
   const float num11 = (x * num3) - (y * num4);
   const float num10 = ((x * num4) + (y * num3)) + (z * num2);
 
-  Fsl::Quaternion quaternion(Fsl::OptimizationFlag::NoInitialization);
+  // Fsl::Quaternion quaternion(Fsl::OptimizationFlag::NoInitialization);
+  Fsl::Quaternion quaternion;
   quaternion.X = ((x * num) + (num4 * w)) + num13;
   quaternion.Y = ((y * num) + (num3 * w)) + num12;
   quaternion.Z = ((z * num) + (num2 * w)) + num11;
@@ -883,7 +843,8 @@ Fsl::Quaternion operator*(const Fsl::Quaternion lhs, const Fsl::Quaternion& rhs)
   const float num10 = (x * num3) - (y * num4);
   const float num9 = ((x * num4) + (y * num3)) + (z * num2);
 
-  Fsl::Quaternion quaternion(Fsl::OptimizationFlag::NoInitialization);
+  // Fsl::Quaternion quaternion(Fsl::OptimizationFlag::NoInitialization);
+  Fsl::Quaternion quaternion;
   quaternion.X = ((x * num) + (num4 * w)) + num12;
   quaternion.Y = ((y * num) + (num3 * w)) + num11;
   quaternion.Z = ((z * num) + (num2 * w)) + num10;

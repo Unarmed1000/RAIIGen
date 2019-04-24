@@ -74,12 +74,6 @@ namespace Fsl
     }
     return fullPath;
   }
-
-  std::wstring Platform::UTF8ToWString(const std::string& str)
-  {
-    throw std::logic_error("not supported on this platform");
-  }
-
 }
 
 #endif

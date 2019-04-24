@@ -29,29 +29,37 @@
  *
  ****************************************************************************************************************************************************/
 
+#include <FslBase/String/StringParseUtil.hpp>
+#include <FslBase/Exceptions.hpp>
+#include <FslBase/Log/Log.hpp>
 #include <cassert>
 #include <cerrno>
 #include <cmath>
 #include <cstring>
 #include <climits>
 #include <limits>
-#include <FslBase/String/StringParseUtil.hpp>
-#include <FslBase/Log/Log.hpp>
-#include <FslBase/Exceptions.hpp>
 
 namespace Fsl
 {
   namespace
   {
-    uint32_t ParseUInt32(const char* const psz, const int startIndex, const int length)
+    uint32_t ParseUInt32(const char* const psz, const std::size_t startIndex, const std::size_t length)
     {
       if (psz == nullptr)
+      {
         throw std::invalid_argument("psz can not be null");
+      }
 
-      const int actualLength = strlen(psz);
-      const int endIndex = startIndex + length;
-      if (startIndex < 0 || length < 1 || endIndex > actualLength)
+      const auto actualLength = strlen(psz);
+      const auto endIndex = startIndex + length;
+      if (endIndex > actualLength)
+      {
         throw std::invalid_argument("startIndex or length out of bounds");
+      }
+      if (length < 1)
+      {
+        throw FormatException("array not in the correct format");
+      }
 
       // Check the string contains a digit as expected
       const char* pszSrc = psz + startIndex;
@@ -59,29 +67,40 @@ namespace Fsl
       {
         char* pEnd = nullptr;
         errno = 0;
-        uint32_t value = strtoul(pszSrc, &pEnd, 0);
-        if (value == ULONG_MAX && errno == ERANGE)
+        auto value = strtoul(pszSrc, &pEnd, 0);
+        if ((value == ULONG_MAX && errno == ERANGE) || value > std::numeric_limits<uint32_t>::max())
+        {
           throw OverflowException("The number is outside than the expected value range");
+        }
 
         if (pEnd != (pszSrc + length))
+        {
           throw FormatException("number not in the correct format");
+        }
 
-        return value;
+        return static_cast<uint32_t>(value);
       }
-      else
-        throw FormatException("number not in the correct format");
+      throw FormatException("number not in the correct format");
     }
 
 
-    int32_t ParseInt32(const char* const psz, const int startIndex, const int length)
+    int32_t ParseInt32(const char* const psz, const std::size_t startIndex, const std::size_t length)
     {
       if (psz == nullptr)
+      {
         throw std::invalid_argument("psz can not be null");
+      }
 
-      const int actualLength = strlen(psz);
-      const int endIndex = startIndex + length;
-      if (startIndex < 0 || length < 1 || endIndex > actualLength)
+      const auto actualLength = strlen(psz);
+      const auto endIndex = startIndex + length;
+      if (endIndex > actualLength)
+      {
         throw std::invalid_argument("startIndex or length out of bounds");
+      }
+      if (length < 1)
+      {
+        throw FormatException("array not in the correct format");
+      }
 
       // Check the string contains a digit as expected
       const char* pszSrc = psz + startIndex;
@@ -91,35 +110,51 @@ namespace Fsl
         errno = 0;
 
         if (length >= 32)
+        {
           throw std::invalid_argument("string is too long");
+        }
         char tmpBuffer[32];
-        for (int i = 0; i < length; ++i)
+        for (std::size_t i = 0; i < length; ++i)
+        {
           tmpBuffer[i] = psz[startIndex + i];
+        }
         tmpBuffer[length] = 0;
 
-        const int32_t value = strtol(tmpBuffer, &pEnd, 0);
-        if ((value == LONG_MIN || value == LONG_MAX) && errno == ERANGE)
+        const auto value = strtol(tmpBuffer, &pEnd, 0);
+        if (((value == LONG_MIN || value == LONG_MAX) && errno == ERANGE) || value < std::numeric_limits<int32_t>::min() ||
+            value > std::numeric_limits<int32_t>::max())
+        {
           throw OverflowException("The number is outside than the expected value range");
+        }
 
         if (pEnd != (tmpBuffer + length))
+        {
           throw FormatException("number not in the correct format");
+        }
 
-        return value;
+        return static_cast<int32_t>(value);
       }
-      else
-        throw FormatException("number not in the correct format");
+      throw FormatException("number not in the correct format");
     }
 
 
-    double ParseDouble(const char* const psz, const int startIndex, const int length)
+    double ParseDouble(const char* const psz, const std::size_t startIndex, const std::size_t length)
     {
       if (psz == nullptr)
+      {
         throw std::invalid_argument("psz can not be null");
+      }
 
-      const int actualLength = strlen(psz);
-      const int endIndex = startIndex + length;
-      if (startIndex < 0 || length < 1 || endIndex > actualLength)
+      const auto actualLength = strlen(psz);
+      const auto endIndex = startIndex + length;
+      if (endIndex > actualLength)
+      {
         throw std::invalid_argument("startIndex or length out of bounds");
+      }
+      if (length < 1)
+      {
+        throw FormatException("array not in the correct format");
+      }
 
       // Check the string doesn't start with a white space
       const char* pszSrc = psz + startIndex;
@@ -129,105 +164,136 @@ namespace Fsl
         errno = 0;
         const double value = strtod(pszSrc, &pEnd);
         if (value == HUGE_VAL && errno == ERANGE)
+        {
           throw OverflowException("The number is outside than the expected value range");
+        }
 
-        if (pEnd != (pszSrc + endIndex))
+        if (pEnd != (pszSrc + length))
+        {
           throw FormatException("number not in the correct format");
+        }
 
         return value;
       }
-      else
-        throw FormatException("number not in the correct format");
+      throw FormatException("number not in the correct format");
     }
 
 
     template <typename T>
-    int DoParseArray(T* pDst, const int dstLength, const char* const psz, const int startIndex, const int length)
+    std::size_t DoParseArray(T* pDst, const std::size_t dstLength, const char* const psz, const std::size_t startIndex, const std::size_t length)
     {
       if (psz == nullptr)
+      {
         throw std::invalid_argument("psz can not be null");
+      }
 
-      const int actualLength = strlen(psz);
-      const int endIndex = startIndex + length;
-      if (startIndex < 0 || length < 1 || endIndex > actualLength)
+      const auto actualLength = strlen(psz);
+      const auto endIndex = startIndex + length;
+      if (endIndex > actualLength)
+      {
         throw std::invalid_argument("startIndex or length out of bounds");
+      }
+      if (length < 1)
+      {
+        throw FormatException("array not in the correct format");
+      }
 
       const char* pszCurrent = psz + startIndex;
       const char* const pszEnd = pszCurrent + length;
       if (length < 3 || *pszCurrent != '[' || *(pszEnd - 1) != ']')
+      {
         throw FormatException("array not in the correct format");
+      }
 
       ++pszCurrent;
-      int index = 0;
+      std::size_t index = 0;
       while (pszCurrent < pszEnd && index < dstLength)
       {
-        const int count = strcspn(pszCurrent, ",]");
+        const auto count = strcspn(pszCurrent, ",]");
         if (index >= dstLength)
+        {
           throw FormatException("array not in the correct format");
-        const int charactersConsumed = StringParseUtil::Parse(*(pDst + index), pszCurrent, 0, count);
+        }
+        const auto charactersConsumed = StringParseUtil::Parse(*(pDst + index), pszCurrent, 0, count);
         assert(charactersConsumed == count);
         pszCurrent += charactersConsumed + 1;
         ++index;
       }
 
       if (pszCurrent != pszEnd)
+      {
         throw FormatException("array not in the correct format");
+      }
       return index;
     }
   }
 
-  int StringParseUtil::Parse(bool& rResult, const char* const psz)
+  std::size_t StringParseUtil::Parse(bool& rResult, const char* const psz)
   {
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return Parse(rResult, psz, 0, strlen(psz));
   }
 
 
-  int StringParseUtil::Parse(uint8_t& rResult, const char* const psz)
+  std::size_t StringParseUtil::Parse(uint8_t& rResult, const char* const psz)
   {
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return Parse(rResult, psz, 0, strlen(psz));
   }
 
 
-  int StringParseUtil::Parse(int8_t& rResult, const char* const psz)
+  std::size_t StringParseUtil::Parse(int8_t& rResult, const char* const psz)
   {
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return Parse(rResult, psz, 0, strlen(psz));
   }
 
 
-  int StringParseUtil::Parse(uint16_t& rResult, const char* const psz)
+  std::size_t StringParseUtil::Parse(uint16_t& rResult, const char* const psz)
   {
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return Parse(rResult, psz, 0, strlen(psz));
   }
 
 
-  int StringParseUtil::Parse(int16_t& rResult, const char* const psz)
+  std::size_t StringParseUtil::Parse(int16_t& rResult, const char* const psz)
   {
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return Parse(rResult, psz, 0, strlen(psz));
   }
 
 
-  int StringParseUtil::Parse(uint32_t& rResult, const char* const psz)
+  std::size_t StringParseUtil::Parse(uint32_t& rResult, const char* const psz)
   {
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return Parse(rResult, psz, 0, strlen(psz));
   }
 
 
-  int StringParseUtil::Parse(int32_t& rResult, const char* const psz)
+  std::size_t StringParseUtil::Parse(int32_t& rResult, const char* const psz)
   {
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return Parse(rResult, psz, 0, strlen(psz));
   }
 
@@ -248,49 +314,66 @@ namespace Fsl
   //}
 
 
-  int StringParseUtil::Parse(float& rResult, const char* const psz)
+  std::size_t StringParseUtil::Parse(float& rResult, const char* const psz)
   {
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return Parse(rResult, psz, 0, strlen(psz));
   }
 
 
-  int StringParseUtil::Parse(double& rResult, const char* const psz)
+  std::size_t StringParseUtil::Parse(double& rResult, const char* const psz)
   {
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return Parse(rResult, psz, 0, strlen(psz));
   }
 
 
-  int StringParseUtil::Parse(Point2& rResult, const char* const psz)
+  std::size_t StringParseUtil::Parse(Point2& rResult, const char* const psz)
   {
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return Parse(rResult, psz, 0, strlen(psz));
   }
 
 
-  int StringParseUtil::Parse(Rectangle& rResult, const char* const psz)
+  std::size_t StringParseUtil::Parse(Rectangle& rResult, const char* const psz)
   {
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return Parse(rResult, psz, 0, strlen(psz));
   }
 
 
-  int StringParseUtil::Parse(bool& rResult, const char* const psz, const int startIndex, const int length)
+  std::size_t StringParseUtil::Parse(bool& rResult, const char* const psz, const std::size_t startIndex, const std::size_t length)
   {
+    rResult = false;
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
 
-    const int actualLength = strlen(psz);
+    const auto actualLength = strlen(psz);
     const char* pszSrc = psz + startIndex;
     int charactersConsumed = 0;
 
-    if (startIndex < 0 || length < 1 || (startIndex + length) > actualLength)
+    if ((startIndex + length) > actualLength)
+    {
       throw std::invalid_argument("startIndex or length out of bounds");
+    }
+    if (length < 1)
+    {
+      throw FormatException("length too small to contain a bool");
+    }
 
     if (length == 4 && strncmp(pszSrc, "true", 4) == 0)
     {
@@ -312,332 +395,372 @@ namespace Fsl
       rResult = false;
       charactersConsumed = 5;
     }
+    else
+    {
+      throw FormatException("not a valid 'bool' string");
+    }
     return charactersConsumed;
   }
 
 
-  int StringParseUtil::Parse(uint8_t& rResult, const char* const psz, const int startIndex, const int length)
+  std::size_t StringParseUtil::Parse(uint8_t& rResult, const char* const psz, const std::size_t startIndex, const std::size_t length)
   {
     const uint32_t result = ParseUInt32(psz, startIndex, length);
     if (result > std::numeric_limits<uint8_t>::max())
+    {
       throw OverflowException("overflow");
+    }
     rResult = static_cast<uint8_t>(result);
     return length;
   }
 
 
-  int StringParseUtil::Parse(int8_t& rResult, const char* const psz, const int startIndex, const int length)
+  std::size_t StringParseUtil::Parse(int8_t& rResult, const char* const psz, const std::size_t startIndex, const std::size_t length)
   {
     const int32_t result = ParseInt32(psz, startIndex, length);
     if (result < std::numeric_limits<int8_t>::min() || result > std::numeric_limits<int8_t>::max())
+    {
       throw OverflowException("overflow");
+    }
     rResult = static_cast<int8_t>(result);
     return length;
   }
 
 
-  int StringParseUtil::Parse(uint16_t& rResult, const char* const psz, const int startIndex, const int length)
+  std::size_t StringParseUtil::Parse(uint16_t& rResult, const char* const psz, const std::size_t startIndex, const std::size_t length)
   {
     const uint32_t result = ParseUInt32(psz, startIndex, length);
     if (result > std::numeric_limits<uint16_t>::max())
+    {
       throw OverflowException("overflow");
+    }
     rResult = static_cast<uint16_t>(result);
     return length;
   }
 
 
-  int StringParseUtil::Parse(int16_t& rResult, const char* const psz, const int startIndex, const int length)
+  std::size_t StringParseUtil::Parse(int16_t& rResult, const char* const psz, const std::size_t startIndex, const std::size_t length)
   {
     const int32_t result = ParseInt32(psz, startIndex, length);
     if (result < std::numeric_limits<int16_t>::min() || result > std::numeric_limits<int16_t>::max())
+    {
       throw OverflowException("overflow");
+    }
     rResult = static_cast<int16_t>(result);
     return length;
   }
 
 
-  int StringParseUtil::Parse(uint32_t& rResult, const char* const psz, const int startIndex, const int length)
+  std::size_t StringParseUtil::Parse(uint32_t& rResult, const char* const psz, const std::size_t startIndex, const std::size_t length)
   {
     rResult = ParseUInt32(psz, startIndex, length);
     return length;
   }
 
 
-  int StringParseUtil::Parse(int32_t& rResult, const char* const psz, const int startIndex, const int length)
+  std::size_t StringParseUtil::Parse(int32_t& rResult, const char* const psz, const std::size_t startIndex, const std::size_t length)
   {
     rResult = ParseInt32(psz, startIndex, length);
     return length;
   }
 
 
-  // int StringParseUtil::Parse(uint64_t& rResult, const char*const psz, const int startIndex, const int length)
+  // int StringParseUtil::Parse(uint64_t& rResult, const char*const psz, const std::size_t startIndex, const std::size_t length)
   //{
   //  throw NotImplementedException();
   //}
 
 
-  // int StringParseUtil::Parse(int64_t& rResult, const char*const psz, const int startIndex, const int length)
+  // int StringParseUtil::Parse(int64_t& rResult, const char*const psz, const std::size_t startIndex, const std::size_t length)
   //{
   //  throw NotImplementedException();
   //}
 
 
-  int StringParseUtil::Parse(float& rResult, const char* const psz, const int startIndex, const int length)
+  std::size_t StringParseUtil::Parse(float& rResult, const char* const psz, const std::size_t startIndex, const std::size_t length)
   {
     const double result = ParseDouble(psz, startIndex, length);
     if (result < std::numeric_limits<float>::lowest() || result > std::numeric_limits<float>::max())
+    {
       throw OverflowException("overflow");
+    }
     rResult = static_cast<float>(result);
     return length;
   }
 
 
-  int StringParseUtil::Parse(double& rResult, const char* const psz, const int startIndex, const int length)
+  std::size_t StringParseUtil::Parse(double& rResult, const char* const psz, const std::size_t startIndex, const std::size_t length)
   {
     rResult = ParseDouble(psz, startIndex, length);
     return length;
   }
 
 
-  int StringParseUtil::Parse(Point2& rResult, const char* const psz, const int startIndex, const int length)
+  std::size_t StringParseUtil::Parse(Point2& rResult, const char* const psz, const std::size_t startIndex, const std::size_t length)
   {
-    int32_t values[2];
+    int32_t values[2]{};
     StringParseArrayResult res = ParseArray(values, 2, psz, startIndex, length);
     if (res.ArrayEntries != 2)
+    {
       throw FormatException("Point2 not in the correct format");
+    }
     rResult = Point2(values[0], values[1]);
     return res.CharactersConsumed;
   }
 
 
-  int StringParseUtil::Parse(Rectangle& rResult, const char* const psz, const int startIndex, const int length)
+  std::size_t StringParseUtil::Parse(Rectangle& rResult, const char* const psz, const std::size_t startIndex, const std::size_t length)
   {
-    int32_t values[4];
+    int32_t values[4]{};
     StringParseArrayResult res = ParseArray(values, 4, psz, startIndex, length);
     if (res.ArrayEntries != 4)
+    {
       throw FormatException("Rectangle not in the correct format");
+    }
+    if (values[2] < 0 || values[3] < 0)
+    {
+      throw FormatException("Rectangle not in the correct format, width and height can not be negative");
+    }
     rResult = Rectangle(values[0], values[1], values[2], values[3]);
     return res.CharactersConsumed;
   }
 
 
-  const StringParseArrayResult StringParseUtil::ParseArray(bool* pDst, const int dstLength, const char* const psz)
+  const StringParseArrayResult StringParseUtil::ParseArray(bool* pDst, const std::size_t dstLength, const char* const psz)
   {
     if (pDst == nullptr)
+    {
       throw std::invalid_argument("pDst can not be null");
-    if (dstLength < 0)
-      throw std::invalid_argument("dstLength can not be < 0");
+    }
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return ParseArray(pDst, dstLength, psz, 0, strlen(psz));
   }
 
 
-  const StringParseArrayResult StringParseUtil::ParseArray(uint8_t* pDst, const int dstLength, const char* const psz)
+  const StringParseArrayResult StringParseUtil::ParseArray(uint8_t* pDst, const std::size_t dstLength, const char* const psz)
   {
     if (pDst == nullptr)
+    {
       throw std::invalid_argument("pDst can not be null");
-    if (dstLength < 0)
-      throw std::invalid_argument("dstLength can not be < 0");
+    }
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return ParseArray(pDst, dstLength, psz, 0, strlen(psz));
   }
 
 
-  const StringParseArrayResult StringParseUtil::ParseArray(int8_t* pDst, const int dstLength, const char* const psz)
+  const StringParseArrayResult StringParseUtil::ParseArray(int8_t* pDst, const std::size_t dstLength, const char* const psz)
   {
     if (pDst == nullptr)
+    {
       throw std::invalid_argument("pDst can not be null");
-    if (dstLength < 0)
-      throw std::invalid_argument("dstLength can not be < 0");
+    }
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return ParseArray(pDst, dstLength, psz, 0, strlen(psz));
   }
 
 
-  const StringParseArrayResult StringParseUtil::ParseArray(uint16_t* pDst, const int dstLength, const char* const psz)
+  const StringParseArrayResult StringParseUtil::ParseArray(uint16_t* pDst, const std::size_t dstLength, const char* const psz)
   {
     if (pDst == nullptr)
+    {
       throw std::invalid_argument("pDst can not be null");
-    if (dstLength < 0)
-      throw std::invalid_argument("dstLength can not be < 0");
+    }
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return ParseArray(pDst, dstLength, psz, 0, strlen(psz));
   }
 
 
-  const StringParseArrayResult StringParseUtil::ParseArray(int16_t* pDst, const int dstLength, const char* const psz)
+  const StringParseArrayResult StringParseUtil::ParseArray(int16_t* pDst, const std::size_t dstLength, const char* const psz)
   {
     if (pDst == nullptr)
+    {
       throw std::invalid_argument("pDst can not be null");
-    if (dstLength < 0)
-      throw std::invalid_argument("dstLength can not be < 0");
+    }
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return ParseArray(pDst, dstLength, psz, 0, strlen(psz));
   }
 
 
-  const StringParseArrayResult StringParseUtil::ParseArray(uint32_t* pDst, const int dstLength, const char* const psz)
+  const StringParseArrayResult StringParseUtil::ParseArray(uint32_t* pDst, const std::size_t dstLength, const char* const psz)
   {
     if (pDst == nullptr)
+    {
       throw std::invalid_argument("pDst can not be null");
-    if (dstLength < 0)
-      throw std::invalid_argument("dstLength can not be < 0");
+    }
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return ParseArray(pDst, dstLength, psz, 0, strlen(psz));
   }
 
 
-  const StringParseArrayResult StringParseUtil::ParseArray(int32_t* pDst, const int dstLength, const char* const psz)
+  const StringParseArrayResult StringParseUtil::ParseArray(int32_t* pDst, const std::size_t dstLength, const char* const psz)
   {
     if (pDst == nullptr)
+    {
       throw std::invalid_argument("pDst can not be null");
-    if (dstLength < 0)
-      throw std::invalid_argument("dstLength can not be < 0");
+    }
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return ParseArray(pDst, dstLength, psz, 0, strlen(psz));
   }
 
 
-  // const StringParseArrayResult StringParseUtil::ParseArray(uint64_t* pDst, const int dstLength, const char*const psz)
+  // const StringParseArrayResult StringParseUtil::ParseArray(uint64_t* pDst, const std::size_t dstLength, const char*const psz)
   //{
   // if (pDst == nullptr)
   //  throw std::invalid_argument("pDst can not be null");
-  // if (dstLength < 0)
-  //  throw std::invalid_argument("dstLength can not be < 0");
   // if (psz == nullptr)
   //  throw std::invalid_argument("psz can not be null");
   // return ParseArray(pDst, dstLength, psz, 0, strlen(psz));
   //}
 
 
-  // const StringParseArrayResult StringParseUtil::ParseArray(int64_t* pDst, const int dstLength, const char*const psz)
+  // const StringParseArrayResult StringParseUtil::ParseArray(int64_t* pDst, const std::size_t dstLength, const char*const psz)
   //{
   // if (pDst == nullptr)
   //  throw std::invalid_argument("pDst can not be null");
-  // if (dstLength < 0)
-  //  throw std::invalid_argument("dstLength can not be < 0");
   // if (psz == nullptr)
   //  throw std::invalid_argument("psz can not be null");
   // return ParseArray(pDst, dstLength, psz, 0, strlen(psz));
   //}
 
 
-  const StringParseArrayResult StringParseUtil::ParseArray(float* pDst, const int dstLength, const char* const psz)
+  const StringParseArrayResult StringParseUtil::ParseArray(float* pDst, const std::size_t dstLength, const char* const psz)
   {
     if (pDst == nullptr)
+    {
       throw std::invalid_argument("pDst can not be null");
-    if (dstLength < 0)
-      throw std::invalid_argument("dstLength can not be < 0");
+    }
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return ParseArray(pDst, dstLength, psz, 0, strlen(psz));
   }
 
 
-  const StringParseArrayResult StringParseUtil::ParseArray(double* pDst, const int dstLength, const char* const psz)
+  const StringParseArrayResult StringParseUtil::ParseArray(double* pDst, const std::size_t dstLength, const char* const psz)
   {
     if (pDst == nullptr)
+    {
       throw std::invalid_argument("pDst can not be null");
-    if (dstLength < 0)
-      throw std::invalid_argument("dstLength can not be < 0");
+    }
     if (psz == nullptr)
+    {
       throw std::invalid_argument("psz can not be null");
+    }
     return ParseArray(pDst, dstLength, psz, 0, strlen(psz));
   }
 
 
-  StringParseArrayResult StringParseUtil::ParseArray(bool* pDst, const int dstLength, const char* const psz, const int startIndex, const int length)
+  StringParseArrayResult StringParseUtil::ParseArray(bool* pDst, const std::size_t dstLength, const char* const psz, const std::size_t startIndex,
+                                                     const std::size_t length)
   {
-    const int arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
+    const auto arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
     return StringParseArrayResult(length, arrayEntries);
   }
 
 
-  StringParseArrayResult StringParseUtil::ParseArray(uint8_t* pDst, const int dstLength, const char* const psz, const int startIndex,
-                                                     const int length)
+  StringParseArrayResult StringParseUtil::ParseArray(uint8_t* pDst, const std::size_t dstLength, const char* const psz, const std::size_t startIndex,
+                                                     const std::size_t length)
   {
-    const int arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
+    const auto arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
     return StringParseArrayResult(length, arrayEntries);
   }
 
 
-  StringParseArrayResult StringParseUtil::ParseArray(int8_t* pDst, const int dstLength, const char* const psz, const int startIndex, const int length)
+  StringParseArrayResult StringParseUtil::ParseArray(int8_t* pDst, const std::size_t dstLength, const char* const psz, const std::size_t startIndex,
+                                                     const std::size_t length)
   {
-    const int arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
+    const auto arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
     return StringParseArrayResult(length, arrayEntries);
   }
 
 
-  StringParseArrayResult StringParseUtil::ParseArray(uint16_t* pDst, const int dstLength, const char* const psz, const int startIndex,
-                                                     const int length)
+  StringParseArrayResult StringParseUtil::ParseArray(uint16_t* pDst, const std::size_t dstLength, const char* const psz, const std::size_t startIndex,
+                                                     const std::size_t length)
   {
-    const int arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
+    const auto arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
     return StringParseArrayResult(length, arrayEntries);
   }
 
 
-  StringParseArrayResult StringParseUtil::ParseArray(int16_t* pDst, const int dstLength, const char* const psz, const int startIndex,
-                                                     const int length)
+  StringParseArrayResult StringParseUtil::ParseArray(int16_t* pDst, const std::size_t dstLength, const char* const psz, const std::size_t startIndex,
+                                                     const std::size_t length)
   {
-    const int arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
+    const auto arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
     return StringParseArrayResult(length, arrayEntries);
   }
 
 
-  StringParseArrayResult StringParseUtil::ParseArray(uint32_t* pDst, const int dstLength, const char* const psz, const int startIndex,
-                                                     const int length)
+  StringParseArrayResult StringParseUtil::ParseArray(uint32_t* pDst, const std::size_t dstLength, const char* const psz, const std::size_t startIndex,
+                                                     const std::size_t length)
   {
-    const int arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
+    const auto arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
     return StringParseArrayResult(length, arrayEntries);
   }
 
 
-  StringParseArrayResult StringParseUtil::ParseArray(int32_t* pDst, const int dstLength, const char* const psz, const int startIndex,
-                                                     const int length)
+  StringParseArrayResult StringParseUtil::ParseArray(int32_t* pDst, const std::size_t dstLength, const char* const psz, const std::size_t startIndex,
+                                                     const std::size_t length)
   {
-    const int arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
+    const auto arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
     return StringParseArrayResult(length, arrayEntries);
   }
 
 
-  // StringParseArrayResult StringParseUtil::ParseArray(uint64_t* pDst, const int dstLength, const char*const psz, const int startIndex, const int
-  // length)
+  // StringParseArrayResult StringParseUtil::ParseArray(uint64_t* pDst, const std::size_t dstLength, const char*const psz, const std::size_t
+  // startIndex, const std::size_t length)
   //{
   // const int arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
   // return StringParseArrayResult(length, arrayEntries);
   //}
 
 
-  // StringParseArrayResult StringParseUtil::ParseArray(int64_t* pDst, const int dstLength, const char*const psz, const int startIndex, const int
-  // length)
+  // StringParseArrayResult StringParseUtil::ParseArray(int64_t* pDst, const std::size_t dstLength, const char*const psz, const std::size_t
+  // startIndex, const std::size_t length)
   //{
   // const int arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
   // return StringParseArrayResult(length, arrayEntries);
   //}
 
 
-  StringParseArrayResult StringParseUtil::ParseArray(float* pDst, const int dstLength, const char* const psz, const int startIndex, const int length)
+  StringParseArrayResult StringParseUtil::ParseArray(float* pDst, const std::size_t dstLength, const char* const psz, const std::size_t startIndex,
+                                                     const std::size_t length)
   {
-    const int arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
+    const auto arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
     return StringParseArrayResult(length, arrayEntries);
   }
 
 
-  StringParseArrayResult StringParseUtil::ParseArray(double* pDst, const int dstLength, const char* const psz, const int startIndex, const int length)
+  StringParseArrayResult StringParseUtil::ParseArray(double* pDst, const std::size_t dstLength, const char* const psz, const std::size_t startIndex,
+                                                     const std::size_t length)
   {
-    const int arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
+    const auto arrayEntries = DoParseArray(pDst, dstLength, psz, startIndex, length);
     return StringParseArrayResult(length, arrayEntries);
   }
 
 
-  bool StringParseUtil::TryParse(int32_t& rValue, const char* const psz, const int startIndex, const int length, const int32_t radix)
+  bool StringParseUtil::TryParse(int32_t& rValue, const char* const psz, const std::size_t startIndex, const std::size_t length, const int32_t radix)
   {
     rValue = 0;
     if (psz == nullptr)
@@ -646,17 +769,33 @@ namespace Fsl
       return false;
     }
 
-    const int actualLength = strlen(psz);
-    const int endIndex = startIndex + length;
-    if (startIndex < 0 || length < 1 || endIndex > actualLength)
+    const auto actualLength = strlen(psz);
+    const auto endIndex = startIndex + length;
+    if (endIndex > actualLength)
     {
       FSLLOG_DEBUG_WARNING("startIndex or length out of bounds");
+      return false;
+    }
+    if (length < 1)
+    {
+      FSLLOG_DEBUG_WARNING("length too small to contain a int32");
       return false;
     }
 
     // Check the string contains a digit as expected
     const char* pszSrc = psz + startIndex;
-    if ((pszSrc[0] >= '0' && pszSrc[0] <= '9') || (length >= 2 && (pszSrc[0] == '+' || pszSrc[0] == '-') && (pszSrc[1] >= '0' && pszSrc[1] <= '9')))
+
+    bool ch1Extended = false;
+    bool ch2Extended = false;
+    if (radix > 10)
+    {
+      const int32_t radixAbove10 = radix - 10;
+      ch1Extended = (pszSrc[0] >= 'a' && (pszSrc[0] - 'a') < radixAbove10) || (pszSrc[0] >= 'A' && (pszSrc[0] - 'A') < radixAbove10);
+      ch2Extended = length >= 2 && ((pszSrc[1] >= 'a' && (pszSrc[1] - 'a') < radixAbove10) || (pszSrc[1] >= 'A' && (pszSrc[1] - 'A') < radixAbove10));
+    }
+
+    if ((pszSrc[0] >= '0' && (pszSrc[0] <= '9' || ch1Extended)) ||
+        (length >= 2 && (pszSrc[0] == '+' || pszSrc[0] == '-') && (pszSrc[1] >= '0' && (pszSrc[1] <= '9' || ch2Extended))))
     {
       char* pEnd = nullptr;
       errno = 0;
@@ -667,22 +806,55 @@ namespace Fsl
         return false;
       }
       char tmpBuffer[32];
-      for (int i = 0; i < length; ++i)
+      for (std::size_t i = 0; i < length; ++i)
+      {
         tmpBuffer[i] = psz[startIndex + i];
+      }
       tmpBuffer[length] = 0;
 
-      const int32_t value = strtol(tmpBuffer, &pEnd, radix);
-      if ((value == LONG_MIN || value == LONG_MAX) && errno == ERANGE)
+      const auto value = strtol(tmpBuffer, &pEnd, radix);
+      if (((value == LONG_MIN || value == LONG_MAX) && errno == ERANGE) || value < std::numeric_limits<int32_t>::min() ||
+          value > std::numeric_limits<int32_t>::max())
+      {
         return false;
+      }
 
       if (pEnd != (tmpBuffer + length))
+      {
         return false;
+      }
 
-      rValue = value;
+      rValue = static_cast<int32_t>(value);
       return true;
     }
-    else
-      return false;
+    return false;
   }
 
+  std::size_t StringParseUtil::ParseTime(std::chrono::seconds& rResult, const char* const psz)
+  {
+    if (psz == nullptr)
+    {
+      throw std::invalid_argument("psz can not be null");
+    }
+
+    // 012345678
+    // HH:MM:SS
+    const std::size_t expectedLength = 8;
+    if (strlen(psz) != expectedLength || psz[2] != ':' || psz[5] != ':')
+    {
+      throw FormatException("time not in the expected HH:MM:SS format");
+    }
+
+    const uint32_t hh = ParseUInt32(psz, 0, 2);
+    const uint32_t mm = ParseUInt32(psz, 3, 2);
+    const uint32_t ss = ParseUInt32(psz, 6, 2);
+
+    if (ss >= 60 || mm >= 60 || hh > 24)
+    {
+      throw FormatException("number not in the correct format");
+    }
+
+    rResult = std::chrono::seconds((hh * 60 * 60) + (mm * 60) + ss);
+    return expectedLength;
+  }
 }

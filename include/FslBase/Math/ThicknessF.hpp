@@ -37,21 +37,15 @@ namespace Fsl
   struct ThicknessF
   {
   private:
-    float m_left;
-    float m_top;
-    float m_right;
-    float m_bottom;
+    float m_left{0};
+    float m_top{0};
+    float m_right{0};
+    float m_bottom{0};
 
   public:
-    ThicknessF()
-      : m_left(0)
-      , m_top(0)
-      , m_right(0)
-      , m_bottom(0)
-    {
-    }
+    constexpr ThicknessF() = default;
 
-    ThicknessF(const float left, const float top, const float right, const float bottom)
+    constexpr ThicknessF(const float left, const float top, const float right, const float bottom)
       : m_left(left)
       , m_top(top)
       , m_right(right)
@@ -59,36 +53,36 @@ namespace Fsl
     {
     }
 
-    float Bottom() const
+    constexpr float Bottom() const
     {
       return m_bottom;
     }
-    float Left() const
+    constexpr float Left() const
     {
       return m_left;
     }
-    float Right() const
+    constexpr float Right() const
     {
       return m_right;
     }
-    float Top() const
+    constexpr float Top() const
     {
       return m_top;
     }
-    float SumX() const
+    constexpr float SumX() const
     {
       return m_left + m_right;
     }
-    float SumY() const
+    constexpr float SumY() const
     {
       return m_top + m_bottom;
     }
 
-    bool operator==(const ThicknessF& rhs) const
+    constexpr bool operator==(const ThicknessF& rhs) const
     {
       return m_left == rhs.m_left && m_top == rhs.m_top && m_right == rhs.m_right && m_bottom == rhs.m_bottom;
     }
-    bool operator!=(const ThicknessF& rhs) const
+    constexpr bool operator!=(const ThicknessF& rhs) const
     {
       return !(*this == rhs);
     }

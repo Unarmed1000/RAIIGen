@@ -36,13 +36,15 @@
 namespace Fsl
 {
   ScopedSystemMemoryAccessDummy::ScopedSystemMemoryAccessDummy(const std::size_t targetAddress)
+  //: m_fd(0)
+  //, m_pMem(nullptr)
+  //, m_pVirtAddress(nullptr)
+  //, m_lastValue(0)
   {
     FSLLOG_WARNING("ScopedSystemMemoryAccess is a dummy implementation that does nothing");
   }
 
-  ScopedSystemMemoryAccessDummy::~ScopedSystemMemoryAccessDummy()
-  {
-  }
+  ScopedSystemMemoryAccessDummy::~ScopedSystemMemoryAccessDummy() = default;
 
   uint8_t ScopedSystemMemoryAccessDummy::GetUInt8() const
   {
@@ -70,6 +72,5 @@ namespace Fsl
   void ScopedSystemMemoryAccessDummy::SetUInt32(const uint32_t value)
   {
   }
-
 }
 #endif

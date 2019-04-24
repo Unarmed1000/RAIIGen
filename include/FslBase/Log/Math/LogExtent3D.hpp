@@ -1,5 +1,7 @@
+#ifndef FSLBASE_LOG_MATH_LOGEXTENT3D_HPP
+#define FSLBASE_LOG_MATH_LOGEXTENT3D_HPP
 /****************************************************************************************************************************************************
- * Copyright (c) 2014 Freescale Semiconductor, Inc.
+ * Copyright 2017 NXP
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -12,7 +14,7 @@
  *      this list of conditions and the following disclaimer in the documentation
  *      and/or other materials provided with the distribution.
  *
- *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
+ *    * Neither the name of the NXP. nor the names of
  *      its contributors may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
@@ -29,42 +31,15 @@
  *
  ****************************************************************************************************************************************************/
 
-// The android logging is just hacked in here to get something to work.
-// This is something we will need to expand upon later.
-
-#include <FslBase/Log/Logger.hpp>
-#ifdef __ANDROID__
-#include <android/log.h>
-#else
-#include <iostream>
-#endif
+#include <FslBase/Math/Extent3D.hpp>
+#include <ostream>
 
 namespace Fsl
 {
-  void Logger::WriteLine(const LogLocation& location, const char* const psz)
+  inline std::ostream& operator<<(std::ostream& o, const Extent3D& value)
   {
-#ifdef __ANDROID__
-    __android_log_print(ANDROID_LOG_DEBUG, "FSL_LOG_TAG", "%s", psz);
-#else
-    std::cout << psz << std::endl;
-#endif
-  }
-
-  void Logger::WriteLine(const LogLocation& location, const std::string& str)
-  {
-#ifdef __ANDROID__
-    __android_log_print(ANDROID_LOG_DEBUG, "FSL_LOG_TAG", "%s", str.c_str());
-#else
-    std::cout << str.c_str() << std::endl;
-#endif
-  }
-
-  void Logger::WriteLine(const LogLocation& location, const std::stringstream& str)
-  {
-#ifdef __ANDROID__
-    __android_log_print(ANDROID_LOG_DEBUG, "FSL_LOG_TAG", "%s", str.str().c_str());
-#else
-    std::cout << str.str().c_str() << std::endl;
-#endif
+    return o << "{Width=" << value.Width << " Height=" << value.Height << " Depth=" << value.Depth << "}";
   }
 }
+
+#endif

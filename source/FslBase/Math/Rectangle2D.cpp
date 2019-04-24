@@ -1,5 +1,5 @@
 /****************************************************************************************************************************************************
- * Copyright (c) 2014 Freescale Semiconductor, Inc.
+ * Copyright (c) 2016 Freescale Semiconductor, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,57 +29,62 @@
  *
  ****************************************************************************************************************************************************/
 
-#include <FslBase/Math/BoxF.hpp>
+#include <FslBase/Math/Rectangle2D.hpp>
+#include <FslBase/Exceptions.hpp>
+#include <FslBase/Log/Log.hpp>
+#include <algorithm>
 #include <cassert>
+#include <limits>
 
 namespace Fsl
 {
-  BoxF::BoxF()
-    : X1(0.0f)
-    , Y1(0.0f)
-    , X2(0.0f)
-    , Y2(0.0f)
+  Rectangle2D::Rectangle2D(const int32_t left, const int32_t top, const int32_t right, const int32_t bottom, const bool reserved)
+    : Offset(left, top)
+    , Extent(static_cast<Extent2D::element_type>(right - left), static_cast<Extent2D::element_type>(bottom - top))
   {
+    static_assert(sizeof(Extent2D::element_type) >= sizeof(int32_t), "for the below check to work this has to be true");
+
+    if (left > right || top > bottom)
+    {
+      throw std::invalid_argument("arguments out of range");
+    }
   }
 
 
-  BoxF::BoxF(const float x1, const float y1, const float x2, const float y2)
-    : X1(x1)
-    , Y1(y1)
-    , X2(x2)
-    , Y2(y2)
+  void Rectangle2D::Inflate(const int32_t horizontalValue, const int32_t verticalValue)
   {
-  }
+    if (horizontalValue <= 0 || verticalValue <= 0)
+    {
+      throw std::invalid_argument("");
+    }
 
-  BoxF::BoxF(const float x, const float y, const float width, const float height, const bool reserved)
-    : X1(x)
-    , Y1(y)
-    , X2(x + width)
-    , Y2(y + height)
-  {
+    Offset.X -= horizontalValue;
+    Offset.Y -= verticalValue;
+    Extent.Width += horizontalValue * 2;
+    Extent.Height += verticalValue * 2;
   }
 
 
-  BoxF BoxF::Empty()
+  Rectangle2D Rectangle2D::Intersect(const Rectangle2D& rect1, const Rectangle2D& rect2)
   {
-    return BoxF(0.0f, 0.0f, 0.0f, 0.0f);
+    if (rect1.Intersects(rect2))
+    {
+      const int32_t rightSide = std::min(rect1.Right(), rect2.Right());
+      const int32_t leftSide = std::max(rect1.Left(), rect2.Left());
+      const int32_t topSide = std::max(rect1.Top(), rect2.Top());
+      const int32_t bottomSide = std::min(rect1.Bottom(), rect2.Bottom());
+      return Rectangle2D(leftSide, topSide, rightSide, bottomSide, true);
+    }
+    return Rectangle2D();
   }
 
 
-  Vector2 BoxF::GetCenter() const
+  Rectangle2D Rectangle2D::Union(const Rectangle2D& rect1, const Rectangle2D& rect2)
   {
-    return Vector2(X1 + ((X2 - X1) * 0.5f), Y1 + ((Y2 - Y1) * 0.5f));
-  }
-
-
-  bool BoxF::operator==(const BoxF& rhs) const
-  {
-    return ((X1 == rhs.X1) && (Y1 == rhs.Y1) && (X2 == rhs.X2) && (Y2 == rhs.Y2));
-  }
-
-
-  bool BoxF::operator!=(const BoxF& rhs) const
-  {
-    return ((X1 != rhs.X1) || (Y1 != rhs.Y1) || (X2 != rhs.X2) || (Y2 != rhs.Y2));
+    const int32_t x = std::min(rect1.Offset.X, rect2.Offset.X);
+    const int32_t y = std::min(rect1.Offset.Y, rect2.Offset.Y);
+    const int32_t x2 = std::max(rect1.Right(), rect2.Right());
+    const int32_t y2 = std::max(rect1.Bottom(), rect2.Bottom());
+    return Rectangle2D(x, y, x2, y2, true);
   }
 }

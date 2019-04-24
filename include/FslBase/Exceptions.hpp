@@ -32,6 +32,7 @@
  ****************************************************************************************************************************************************/
 
 #include <stdexcept>
+#include <string>
 
 namespace Fsl
 {
@@ -43,8 +44,8 @@ namespace Fsl
     {
     }
 
-    explicit UsageErrorException(const std::string& what_arg)
-      : std::logic_error(what_arg)
+    explicit UsageErrorException(const std::string& whatArg)
+      : std::logic_error(whatArg)
     {
     }
   };
@@ -53,8 +54,8 @@ namespace Fsl
   class UnknownTypeException : public std::runtime_error
   {
   public:
-    explicit UnknownTypeException(const std::string& what_arg)
-      : std::runtime_error(what_arg)
+    explicit UnknownTypeException(const std::string& whatArg)
+      : std::runtime_error(whatArg)
     {
     }
   };
@@ -63,8 +64,8 @@ namespace Fsl
   class NotFoundException : public std::runtime_error
   {
   public:
-    explicit NotFoundException(const std::string& what_arg)
-      : std::runtime_error(what_arg)
+    explicit NotFoundException(const std::string& whatArg)
+      : std::runtime_error(whatArg)
     {
     }
   };
@@ -73,8 +74,8 @@ namespace Fsl
   class DirectoryNotFoundException : public NotFoundException
   {
   public:
-    explicit DirectoryNotFoundException(const std::string& what_arg)
-      : NotFoundException(what_arg)
+    explicit DirectoryNotFoundException(const std::string& whatArg)
+      : NotFoundException(whatArg)
     {
     }
   };
@@ -83,8 +84,8 @@ namespace Fsl
   class InitFailedException : public std::runtime_error
   {
   public:
-    explicit InitFailedException(const std::string& what_arg)
-      : std::runtime_error(what_arg)
+    explicit InitFailedException(const std::string& whatArg)
+      : std::runtime_error(whatArg)
     {
     }
   };
@@ -98,8 +99,8 @@ namespace Fsl
     {
     }
 
-    explicit NotImplementedException(const std::string& what_arg)
-      : std::logic_error(what_arg)
+    explicit NotImplementedException(const std::string& whatArg)
+      : std::logic_error(whatArg)
     {
     }
   };
@@ -112,8 +113,8 @@ namespace Fsl
     {
     }
 
-    explicit NotSupportedException(const std::string& what_arg)
-      : std::logic_error(what_arg)
+    explicit NotSupportedException(const std::string& whatArg)
+      : std::logic_error(whatArg)
     {
     }
   };
@@ -127,8 +128,8 @@ namespace Fsl
     {
     }
 
-    explicit IndexOutOfRangeException(const std::string& what_arg)
-      : std::logic_error(what_arg)
+    explicit IndexOutOfRangeException(const std::string& whatArg)
+      : std::logic_error(whatArg)
     {
     }
   };
@@ -137,8 +138,8 @@ namespace Fsl
   class GraphicsException : public std::runtime_error
   {
   public:
-    explicit GraphicsException(const std::string& what_arg)
-      : std::runtime_error(what_arg)
+    explicit GraphicsException(const std::string& whatArg)
+      : std::runtime_error(whatArg)
     {
     }
   };
@@ -147,8 +148,8 @@ namespace Fsl
   class IOException : public std::runtime_error
   {
   public:
-    explicit IOException(const std::string& what_arg)
-      : std::runtime_error(what_arg)
+    explicit IOException(const std::string& whatArg)
+      : std::runtime_error(whatArg)
     {
     }
   };
@@ -156,8 +157,8 @@ namespace Fsl
   class OverflowException : public std::runtime_error
   {
   public:
-    explicit OverflowException(const std::string& what_arg)
-      : std::runtime_error(what_arg)
+    explicit OverflowException(const std::string& whatArg)
+      : std::runtime_error(whatArg)
     {
     }
   };
@@ -165,8 +166,8 @@ namespace Fsl
   class FormatException : public std::runtime_error
   {
   public:
-    explicit FormatException(const std::string& what_arg)
-      : std::runtime_error(what_arg)
+    explicit FormatException(const std::string& whatArg)
+      : std::runtime_error(whatArg)
     {
     }
   };
@@ -175,8 +176,8 @@ namespace Fsl
   class InvalidUTF8StringException : public std::runtime_error
   {
   public:
-    explicit InvalidUTF8StringException(const std::string& what_arg)
-      : std::runtime_error(what_arg)
+    explicit InvalidUTF8StringException(const std::string& whatArg)
+      : std::runtime_error(whatArg)
     {
     }
   };
@@ -185,8 +186,8 @@ namespace Fsl
   class InvalidFormatException : public std::runtime_error
   {
   public:
-    explicit InvalidFormatException(const std::string& what_arg)
-      : std::runtime_error(what_arg)
+    explicit InvalidFormatException(const std::string& whatArg)
+      : std::runtime_error(whatArg)
     {
     }
   };

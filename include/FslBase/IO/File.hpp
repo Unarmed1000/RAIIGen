@@ -59,7 +59,7 @@ namespace Fsl
 
       //! @brief Get the current length of a file.
       //! @throws IOException if the file isn't found.
-      static int64_t GetLength(const Path& path);
+      static uint64_t GetLength(const Path& path);
 
       //! @brief Read the entire content of the given file into a string.
       //! @throws IOException if the file isn't found or something goes wrong reading it.
@@ -81,7 +81,7 @@ namespace Fsl
       //! @param path to the file that should be loaded
       //! @return the number of bytes that was read.
       //! @throws IOException if the file isn't found or something goes wrong reading it.
-      static int64_t ReadAllBytes(void* pDstArray, const int64_t cbDstArray, const Path& path);
+      static uint64_t ReadAllBytes(void* pDstArray, const uint64_t cbDstArray, const Path& path);
 
       //! @brief Read the entire content of the given file into a binary array.
       //! @param path to the file that should be loaded
@@ -95,7 +95,7 @@ namespace Fsl
       //! file this throws a exception)
       //! @param bytesToRead the number of bytes to read (if the end of file is encountered the read operation will fail with a exception)
       //! @throws IOException if the file isn't found or something goes wrong reading it.
-      static void ReadBytes(std::vector<uint8_t>& rTargetArray, const IO::Path& path, const int64_t fileOffset, const int64_t bytesToRead);
+      static void ReadBytes(std::vector<uint8_t>& rTargetArray, const IO::Path& path, const uint64_t fileOffset, const uint64_t bytesToRead);
 
       //! @brief Read the entire content of the given file into a binary array.
       //! @param pDstArray the array to load the content into (if == nullptr a exception will be thrown)
@@ -107,8 +107,8 @@ namespace Fsl
       //! @param bytesToRead the number of bytes to read (if the end of file is encountered the read operation will fail with a exception)
       //! @return the number of bytes that was read.
       //! @throws IOException if the file isn't found or something goes wrong reading it.
-      static int64_t ReadBytes(void* pDstArray, const int64_t cbDstArray, const int64_t dstStartIndex, const IO::Path& path, const int64_t fileOffset,
-                               const int64_t bytesToRead);
+      static uint64_t ReadBytes(void* pDstArray, const uint64_t cbDstArray, const uint64_t dstStartIndex, const IO::Path& path,
+                                const uint64_t fileOffset, const uint64_t bytesToRead);
 
       //! @brief Write the entire content of the string to the given file.
       //! @note If the target file exists its overwritten
@@ -116,7 +116,12 @@ namespace Fsl
 
       //! @brief Write the entire content of the array to the given file.
       //! @note If the target file exists its overwritten
-      static void WriteAllBytes(const IO::Path& path, const std::vector<uint8_t>& content);
+      static void WriteAllBytes(const IO::Path& path, const std::vector<uint8_t>& content)
+      {
+        WriteAllBytes(path, content.data(), content.size());
+      }
+
+      static void WriteAllBytes(const IO::Path& path, const void* const pContent, const std::size_t contentSizeInBytes);
     };
   }
 }

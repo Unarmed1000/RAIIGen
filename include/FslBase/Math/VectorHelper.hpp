@@ -55,7 +55,7 @@ namespace Fsl
     inline float VectorToAngle(const Vector2& vec)
     {
       Vector2 value(Vector2::Normalize(vec));
-      return (float)std::atan2(value.Y, value.X);
+      return std::atan2(value.Y, value.X);
     }
 
 
@@ -79,7 +79,6 @@ namespace Fsl
                      MathHelper::CatmullRom(value1.Z, value2.Z, value3.Z, value4.Z, amount),
                      MathHelper::CatmullRom(value1.W, value2.W, value3.W, value4.W, amount));
     }
-
   };
 }
 

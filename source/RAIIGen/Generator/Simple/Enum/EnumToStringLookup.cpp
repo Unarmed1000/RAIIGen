@@ -291,7 +291,7 @@ namespace MB
       std::string headerContent = GenerateHeaderFile(config, snippets.Header, dstRootPath, dstFileName, content);
 
       auto dirName = IO::Path::GetDirectoryName(dstFileName);
-      IO::Directory::CreateDirectory(dirName);
+      IO::Directory::CreateDir(dirName);
 
       IOUtil::WriteAllTextIfChanged(dstFileName, headerContent);
     }
@@ -300,7 +300,7 @@ namespace MB
     void ProcessMultipleFile(const EnumToStringSnippets& snippets, const Capture& capture, const SimpleGeneratorConfig& config,
                              const IO::Path& dstRootPath, const IO::Path& dstFilePath, const bool useSeperateFiles)
     {
-      IO::Directory::CreateDirectory(dstFilePath);
+      IO::Directory::CreateDir(dstFilePath);
 
       auto enumDict = capture.GetEnumDict();
 

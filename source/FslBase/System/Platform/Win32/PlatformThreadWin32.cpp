@@ -32,6 +32,7 @@
 
 #include <FslBase/System/Platform/PlatformThread.hpp>
 #include <FslBase/Log/Log.hpp>
+#include <utility>
 #include <windows.h>
 
 namespace Fsl
@@ -42,8 +43,8 @@ namespace Fsl
     {
       std::weak_ptr<PlatformThreadImpl> Object;
 
-      ObjectThreadContext(const std::weak_ptr<PlatformThreadImpl>& object)
-        : Object(object)
+      ObjectThreadContext(std::weak_ptr<PlatformThreadImpl> object)
+        : Object(std::move(object))
       {
       }
     };
@@ -57,9 +58,9 @@ namespace Fsl
     DWORD m_threadId;
 
   public:
-    PlatformThreadImpl(const std::function<void(const std::shared_ptr<IThreadContext>)>& fnRun, const std::shared_ptr<IThreadContext>& threadContext)
-      : m_fnRun(fnRun)
-      , m_threadContext(threadContext)
+    PlatformThreadImpl(std::function<void(const std::shared_ptr<IThreadContext>)> fnRun, std::shared_ptr<IThreadContext> threadContext)
+      : m_fnRun(std::move(fnRun))
+      , m_threadContext(std::move(threadContext))
       , m_hThread(nullptr)
       , m_threadId(0)
     {
@@ -67,7 +68,7 @@ namespace Fsl
 
     void Start(const std::weak_ptr<PlatformThreadImpl>& weakThisObject)
     {
-      ObjectThreadContext* pThreadContext = new ObjectThreadContext(weakThisObject);
+      auto* pThreadContext = new ObjectThreadContext(weakThisObject);
 
       m_hThread = CreateThread(nullptr,                            // default security attributes
                                0,                                  // use default stack size
@@ -81,7 +82,9 @@ namespace Fsl
     void Join()
     {
       if (m_hThread != nullptr)
+      {
         WaitForSingleObject(m_hThread, INFINITE);
+      }
     }
 
 
@@ -94,15 +97,19 @@ namespace Fsl
     static DWORD __stdcall RunOnThread(LPVOID lpThreadParameter)
     {
       if (lpThreadParameter == nullptr)
+      {
         return 0;
-      ObjectThreadContext* pThreadContext = static_cast<ObjectThreadContext*>(lpThreadParameter);
+      }
+      auto* pThreadContext = static_cast<ObjectThreadContext*>(lpThreadParameter);
       ObjectThreadContext threadContext = *pThreadContext;
       delete pThreadContext;
       pThreadContext = nullptr;
 
       const std::shared_ptr<PlatformThreadImpl> context = threadContext.Object.lock();
       if (!context)
+      {
         return 0;
+      }
       context->OnThreadRunning();
       return 1;
     }
@@ -111,16 +118,13 @@ namespace Fsl
 
   PlatformThread::PlatformThread(const std::function<void(const std::shared_ptr<IThreadContext>)>& fnRun,
                                  const std::shared_ptr<IThreadContext>& threadContext)
-    : m_impl()
   {
     m_impl = std::make_shared<PlatformThreadImpl>(fnRun, threadContext);
     m_impl->Start(m_impl);
   }
 
 
-  PlatformThread::~PlatformThread()
-  {
-  }
+  PlatformThread::~PlatformThread() = default;
 
 
   void PlatformThread::Join()
@@ -133,7 +137,6 @@ namespace Fsl
   {
     Sleep(milliseconds);
   }
-
 }
 
 #endif

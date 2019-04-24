@@ -42,7 +42,8 @@
 // since its the only supported platform that doesn't allow UTF8 strings
 // but instead provides its own 'hack' for opening wstring's
 #ifdef _WIN32
-#define PATH_GET_NAME(X) X.ToWString()
+#include <FslBase/System/Platform/PlatformWin32.hpp>
+#define PATH_GET_NAME(X) PlatformWin32::Widen(X.ToUTF8String())
 #else
 #define PATH_GET_NAME(X) X.ToUTF8String()
 #endif
@@ -55,12 +56,12 @@ namespace Fsl
     {
       std::size_t Convert(const std::streamoff value)
       {
-        return static_cast<size_t>(value);
+        return static_cast<std::size_t>(value);
       }
 
-      std::size_t ConvertInt64(const int64_t value)
+      std::size_t Convert(const uint64_t value)
       {
-        return static_cast<size_t>(value);
+        return static_cast<std::size_t>(value);
       }
 
 
@@ -75,9 +76,9 @@ namespace Fsl
         }
 
         // Dumb C++ way of getting the stream length
-        rStream.seekg(0, rStream.end);
+        rStream.seekg(0, std::ifstream::end);
         const std::streamoff streamLength = rStream.tellg();
-        rStream.seekg(0, rStream.beg);
+        rStream.seekg(0, std::ifstream::beg);
         assert(streamLength >= 0);
         return Convert(streamLength);
       }
@@ -86,7 +87,9 @@ namespace Fsl
       {
         // Read the entire content of the file
         if (length > 0)
+        {
           rStream.read(static_cast<char*>(pDst), length);
+        }
         if (!rStream.good())
         {
           std::string str("Failed to read entire file '");
@@ -101,7 +104,9 @@ namespace Fsl
       {
         // Read the entire content of the file
         if (length > 0)
+        {
           rStream.write(static_cast<const char*>(pDst), length);
+        }
         if (!rStream.good())
         {
           std::string str("Failed to write entire file '");
@@ -141,7 +146,9 @@ namespace Fsl
       {
         std::ifstream file(PATH_GET_NAME(path), std::ios::in | std::ios::binary);
         if (!file.good())
+        {
           return false;
+        }
 
         const std::size_t length = GetStreamLength(file, path);
 
@@ -163,11 +170,12 @@ namespace Fsl
 
     bool File::Exists(const Path& path)
     {
-      // Use a portable way that checks if the file can be read
-      // Which of course isn't exactly the same as if it exists, but it ought to
-      // be good enough for our purpose.
-      std::ifstream file(PATH_GET_NAME(path));
-      return file.good();
+      FileAttributes attr;
+      if (!TryGetAttributes(path, attr))
+      {
+        return false;
+      }
+      return (attr.HasFlag(FileAttributes::File));
     }
 
 
@@ -175,7 +183,9 @@ namespace Fsl
     {
       FileAttributes attributes;
       if (!TryGetAttributes(path, attributes))
+      {
         throw NotFoundException("Path not found");
+      }
       return attributes;
     }
 
@@ -186,7 +196,7 @@ namespace Fsl
     }
 
 
-    int64_t File::GetLength(const Path& path)
+    uint64_t File::GetLength(const Path& path)
     {
       std::ifstream file(PATH_GET_NAME(path), std::ios::ate | std::ios::binary);
       if (!file.good())
@@ -217,15 +227,15 @@ namespace Fsl
     }
 
 
-    int64_t File::ReadAllBytes(void* pDstArray, const int64_t cbDstArray, const Path& path)
+    uint64_t File::ReadAllBytes(void* pDstArray, const uint64_t cbDstArray, const Path& path)
     {
       if (pDstArray == nullptr)
+      {
         throw std::invalid_argument("pDstArray can not be null");
-      if (cbDstArray < 0)
-        throw std::invalid_argument("cbDstArray can not be negative");
+      }
 
 
-      const std::size_t cbDstArrayEx = ConvertInt64(cbDstArray);
+      const std::size_t cbDstArrayEx = Convert(cbDstArray);
 
       try
       {
@@ -257,15 +267,10 @@ namespace Fsl
     }
 
 
-    void File::ReadBytes(std::vector<uint8_t>& rTargetArray, const IO::Path& path, const int64_t fileOffset, const int64_t bytesToRead)
+    void File::ReadBytes(std::vector<uint8_t>& rTargetArray, const IO::Path& path, const uint64_t fileOffset, const uint64_t bytesToRead)
     {
-      if (fileOffset < 0)
-        throw std::invalid_argument("fileOffset can not be negative");
-      if (bytesToRead < 0)
-        throw std::invalid_argument("bytesToRead can not be negative");
-
-      const std::size_t fileOffsetEx = ConvertInt64(fileOffset);
-      const std::size_t bytesToReadEx = ConvertInt64(bytesToRead);
+      const std::size_t fileOffsetEx = Convert(fileOffset);
+      const std::size_t bytesToReadEx = Convert(bytesToRead);
 
       try
       {
@@ -273,13 +278,17 @@ namespace Fsl
         const std::size_t length = GetStreamLength(file, path);
 
         if (fileOffsetEx >= length && !(fileOffsetEx == 0 && length == 0))
+        {
           throw std::invalid_argument("fileOffsetEx can not be equal or greater than the file length");
+        }
         if ((fileOffsetEx + bytesToReadEx) > length)
+        {
           throw std::invalid_argument("can not read outside the file");
+        }
 
         rTargetArray.resize(bytesToReadEx);
         // seek to the desired area of the file
-        file.seekg(fileOffsetEx, file.beg);
+        file.seekg(fileOffsetEx, std::ifstream::beg);
         StreamRead(file, path, rTargetArray.data(), bytesToReadEx);
       }
       catch (const std::ios_base::failure& ex)
@@ -289,28 +298,26 @@ namespace Fsl
     }
 
 
-    int64_t File::ReadBytes(void* pDstArray, const int64_t cbDstArray, const int64_t dstStartIndex, const IO::Path& path, const int64_t fileOffset,
-                            const int64_t bytesToRead)
+    uint64_t File::ReadBytes(void* pDstArray, const uint64_t cbDstArray, const uint64_t dstStartIndex, const IO::Path& path,
+                             const uint64_t fileOffset, const uint64_t bytesToRead)
     {
       if (pDstArray == nullptr)
+      {
         throw std::invalid_argument("pDstArray can not be null");
-      if (cbDstArray < 0)
-        throw std::invalid_argument("cbDstArray can not be negative");
-      if (dstStartIndex < 0)
-        throw std::invalid_argument("dstStartIndex can not be negative");
-      if (fileOffset < 0)
-        throw std::invalid_argument("fileOffset can not be negative");
-      if (bytesToRead < 0)
-        throw std::invalid_argument("bytesToRead can not be negative");
+      }
 
       if (dstStartIndex > cbDstArray && !(dstStartIndex == 0 && cbDstArray == 0))
+      {
         throw std::invalid_argument("dstStartIndex can not greater or equal to cbDstArray");
+      }
 
       if (bytesToRead > (cbDstArray - dstStartIndex))
+      {
         throw std::invalid_argument("the requested number of bytes can not fit in the supplied dstArray at the given location");
+      }
 
-      const std::size_t fileOffsetEx = ConvertInt64(fileOffset);
-      const std::size_t bytesToReadEx = ConvertInt64(bytesToRead);
+      const std::size_t fileOffsetEx = Convert(fileOffset);
+      const std::size_t bytesToReadEx = Convert(bytesToRead);
 
       try
       {
@@ -318,12 +325,16 @@ namespace Fsl
         const std::size_t length = GetStreamLength(file, path);
 
         if (fileOffsetEx >= length && !(fileOffsetEx == 0 && length == 0))
+        {
           throw std::invalid_argument("fileOffset can not be equal or greater than the file length");
+        }
         if ((fileOffsetEx + bytesToReadEx) > length)
+        {
           throw std::invalid_argument("can not read outside the file");
+        }
 
         // seek to the desired area of the file
-        file.seekg(fileOffsetEx, file.beg);
+        file.seekg(fileOffsetEx, std::ifstream::beg);
 
         StreamRead(file, path, static_cast<uint8_t*>(pDstArray) + dstStartIndex, bytesToReadEx);
         return bytesToRead;
@@ -350,20 +361,19 @@ namespace Fsl
     }
 
 
-    void File::WriteAllBytes(const IO::Path& path, const std::vector<uint8_t>& content)
+    void File::WriteAllBytes(const IO::Path& path, const void* const pContent, const std::size_t contentSizeInBytes)
     {
       try
       {
         std::ofstream file(PATH_GET_NAME(path), std::ios::out | std::ios::binary);
         // Write the entire content of the file
-        StreamWrite(file, path, content.data(), content.size());
+        StreamWrite(file, path, pContent, contentSizeInBytes);
       }
       catch (const std::ios_base::failure& ex)
       {
         throw IOException(ex.what());
       }
     }
-
 
   }
 }

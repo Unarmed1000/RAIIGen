@@ -33,19 +33,21 @@
  ****************************************************************************************************************************************************/
 
 #include <FslBase/BasicTypes.hpp>
-#include <FslBase/Noncopyable.hpp>
 #include <cstddef>
 
 namespace Fsl
 {
-  class ScopedSystemMemoryAccessDummy : private Noncopyable
+  class ScopedSystemMemoryAccessDummy
   {
-    int m_fd;
-    void* m_pMem;
-    void* m_pVirtAddress;
-    int m_lastValue;
+    // int m_fd;
+    // void* m_pMem;
+    // void* m_pVirtAddress;
+    // int m_lastValue;
 
   public:
+    ScopedSystemMemoryAccessDummy(const ScopedSystemMemoryAccessDummy&) = delete;
+    ScopedSystemMemoryAccessDummy& operator=(const ScopedSystemMemoryAccessDummy&) = delete;
+
     ScopedSystemMemoryAccessDummy(const std::size_t targetAddress);
     ~ScopedSystemMemoryAccessDummy();
     uint8_t GetUInt8() const;

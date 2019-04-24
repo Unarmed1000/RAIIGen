@@ -1,41 +1,8 @@
 #ifndef FSLBASE_MATH_PLANE_HPP
 #define FSLBASE_MATH_PLANE_HPP
-/****************************************************************************************************************************************************
- * Copyright (c) 2016 Freescale Semiconductor, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *    * Redistributions of source code must retain the above copyright notice,
- *      this list of conditions and the following disclaimer.
- *
- *    * Redistributions in binary form must reproduce the above copyright notice,
- *      this list of conditions and the following disclaimer in the documentation
- *      and/or other materials provided with the distribution.
- *
- *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
- *      its contributors may be used to endorse or promote products derived from
- *      this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- ****************************************************************************************************************************************************/
-
-// The functions in this file are a port of an MIT licensed library: MonaGame - Plane.cs.
-
 /*
 MIT License
-Copyright © 2006 The Mono.Xna Team
+Copyright (C) 2006 The Mono.Xna Team
 
 All rights reserved.
 
@@ -58,6 +25,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// The functions in this file are a port of an MIT licensed library: MonoGame - Plane.cs.
+
 #include <FslBase/BasicTypes.hpp>
 #include <FslBase/Math/PlaneIntersectionType.hpp>
 #include <FslBase/Math/Vector3.hpp>
@@ -74,13 +43,9 @@ namespace Fsl
   struct Plane
   {
     Vector3 Normal;
-    float D;
+    float D{0};
 
-    Plane()
-      : Normal()
-      , D(0)
-    {
-    }
+    Plane() = default;
 
     Plane(const Vector4& value)
       : Normal(value.X, value.Y, value.Z)
@@ -138,10 +103,8 @@ namespace Fsl
     static void Normalize(const Plane& value, Plane& rResult);
 
     PlaneIntersectionType Intersects(const BoundingBox& box) const;
-    void Intersects(const BoundingBox& box, PlaneIntersectionType& rResult) const;
     PlaneIntersectionType Intersects(const BoundingFrustum& frustum) const;
     PlaneIntersectionType Intersects(const BoundingSphere& sphere) const;
-    void Intersects(const BoundingSphere& sphere, PlaneIntersectionType& rResult) const;
     PlaneIntersectionType Intersects(const Vector3& point) const;
 
     //! @brief Tests for equality.

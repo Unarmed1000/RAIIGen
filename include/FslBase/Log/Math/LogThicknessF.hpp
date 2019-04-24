@@ -1,5 +1,7 @@
+#ifndef FSLBASE_LOG_MATH_LOGTHICKNESSF_HPP
+#define FSLBASE_LOG_MATH_LOGTHICKNESSF_HPP
 /****************************************************************************************************************************************************
- * Copyright (c) 2015 Freescale Semiconductor, Inc.
+ * Copyright 2017 NXP
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -12,7 +14,7 @@
  *      this list of conditions and the following disclaimer in the documentation
  *      and/or other materials provided with the distribution.
  *
- *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
+ *    * Neither the name of the NXP. nor the names of
  *      its contributors may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
@@ -29,28 +31,15 @@
  *
  ****************************************************************************************************************************************************/
 
-#include <FslBase/Math/Rectangle9.hpp>
+#include <FslBase/Math/ThicknessF.hpp>
+#include <ostream>
 
 namespace Fsl
 {
-  Rectangle9::Rectangle9()
+  inline std::ostream& operator<<(std::ostream& o, const ThicknessF& value)
   {
+    return o << "{Left=" << value.Left() << " Top=" << value.Top() << " Right=" << value.Right() << " Bottom=" << value.Bottom() << "}";
   }
-
-
-  Rectangle9::Rectangle9(const Rectangle& topLeft, const Rectangle& topCenter, const Rectangle& topRight, const Rectangle& left,
-                         const Rectangle& center, const Rectangle& right, const Rectangle& bottomLeft, const Rectangle& bottomCenter,
-                         const Rectangle& bottomRight)
-  {
-    Array[0] = topLeft;
-    Array[1] = topCenter;
-    Array[2] = topRight;
-    Array[3] = left;
-    Array[4] = center;
-    Array[5] = right;
-    Array[6] = bottomLeft;
-    Array[7] = bottomCenter;
-    Array[8] = bottomRight;
-  }
-
 }
+
+#endif

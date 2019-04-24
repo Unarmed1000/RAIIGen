@@ -31,6 +31,7 @@
  *
  ****************************************************************************************************************************************************/
 
+#include <chrono>
 #include <condition_variable>
 #include <mutex>
 #include <queue>
@@ -46,7 +47,7 @@ namespace Fsl
     std::queue<T> m_queue;
 
   public:
-    typedef T value_type;
+    using value_type = T;
 
     //! @brief Clear all elements from the queue
     void Clear();
@@ -60,6 +61,8 @@ namespace Fsl
     //! @brief Tries to remove and return the element at the beginning of the concurrent queue.
     //! @return true on success, false if unsuccessful. When false rValue will be set to T().
     bool TryDequeue(T& rValue);
+
+    bool TryDequeWait(T& rValue, const std::chrono::milliseconds& duration);
 
     //! @brief Tries to return a element from the beginning of the queue without removing it.
     //! @return true on success, false if unsuccessful. When false rValue will be set to T().

@@ -35,7 +35,11 @@
 #define FSL_ATTR_DEPRECATED __declspec(deprecated)
 #define FSL_FUNC_POSTFIX_WARN_UNUSED_RESULT
 #elif defined(__GNUC__)
+#if __cplusplus > 201103
+#define FSL_ATTR_DEPRECATED [[deprecated]]
+#else
 #define FSL_ATTR_DEPRECATED
+#endif
 #define FSL_FUNC_POSTFIX_WARN_UNUSED_RESULT __attribute__((warn_unused_result))
 // __attribute__ ((deprecated)) but its a postfix thing again :(
 // So its better to wait for [[deprecated]](C++14)

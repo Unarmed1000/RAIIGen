@@ -37,6 +37,7 @@
 #include <FslBase/Exceptions.hpp>
 #include <algorithm>
 #include <list>
+#include <utility>
 
 namespace Fsl
 {
@@ -48,16 +49,17 @@ namespace Fsl
       IO::Path FullPath;
       std::shared_ptr<PlatformPathMonitorToken> Token;
 
-      PathWatcherInternalRecord(const Path& fullPath, const std::shared_ptr<PlatformPathMonitorToken>& token)
-        : FullPath()
-        , Token(token)
+      PathWatcherInternalRecord(const Path& fullPath, std::shared_ptr<PlatformPathMonitorToken> token)
+        : Token(std::move(token))
       {
       }
 
       bool CheckForChanges()
       {
         if (!Token)
+        {
           throw NotSupportedException("");
+        }
         return PlatformFileSystem::CheckPathForChanges(Token);
       }
     };
@@ -80,34 +82,36 @@ namespace Fsl
     }
 
 
-    PathWatcher::PathWatcher()
-    {
-    }
-
-
-    PathWatcher::~PathWatcher()
-    {
-    }
+    PathWatcher::PathWatcher() = default;
+    PathWatcher::~PathWatcher() = default;
 
 
     void PathWatcher::Add(const IO::Path& fullPath)
     {
       if (!TryAdd(fullPath))
+      {
         throw NotSupportedException("PathWatcher not supported");
+      }
     }
 
 
     bool PathWatcher::TryAdd(const IO::Path& fullPath)
     {
       if (!Path::IsPathRooted(fullPath))
+      {
         throw std::invalid_argument("Path is not rooted");
+      }
 
       if (std::find_if(m_paths.begin(), m_paths.end(), FullPathComp(fullPath)) != m_paths.end())
+      {
         return false;
+      }
 
       std::shared_ptr<PlatformPathMonitorToken> token = PlatformFileSystem::CreatePathMonitorToken(fullPath);
       if (!token)
+      {
         return false;
+      }
 
       const auto record = std::make_shared<PathWatcherInternalRecord>(fullPath, token);
       m_paths.push_back(record);
@@ -126,10 +130,11 @@ namespace Fsl
       for (auto itr = m_paths.begin(); itr != m_paths.end(); ++itr)
       {
         if ((*itr)->CheckForChanges())
+        {
           return true;
+        }
       }
       return false;
     }
-
   }
 }

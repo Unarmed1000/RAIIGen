@@ -32,7 +32,7 @@
 #ifdef _WIN32
 #include <Windows.h>
 #elif defined(__linux__) || defined(__QNXNTO__)
-#include <time.h>
+#include <ctime>
 #else
 #error Unsupported platform
 #endif
@@ -41,27 +41,28 @@
 
 namespace Fsl
 {
-  HighResolutionTimer::HighResolutionTimer(){
-#ifdef _WIN32
-    {LARGE_INTEGER value;
-  QueryPerformanceFrequency(&value);
-  m_frequency = value.QuadPart / 1000000L;
-}
-#endif
-}
-
-
-uint64_t HighResolutionTimer::GetTime() const
-{
-#ifdef _WIN32
+  HighResolutionTimer::HighResolutionTimer()    // NOLINT(modernize-use-equals-default)
   {
+#ifdef _WIN32
     LARGE_INTEGER value;
-    QueryPerformanceCounter(&value);
-    return (value.QuadPart / m_frequency);
+    QueryPerformanceFrequency(&value);
+    m_frequency = value.QuadPart / 1000000.0;
+#endif
   }
+
+
+  uint64_t HighResolutionTimer::GetTime() const
+  {
+#ifdef _WIN32
+    {
+      LARGE_INTEGER value;
+      QueryPerformanceCounter(&value);
+      return static_cast<uint64_t>(value.QuadPart / m_frequency);
+    }
 #elif defined(__linux__) || defined(__QNXNTO__)
     {
-      struct timespec currentTime;
+      using SafeTimespec = struct timespec;
+      SafeTimespec currentTime{};
       clock_gettime(CLOCK_MONOTONIC, &currentTime);
       uint64_t time = currentTime.tv_sec;
       time *= 1000000;
@@ -69,5 +70,5 @@ uint64_t HighResolutionTimer::GetTime() const
       return time;
     }
 #endif
-}
+  }
 }

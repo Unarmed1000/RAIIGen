@@ -1,7 +1,7 @@
-#ifndef FSLBASE_MATH_MATRIX3FIELDS_HPP
-#define FSLBASE_MATH_MATRIX3FIELDS_HPP
+#ifndef FSLBASE_LOG_MATH_LOGMATRIX3_HPP
+#define FSLBASE_LOG_MATH_LOGMATRIX3_HPP
 /****************************************************************************************************************************************************
- * Copyright (c) 2014 Freescale Semiconductor, Inc.
+ * Copyright 2017 NXP
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *      this list of conditions and the following disclaimer in the documentation
  *      and/or other materials provided with the distribution.
  *
- *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
+ *    * Neither the name of the NXP. nor the names of
  *      its contributors may be used to endorse or promote products derived from
  *      this software without specific prior written permission.
  *
@@ -31,14 +31,17 @@
  *
  ****************************************************************************************************************************************************/
 
-#define _M11 (3 * 0 + 0)
-#define _M12 (3 * 0 + 1)
-#define _M13 (3 * 0 + 2)
-#define _M21 (3 * 1 + 0)
-#define _M22 (3 * 1 + 1)
-#define _M23 (3 * 1 + 2)
-#define _M31 (3 * 2 + 0)
-#define _M32 (3 * 2 + 1)
-#define _M33 (3 * 2 + 2)
+#include <FslBase/Math/Matrix3.hpp>
+#include <ostream>
+
+namespace Fsl
+{
+  inline std::ostream& operator<<(std::ostream& o, const Matrix3& value)
+  {
+    const auto* pMatrix = value.DirectAccess();
+    return o << "{" << pMatrix[0] << ", " << pMatrix[1] << ", " << pMatrix[2] << ", " << pMatrix[3] << ", " << pMatrix[4] << ", " << pMatrix[5]
+             << ", " << pMatrix[6] << ", " << pMatrix[7] << ", " << pMatrix[8] << "}";
+  }
+}
 
 #endif

@@ -42,14 +42,10 @@ namespace Fsl
   public:
     struct ParserRecord
     {
-      IOptionParser* Parser;
-      int32_t CmdIdOffset;
+      IOptionParser* Parser{nullptr};
+      int32_t CmdIdOffset{0};
 
-      ParserRecord()
-        : Parser(nullptr)
-        , CmdIdOffset(0)
-      {
-      }
+      ParserRecord() = default;
 
       ParserRecord(IOptionParser* parser, const int32_t cmdIdOffset)
         : Parser(parser)
@@ -58,10 +54,31 @@ namespace Fsl
       }
     };
 
-    static bool Parse(int argc, char** argv, const char* const pszHelpCaption);
-    static bool Parse(int argc, char** argv, IOptionParser& inputOptionParser, const char* const pszHelpCaption);
-    static bool Parse(int argc, char** argv, const std::deque<IOptionParser*>& inputOptionParsers, const char* const pszHelpCaption);
-    static bool Parse(int argc, char** argv, const std::deque<ParserRecord>& inputOptionParsers, const char* const pszHelpCaption);
+    enum class Result
+    {
+      Failed = 0,
+      OK = 1,
+      Exit = 2,
+    };
+
+    struct ParseResult
+    {
+      Result Status{Result::Failed};
+      uint32_t VerbosityLevel{0};
+
+      ParseResult() = default;
+
+      ParseResult(const Result result, const uint32_t verbosityLevel)
+        : Status(result)
+        , VerbosityLevel(verbosityLevel)
+      {
+      }
+    };
+
+    static ParseResult Parse(int argc, char** argv, const char* const pszHelpCaption);
+    static ParseResult Parse(int argc, char** argv, IOptionParser& inputOptionParser, const char* const pszHelpCaption);
+    static ParseResult Parse(int argc, char** argv, const std::deque<IOptionParser*>& inputOptionParsers, const char* const pszHelpCaption);
+    static ParseResult Parse(int argc, char** argv, const std::deque<ParserRecord>& inputOptionParsers, const char* const pszHelpCaption);
   };
 }
 

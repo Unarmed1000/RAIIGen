@@ -39,42 +39,23 @@
 
 namespace Fsl
 {
-  TransitionVector2::TransitionVector2()
-    : m_transition()
-    , m_transitionType(TransitionType::Smooth)
-    , m_val()
-    , m_from()
-    , m_target()
-    , m_currentTime(0)
-    , m_endTime(0)
-    , m_startDelay(0)
-  {
-  }
+  TransitionVector2::TransitionVector2() = default;
 
 
   TransitionVector2::TransitionVector2(TransitionCache& rTransitionCache, const TransitionTimeSpan& time)
-    : m_transition()
-    , m_transitionType(TransitionType::Smooth)
-    , m_val()
-    , m_from()
-    , m_target()
-    , m_currentTime(time.Ticks)
+    : m_currentTime(time.Ticks)
     , m_endTime(time.Ticks)
-    , m_startDelay(0)
+
   {
     SetTransitionTime(rTransitionCache, time, m_transitionType);
   }
 
 
   TransitionVector2::TransitionVector2(TransitionCache& rTransitionCache, const TransitionTimeSpan& time, const TransitionType type)
-    : m_transition()
-    , m_transitionType(type)
-    , m_val()
-    , m_from()
-    , m_target()
+    : m_transitionType(type)
     , m_currentTime(time.Ticks)
     , m_endTime(time.Ticks)
-    , m_startDelay(0)
+
   {
     SetTransitionTime(rTransitionCache, time, type);
   }
@@ -94,7 +75,9 @@ namespace Fsl
       assert(ticks >= 0 && ticks <= std::numeric_limits<int32_t>::max());
       auto startDelay = static_cast<int32_t>(ticks);
       if (!IsCompleted())
+      {
         m_currentTime = -startDelay;
+      }
       m_startDelay = startDelay;
     }
   }
@@ -152,9 +135,13 @@ namespace Fsl
       assert(m_transition);
 
       if (!EqualHelper::IsAlmostEqual(m_target, m_val))
+      {
         CalcTransition();
+      }
       else
+      {
         ForceComplete();
+      }
     }
   }
 
@@ -166,28 +153,26 @@ namespace Fsl
       // We do the increase here because the first entry in the m_transition table is zero which we want to skip
       m_currentTime += deltaTime.Ticks;
       if (m_currentTime < 0)
-        return TransitionState::StartDelay;
-      else if (m_currentTime < m_endTime)
       {
-        const int32_t toIndex = static_cast<int32_t>((static_cast<int64_t>(m_transition->size()) * m_currentTime) / m_endTime);
+        return TransitionState::StartDelay;
+      }
+      if (m_currentTime < m_endTime)
+      {
+        const auto toIndex = static_cast<int32_t>((static_cast<int64_t>(m_transition->size()) * m_currentTime) / m_endTime);
         assert(toIndex >= 0);
         assert(static_cast<uint32_t>(toIndex) < m_transition->size());
         m_val = m_from + ((m_target - m_from) * (*m_transition)[toIndex]);
         return TransitionState::Running;
       }
-      else
-      {
-        m_currentTime = m_endTime;
-        m_val = m_target;
-        return TransitionState::Idle;
-      }
-    }
-    else
-    {
+
       m_currentTime = m_endTime;
       m_val = m_target;
       return TransitionState::Idle;
     }
+
+    m_currentTime = m_endTime;
+    m_val = m_target;
+    return TransitionState::Idle;
   }
 
 
@@ -195,5 +180,4 @@ namespace Fsl
   {
     m_currentTime = -m_startDelay;
   }
-
 }

@@ -39,8 +39,7 @@ namespace Fsl
   TransitionCache::TransitionCache()
     : m_empty(std::make_shared<std::vector<float>>())
     , m_zeroTransition(std::make_shared<std::vector<float>>(1))
-    , m_lookupLinearBasedTables()
-    , m_lookupCosBasedTables()
+
   {
     (*m_zeroTransition)[0] = 1.0f;
 
@@ -82,7 +81,9 @@ namespace Fsl
     assert(length >= 0);
     const auto itr = m_lookupLinearBasedTables.find(length);
     if (itr != m_lookupLinearBasedTables.end())
+    {
       return itr->second;
+    }
 
     auto table = std::make_shared<std::vector<float>>(length);
 
@@ -116,7 +117,9 @@ namespace Fsl
     assert(length >= 0);
     const auto itr = m_lookupCosBasedTables.find(length);
     if (itr != m_lookupCosBasedTables.end())
+    {
       return itr->second;
+    }
 
     auto table = std::make_shared<std::vector<float>>(length);
 
@@ -138,5 +141,4 @@ namespace Fsl
     assert(EqualHelper::IsAlmostEqual(rTable.back(), 1));
     return table;
   }
-
 }

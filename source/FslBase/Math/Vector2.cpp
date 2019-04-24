@@ -1,39 +1,6 @@
-/****************************************************************************************************************************************************
- * Copyright (c) 2014 Freescale Semiconductor, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *    * Redistributions of source code must retain the above copyright notice,
- *      this list of conditions and the following disclaimer.
- *
- *    * Redistributions in binary form must reproduce the above copyright notice,
- *      this list of conditions and the following disclaimer in the documentation
- *      and/or other materials provided with the distribution.
- *
- *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
- *      its contributors may be used to endorse or promote products derived from
- *      this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- ****************************************************************************************************************************************************/
-
-// The functions in this file are a port of an MIT licensed library: MonaGame - Vector2.cs.
-
 /*
 MIT License
-Copyright © 2006 The Mono.Xna Team
+Copyright (C) 2006 The Mono.Xna Team
 
 All rights reserved.
 
@@ -56,6 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// The functions in this file are a port of an MIT licensed library: MonoGame - Vector2.cs.
+
 #include <FslBase/Exceptions.hpp>
 #include <FslBase/Math/MathHelper.hpp>
 #include <FslBase/Math/Matrix.hpp>
@@ -68,13 +37,10 @@ SOFTWARE.
 
 namespace Fsl
 {
-  const float* Vector2::DirectAccess() const
-  {
-    // Verify that our assumption about the structure packing is correct
-    assert(offsetof(Vector2, X) == (sizeof(float) * 0));
-    assert(offsetof(Vector2, Y) == (sizeof(float) * 1));
-    return &X;
-  }
+  // Verify that our assumption about the structure packing is correct
+  static_assert(offsetof(Vector2, X) == (sizeof(float) * 0), "Vector2.X component not at the expected offset");
+  static_assert(offsetof(Vector2, Y) == (sizeof(float) * 1), "Vector2.Y component not at the expected offset");
+  static_assert(sizeof(Vector2) == (sizeof(float) * 2), "Vector2 not of the expected size");
 
 
   Vector2 Vector2::Barycentric(const Vector2& value1, const Vector2& value2, const Vector2& value3, const float amount1, const float amount2)
@@ -113,7 +79,7 @@ namespace Fsl
   }
 
 
-  void Vector2::Clamp(Vector2& rResult, const Vector2& value, const Vector2& min, const Vector2& max)
+  void Vector2::Clamp(const Vector2& value, const Vector2& min, const Vector2& max, Vector2& rResult)
   {
     rResult = Vector2(MathHelper::Clamp(value.X, min.X, max.X), MathHelper::Clamp(value.Y, min.Y, max.Y));
   }
@@ -152,7 +118,7 @@ namespace Fsl
   }
 
 
-  void Vector2::Lerp(Vector2& rResult, const Vector2& value1, const Vector2 value2, const float amount)
+  void Vector2::Lerp(const Vector2& value1, const Vector2 value2, const float amount, Vector2& rResult)
   {
     rResult = Vector2(MathHelper::Lerp(value1.X, value2.X, amount), MathHelper::Lerp(value1.Y, value2.Y, amount));
   }
@@ -164,7 +130,7 @@ namespace Fsl
   }
 
 
-  void Vector2::Max(Vector2& rResult, const Vector2& value1, const Vector2& value2)
+  void Vector2::Max(const Vector2& value1, const Vector2& value2, Vector2& rResult)
   {
     rResult = Vector2(std::max(value1.X, value2.X), std::max(value1.Y, value2.Y));
   }
@@ -176,40 +142,30 @@ namespace Fsl
   }
 
 
-  void Vector2::Min(Vector2& rResult, const Vector2& value1, const Vector2& value2)
+  void Vector2::Min(const Vector2& value1, const Vector2& value2, Vector2& rResult)
   {
     rResult = Vector2(std::min(value1.X, value2.X), std::min(value1.Y, value2.Y));
   }
 
 
-  Vector2 Vector2::Negate(const Vector2& value)
-  {
-    return Vector2(-value.X, -value.Y);
-  }
-
-
-  void Vector2::Negate(Vector2& rResult, const Vector2& value)
-  {
-    rResult.X = -value.X;
-    rResult.Y = -value.Y;
-  }
-
-
   void Vector2::Normalize()
   {
-    Normalize(*this, *this);
+    float factor = Length();
+    X /= factor;
+    Y /= factor;
   }
 
 
   Vector2 Vector2::Normalize(const Vector2& vector)
   {
-    Vector2 result(OptimizationFlag::NoInitialization);
-    Normalize(result, vector);
+    // Vector2 result(OptimizationFlag::NoInitialization);
+    Vector2 result;
+    Normalize(vector, result);
     return result;
   }
 
 
-  void Vector2::Normalize(Vector2& rResult, const Vector2& value)
+  void Vector2::Normalize(const Vector2& value, Vector2& rResult)
   {
     float factor = value.Length();
     rResult.X = value.X / factor;
@@ -228,7 +184,7 @@ namespace Fsl
   }
 
 
-  void Vector2::Reflect(Vector2& rResult, const Vector2& vector, const Vector2& normal)
+  void Vector2::Reflect(const Vector2& vector, const Vector2& normal, Vector2& rResult)
   {
     // I is the original array
     // N is the normal of the incident plane
@@ -254,13 +210,14 @@ namespace Fsl
 
   Vector2 Vector2::Transform(const Vector2& position, const Matrix& matrix)
   {
-    Vector2 result(OptimizationFlag::NoInitialization);
+    // Vector2 result(OptimizationFlag::NoInitialization);
+    Vector2 result;
     MatrixInternals::Transform(result, position, matrix);
     return result;
   }
 
 
-  void Vector2::Transform(Vector2& rResult, const Vector2& position, const Matrix& matrix)
+  void Vector2::Transform(const Vector2& position, const Matrix& matrix, Vector2& rResult)
   {
     MatrixInternals::Transform(rResult, position, matrix);
   }
@@ -283,8 +240,10 @@ namespace Fsl
     auto rot5 = rot1 * rot3;
 
     Vector2 v;
-    v.X = (float)((double)value.X * (1.0 - (double)rot5.Y - (double)rot5.Z) + (double)value.Y * ((double)rot4.Y - (double)rot4.Z));
-    v.Y = (float)((double)value.X * ((double)rot4.Y + (double)rot4.Z) + (double)value.Y * (1.0 - (double)rot4.X - (double)rot5.Z));
+    v.X = static_cast<float>(static_cast<double>(value.X) * (1.0 - static_cast<double>(rot5.Y) - static_cast<double>(rot5.Z)) +
+                             static_cast<double>(value.Y) * (static_cast<double>(rot4.Y) - static_cast<double>(rot4.Z)));
+    v.Y = static_cast<float>(static_cast<double>(value.X) * (static_cast<double>(rot4.Y) + static_cast<double>(rot4.Z)) +
+                             static_cast<double>(value.Y) * (1.0 - static_cast<double>(rot4.X) - static_cast<double>(rot5.Z)));
     rResult.X = v.X;
     rResult.Y = v.Y;
   }
@@ -292,13 +251,14 @@ namespace Fsl
 
   Vector2 Vector2::TransformNormal(const Vector2& position, const Matrix& matrix)
   {
-    Vector2 result(OptimizationFlag::NoInitialization);
+    // Vector2 result(OptimizationFlag::NoInitialization);
+    Vector2 result;
     MatrixInternals::TransformNormal(result, position, matrix);
     return result;
   }
 
 
-  void Vector2::TransformNormal(Vector2& rResult, const Vector2& position, const Matrix& matrix)
+  void Vector2::TransformNormal(const Vector2& position, const Matrix& matrix, Vector2& rResult)
   {
     MatrixInternals::TransformNormal(rResult, position, matrix);
   }

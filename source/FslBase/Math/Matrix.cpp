@@ -1,39 +1,6 @@
-/****************************************************************************************************************************************************
- * Copyright (c) 2014 Freescale Semiconductor, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *    * Redistributions of source code must retain the above copyright notice,
- *      this list of conditions and the following disclaimer.
- *
- *    * Redistributions in binary form must reproduce the above copyright notice,
- *      this list of conditions and the following disclaimer in the documentation
- *      and/or other materials provided with the distribution.
- *
- *    * Neither the name of the Freescale Semiconductor, Inc. nor the names of
- *      its contributors may be used to endorse or promote products derived from
- *      this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- ****************************************************************************************************************************************************/
-
-// The functions in this file are a port of an MIT licensed library: MonaGame - Matrix.cs.
-
 /*
 MIT License
-Copyright © 2006 The Mono.Xna Team
+Copyright (C) 2006 The Mono.Xna Team
 
 All rights reserved.
 
@@ -56,64 +23,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// The functions in this file are a port of an MIT licensed library: MonoGame - Matrix.cs.
+
 #include <FslBase/Math/Matrix.hpp>
 #include <cassert>
 #include <cmath>
 #include <FslBase/Exceptions.hpp>
+#include <FslBase/Math/MatrixFields.hpp>
 #include <FslBase/Math/Plane.hpp>
 #include <FslBase/Math/Quaternion.hpp>
 #include <FslBase/Math/Rectangle.hpp>
 #include <FslBase/Math/Vector2.hpp>
 #include <FslBase/Math/Vector4.hpp>
-#include "MatrixFields.hpp"
 #include "MatrixInternals.hpp"
 
+// Workaround a issue with qnx signbit
+using namespace std;
 
 namespace Fsl
 {
-  Matrix::Matrix()
-  {
-    m[_M11] = 0.0f;
-    m[_M12] = 0.0f;
-    m[_M13] = 0.0f;
-    m[_M14] = 0.0f;
-    m[_M21] = 0.0f;
-    m[_M22] = 0.0f;
-    m[_M23] = 0.0f;
-    m[_M24] = 0.0f;
-    m[_M31] = 0.0f;
-    m[_M32] = 0.0f;
-    m[_M33] = 0.0f;
-    m[_M34] = 0.0f;
-    m[_M41] = 0.0f;
-    m[_M42] = 0.0f;
-    m[_M43] = 0.0f;
-    m[_M44] = 0.0f;
-  }
+  using namespace MatrixFields;
 
-
-  Matrix::Matrix(const float m11, const float m12, const float m13, const float m14, const float m21, const float m22, const float m23,
-                 const float m24, const float m31, const float m32, const float m33, const float m34, const float m41, const float m42,
-                 const float m43, const float m44)
-  {
-    m[_M11] = m11;
-    m[_M12] = m12;
-    m[_M13] = m13;
-    m[_M14] = m14;
-    m[_M21] = m21;
-    m[_M22] = m22;
-    m[_M23] = m23;
-    m[_M24] = m24;
-    m[_M31] = m31;
-    m[_M32] = m32;
-    m[_M33] = m33;
-    m[_M34] = m34;
-    m[_M41] = m41;
-    m[_M42] = m42;
-    m[_M43] = m43;
-    m[_M44] = m44;
-  }
-
+  static_assert(sizeof(Matrix) == (sizeof(float) * 4 * 4), "Matrix not of expected size");
 
   Matrix Matrix::Add(const Matrix& matrix1, const Matrix& matrix2)
   {
@@ -399,19 +330,20 @@ namespace Fsl
 
   Matrix Matrix::CreateFromAxisAngle(const Vector3& axis, const float angle)
   {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreateFromAxisAngle(result, axis, angle);
+    // Matrix result(OptimizationFlag::NoInitialization);
+    Matrix result;
+    CreateFromAxisAngle(axis, angle, result);
     return result;
   }
 
 
-  void Matrix::CreateFromAxisAngle(Matrix& rResult, const Vector3& axis, const float angle)
+  void Matrix::CreateFromAxisAngle(const Vector3& axis, const float angle, Matrix& rResult)
   {
     const float x = axis.X;
     const float y = axis.Y;
     const float z = axis.Z;
-    const float num2 = (float)std::sin(angle);
-    const float num = (float)std::cos(angle);
+    const float num2 = std::sin(angle);
+    const float num = std::cos(angle);
     const float num11 = x * x;
     const float num10 = y * y;
     const float num9 = z * z;
@@ -439,21 +371,23 @@ namespace Fsl
 
   Matrix Matrix::CreateFromYawPitchRoll(const float yaw, const float pitch, const float roll)
   {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreateFromYawPitchRoll(result, yaw, pitch, roll);
+    // Matrix result(OptimizationFlag::NoInitialization);
+    Matrix result;
+    CreateFromYawPitchRoll(yaw, pitch, roll, result);
     return result;
   }
 
 
   Matrix Matrix::CreateFromQuaternion(const Quaternion& quaternion)
   {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreateFromQuaternion(result, quaternion);
+    Matrix result;
+    // Matrix result(OptimizationFlag::NoInitialization);
+    CreateFromQuaternion(quaternion, result);
     return result;
   }
 
 
-  void Matrix::CreateFromQuaternion(Matrix& rResult, const Quaternion& quaternion)
+  void Matrix::CreateFromQuaternion(const Quaternion& quaternion, Matrix& rResult)
   {
     const float num9 = quaternion.X * quaternion.X;
     const float num8 = quaternion.Y * quaternion.Y;
@@ -483,60 +417,75 @@ namespace Fsl
   }
 
 
-  void Matrix::CreateFromYawPitchRoll(Matrix& rResult, const float yaw, const float pitch, const float roll)
+  void Matrix::CreateFromYawPitchRoll(const float yaw, const float pitch, const float roll, Matrix& rResult)
   {
-    Quaternion quaternion(OptimizationFlag::NoInitialization);
+    // Quaternion quaternion(OptimizationFlag::NoInitialization);
+    Quaternion quaternion;
     Quaternion::CreateFromYawPitchRoll(quaternion, yaw, pitch, roll);
-    CreateFromQuaternion(rResult, quaternion);
+    CreateFromQuaternion(quaternion, rResult);
   }
 
 
   Matrix Matrix::CreateLookAt(const Vector3& cameraPosition, const Vector3& cameraTarget, const Vector3& cameraUpVector)
   {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreateLookAt(result, cameraPosition, cameraTarget, cameraUpVector);
+    // Matrix result(OptimizationFlag::NoInitialization);
+    Matrix result;
+    CreateLookAt(cameraPosition, cameraTarget, cameraUpVector, result);
     return result;
   }
 
 
-  void Matrix::CreateLookAt(Matrix& rResult, const Vector3& cameraPosition, const Vector3& cameraTarget, const Vector3& cameraUpVector)
+  void Matrix::CreateLookAt(const Vector3& cameraPosition, const Vector3& cameraTarget, const Vector3& cameraUpVector, Matrix& rResult)
   {
-    const Vector3 vector3_1 = Vector3::Normalize(cameraPosition - cameraTarget);
-    const Vector3 vector3_2 = Vector3::Normalize(Vector3::Cross(cameraUpVector, vector3_1));
-    const Vector3 vector1 = Vector3::Cross(vector3_1, vector3_2);
-    rResult.m[_M11] = vector3_2.X;
-    rResult.m[_M12] = vector1.X;
-    rResult.m[_M13] = vector3_1.X;
+    const Vector3 f = Vector3::Normalize(cameraPosition - cameraTarget);
+    const Vector3 s = Vector3::Normalize(Vector3::Cross(cameraUpVector, f));
+    const Vector3 u = Vector3::Cross(f, s);
+    rResult.m[_M11] = s.X;
+    rResult.m[_M12] = u.X;
+    rResult.m[_M13] = f.X;
     rResult.m[_M14] = 0.0f;
-    rResult.m[_M21] = vector3_2.Y;
-    rResult.m[_M22] = vector1.Y;
-    rResult.m[_M23] = vector3_1.Y;
+    rResult.m[_M21] = s.Y;
+    rResult.m[_M22] = u.Y;
+    rResult.m[_M23] = f.Y;
     rResult.m[_M24] = 0.0f;
-    rResult.m[_M31] = vector3_2.Z;
-    rResult.m[_M32] = vector1.Z;
-    rResult.m[_M33] = vector3_1.Z;
+    rResult.m[_M31] = s.Z;
+    rResult.m[_M32] = u.Z;
+    rResult.m[_M33] = f.Z;
     rResult.m[_M34] = 0.0f;
-    rResult.m[_M41] = -Vector3::Dot(vector3_2, cameraPosition);
-    rResult.m[_M42] = -Vector3::Dot(vector1, cameraPosition);
-    rResult.m[_M43] = -Vector3::Dot(vector3_1, cameraPosition);
+    rResult.m[_M41] = -Vector3::Dot(s, cameraPosition);
+    rResult.m[_M42] = -Vector3::Dot(u, cameraPosition);
+    rResult.m[_M43] = -Vector3::Dot(f, cameraPosition);
     rResult.m[_M44] = 1.0f;
   }
 
 
   Matrix Matrix::CreateOrthographic(const float width, const float height, const float zNearPlane, const float zFarPlane)
   {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreateOrthographic(result, width, height, zNearPlane, zFarPlane);
+    // Matrix result(OptimizationFlag::NoInitialization);
+    Matrix result;
+    CreateOrthographic(width, height, zNearPlane, zFarPlane, result);
     return result;
   }
 
 
-  void Matrix::CreateOrthographic(Matrix& rResult, const float width, const float height, const float zNearPlane, const float zFarPlane)
+  void Matrix::CreateOrthographic(const float width, const float height, const float zNearPlane, const float zFarPlane, Matrix& rResult)
   {
     if (width <= 0.0f)
+    {
       throw std::invalid_argument("width <= 0.0f");
+    }
     if (height <= 0.0f)
+    {
       throw std::invalid_argument("height <= 0.0f");
+    }
+    if (zNearPlane <= 0.0f)
+    {
+      throw std::invalid_argument("zNearPlane <= 0.0f");
+    }
+    if (zNearPlane >= zFarPlane)
+    {
+      throw std::invalid_argument("zNearPlane >= zFarPlane");
+    }
 
     rResult.m[_M11] = 2.0f / width;
     rResult.m[_M12] = 0.0f;
@@ -578,45 +527,54 @@ namespace Fsl
   void Matrix::CreateOrthographicOffCenter(const float left, const float right, const float bottom, const float top, const float zNearPlane,
                                            const float zFarPlane, Matrix& rResult)
   {
-    rResult.m[_M11] = (float)(2.0 / ((double)right - (double)left));
+    rResult.m[_M11] = static_cast<float>(2.0 / (static_cast<double>(right) - static_cast<double>(left)));
     rResult.m[_M12] = 0.0f;
     rResult.m[_M13] = 0.0f;
     rResult.m[_M14] = 0.0f;
     rResult.m[_M21] = 0.0f;
-    rResult.m[_M22] = (float)(2.0 / ((double)top - (double)bottom));
+    rResult.m[_M22] = static_cast<float>(2.0 / (static_cast<double>(top) - static_cast<double>(bottom)));
     rResult.m[_M23] = 0.0f;
     rResult.m[_M24] = 0.0f;
     rResult.m[_M31] = 0.0f;
     rResult.m[_M32] = 0.0f;
-    rResult.m[_M33] = (float)(1.0 / ((double)zNearPlane - (double)zFarPlane));
+    rResult.m[_M33] = static_cast<float>(1.0 / (static_cast<double>(zNearPlane) - static_cast<double>(zFarPlane)));
     rResult.m[_M34] = 0.0f;
-    rResult.m[_M41] = (float)(((double)left + (double)right) / ((double)left - (double)right));
-    rResult.m[_M42] = (float)(((double)top + (double)bottom) / ((double)bottom - (double)top));
-    rResult.m[_M43] = (float)((double)zNearPlane / ((double)zNearPlane - (double)zFarPlane));
+    rResult.m[_M41] =
+      static_cast<float>((static_cast<double>(left) + static_cast<double>(right)) / (static_cast<double>(left) - static_cast<double>(right)));
+    rResult.m[_M42] =
+      static_cast<float>((static_cast<double>(top) + static_cast<double>(bottom)) / (static_cast<double>(bottom) - static_cast<double>(top)));
+    rResult.m[_M43] = static_cast<float>(static_cast<double>(zNearPlane) / (static_cast<double>(zNearPlane) - static_cast<double>(zFarPlane)));
     rResult.m[_M44] = 1.0f;
   }
 
 
   Matrix Matrix::CreatePerspective(const float width, const float height, const float nearPlaneDistance, const float farPlaneDistance)
   {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreatePerspective(result, width, height, nearPlaneDistance, farPlaneDistance);
+    // Matrix result(OptimizationFlag::NoInitialization);
+    Matrix result;
+    CreatePerspective(width, height, nearPlaneDistance, farPlaneDistance, result);
     return result;
   }
 
 
-  void Matrix::CreatePerspective(Matrix& rResult, const float width, const float height, const float nearPlaneDistance, const float farPlaneDistance)
+  void Matrix::CreatePerspective(const float width, const float height, const float nearPlaneDistance, const float farPlaneDistance, Matrix& rResult)
   {
     if (width <= 0.0f)
+    {
       throw std::invalid_argument("width <= 0.0f");
+    }
     if (height <= 0.0f)
+    {
       throw std::invalid_argument("height <= 0.0f");
+    }
     if (nearPlaneDistance <= 0.0f)
+    {
       throw std::invalid_argument("nearPlaneDistance <= 0.0f");
-    if (farPlaneDistance <= 0.0f)
-      throw std::invalid_argument("farPlaneDistance <= 0.0f");
+    }
     if (nearPlaneDistance >= farPlaneDistance)
+    {
       throw std::invalid_argument("nearPlaneDistance >= farPlaneDistance");
+    }
 
     rResult.m[_M11] = (2.0f * nearPlaneDistance) / width;
     rResult.m[_M12] = 0.0f;
@@ -640,32 +598,45 @@ namespace Fsl
   Matrix Matrix::CreatePerspectiveFieldOfView(const float fieldOfView, const float aspectRatio, const float nearPlaneDistance,
                                               const float farPlaneDistance)
   {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreatePerspectiveFieldOfView(result, fieldOfView, aspectRatio, nearPlaneDistance, farPlaneDistance);
+    // Matrix result(OptimizationFlag::NoInitialization);
+    Matrix result;
+    CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearPlaneDistance, farPlaneDistance, result);
     return result;
   }
 
-
-  void Matrix::CreatePerspectiveFieldOfView(Matrix& rResult, const float fieldOfView, const float aspectRatio, const float nearPlaneDistance,
-                                            const float farPlaneDistance)
+  // This produces a similar matrix to GLM::perspectiveRH with GLM_DEPTH_ZERO_TO_ONE
+  void Matrix::CreatePerspectiveFieldOfView(const float fieldOfView, const float aspectRatio, const float nearPlaneDistance,
+                                            const float farPlaneDistance, Matrix& rResult)
   {
     if ((fieldOfView <= 0.0f) || (fieldOfView >= 3.141593f))
+    {
       throw std::invalid_argument("fieldOfView <= 0 or >= PI");
+    }
+    if (aspectRatio == 0.0f)
+    {
+      throw std::invalid_argument("aspectRatio can not be zero");
+    }
     if (nearPlaneDistance <= 0.0f)
+    {
       throw std::invalid_argument("nearPlaneDistance <= 0");
+    }
     if (farPlaneDistance <= 0.0f)
+    {
       throw std::invalid_argument("farPlaneDistance <= 0");
+    }
     if (nearPlaneDistance >= farPlaneDistance)
+    {
       throw std::invalid_argument("nearPlaneDistance >= farPlaneDistance");
+    }
 
-    const float num = 1.0f / ((float)std::tan(fieldOfView * 0.5));
-    const float num9 = num / aspectRatio;
+    const float oneDivTanHalfFovY = 1.0f / (static_cast<float>(std::tan(fieldOfView * 0.5)));
+    const float num9 = oneDivTanHalfFovY / aspectRatio;
     rResult.m[_M11] = num9;
     rResult.m[_M12] = 0.0f;
     rResult.m[_M13] = 0.0f;
     rResult.m[_M14] = 0.0f;
     rResult.m[_M21] = 0.0f;
-    rResult.m[_M22] = num;
+    rResult.m[_M22] = oneDivTanHalfFovY;
     rResult.m[_M23] = 0.0f;
     rResult.m[_M24] = 0.0f;
     rResult.m[_M31] = 0.0f;
@@ -766,13 +737,14 @@ namespace Fsl
 
   Matrix Matrix::CreateRotationX(const float radians)
   {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreateRotationX(result, radians);
+    // Matrix result(OptimizationFlag::NoInitialization);
+    Matrix result;
+    CreateRotationX(radians, result);
     return result;
   }
 
 
-  void Matrix::CreateRotationX(Matrix& rResult, const float radians)
+  void Matrix::CreateRotationX(const float radians, Matrix& rResult)
   {
     rResult.SetIdentity();
 
@@ -788,13 +760,14 @@ namespace Fsl
 
   Matrix Matrix::CreateRotationY(const float radians)
   {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreateRotationY(result, radians);
+    // Matrix result(OptimizationFlag::NoInitialization);
+    Matrix result;
+    CreateRotationY(radians, result);
     return result;
   }
 
 
-  void Matrix::CreateRotationY(Matrix& rResult, const float radians)
+  void Matrix::CreateRotationY(const float radians, Matrix& rResult)
   {
     rResult.SetIdentity();
 
@@ -810,13 +783,14 @@ namespace Fsl
 
   Matrix Matrix::CreateRotationZ(const float radians)
   {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreateRotationZ(result, radians);
+    // Matrix result(OptimizationFlag::NoInitialization);
+    Matrix result;
+    CreateRotationZ(radians, result);
     return result;
   }
 
 
-  void Matrix::CreateRotationZ(Matrix& rResult, const float radians)
+  void Matrix::CreateRotationZ(const float radians, Matrix& rResult)
   {
     rResult.SetIdentity();
 
@@ -830,26 +804,13 @@ namespace Fsl
   }
 
 
-  Matrix Matrix::CreateScale(const float scale)
+  void Matrix::CreateScale(const float scale, Matrix& rResult)
   {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreateScale(result, scale, scale, scale);
-    return result;
+    CreateScale(scale, scale, scale, rResult);
   }
 
-  void Matrix::CreateScale(Matrix& rResult, const float scale)
-  {
-    CreateScale(rResult, scale, scale, scale);
-  }
 
-  Matrix Matrix::CreateScale(const float scaleX, const float scaleY, const float scaleZ)
-  {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreateScale(result, scaleX, scaleY, scaleZ);
-    return result;
-  }
-
-  void Matrix::CreateScale(Matrix& rResult, const float scaleX, const float scaleY, const float scaleZ)
+  void Matrix::CreateScale(const float scaleX, const float scaleY, const float scaleZ, Matrix& rResult)
   {
     rResult.m[_M11] = scaleX;
     rResult.m[_M12] = 0;
@@ -869,14 +830,8 @@ namespace Fsl
     rResult.m[_M44] = 1;
   }
 
-  Matrix Matrix::CreateScale(const Vector3& scale)
-  {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreateScale(result, scale);
-    return result;
-  }
 
-  void Matrix::CreateScale(Matrix& rResult, const Vector3& scale)
+  void Matrix::CreateScale(const Vector3& scale, Matrix& rResult)
   {
     rResult.m[_M11] = scale.X;
     rResult.m[_M12] = 0;
@@ -932,15 +887,7 @@ namespace Fsl
   }
 
 
-  Matrix Matrix::CreateTranslation(const float x, const float y, const float z)
-  {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreateTranslation(result, x, y, z);
-    return result;
-  }
-
-
-  void Matrix::CreateTranslation(Matrix& rResult, const float x, const float y, const float z)
+  void Matrix::CreateTranslation(const float x, const float y, const float z, Matrix& rResult)
   {
     rResult.m[_M11] = 1.0f;
     rResult.m[_M12] = 0.0f;
@@ -961,15 +908,7 @@ namespace Fsl
   }
 
 
-  Matrix Matrix::CreateTranslation(const Vector3& value)
-  {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreateTranslation(result, value);
-    return result;
-  }
-
-
-  void Matrix::CreateTranslation(Matrix& rResult, const Vector3& value)
+  void Matrix::CreateTranslation(const Vector3& value, Matrix& rResult)
   {
     rResult.m[_M11] = 1.0f;
     rResult.m[_M12] = 0.0f;
@@ -992,18 +931,20 @@ namespace Fsl
 
   Matrix Matrix::CreateWorld(const Vector3& position, const Vector3& forward, const Vector3& up)
   {
-    Matrix result(OptimizationFlag::NoInitialization);
-    CreateWorld(result, position, forward, up);
+    // Matrix result(OptimizationFlag::NoInitialization);
+    Matrix result;
+    CreateWorld(position, forward, up, result);
     return result;
   }
 
 
-  void Matrix::CreateWorld(Matrix& rResult, const Vector3& position, const Vector3& forward, const Vector3& up)
+  void Matrix::CreateWorld(const Vector3& position, const Vector3& forward, const Vector3& up, Matrix& rResult)
   {
     Vector3 x, y, z;
-    Vector3::Normalize(z, forward);
-    Vector3::Cross(x, forward, up);
-    Vector3::Cross(y, x, forward);
+    Vector3::Normalize(forward, z);
+    Vector3::Cross(forward, up, x);
+    // Ugly cast due to deprecated overloads of Cross
+    Vector3::Cross(static_cast<const Vector3>(x), forward, y);
     x.Normalize();
     y.Normalize();
 
@@ -1022,9 +963,9 @@ namespace Fsl
     rTranslation.Y = m[_M42];
     rTranslation.Z = m[_M43];
 
-    const float xs = std::signbit(m[_M11] * m[_M12] * m[_M13] * m[_M14]) ? -1.0f : 1.0f;
-    const float ys = std::signbit(m[_M21] * m[_M22] * m[_M23] * m[_M24]) ? -1.0f : 1.0f;
-    const float zs = std::signbit(m[_M31] * m[_M32] * m[_M33] * m[_M34]) ? -1.0f : 1.0f;
+    const float xs = signbit(m[_M11] * m[_M12] * m[_M13] * m[_M14]) ? -1.0f : 1.0f;
+    const float ys = signbit(m[_M21] * m[_M22] * m[_M23] * m[_M24]) ? -1.0f : 1.0f;
+    const float zs = signbit(m[_M31] * m[_M32] * m[_M33] * m[_M34]) ? -1.0f : 1.0f;
 
     rScale.X = xs * std::sqrt(m[_M11] * m[_M11] + m[_M12] * m[_M12] + m[_M13] * m[_M13]);
     rScale.Y = ys * std::sqrt(m[_M21] * m[_M21] + m[_M22] * m[_M22] + m[_M23] * m[_M23]);
@@ -1072,81 +1013,16 @@ namespace Fsl
   }
 
 
-  Matrix Matrix::Divide(const Matrix& matrix1, const Matrix& matrix2)
-  {
-    return Matrix(
-      matrix1.m[_M11] / matrix2.m[_M11], matrix1.m[_M12] / matrix2.m[_M12], matrix1.m[_M13] / matrix2.m[_M13], matrix1.m[_M14] / matrix2.m[_M14],
-      matrix1.m[_M21] / matrix2.m[_M21], matrix1.m[_M22] / matrix2.m[_M22], matrix1.m[_M23] / matrix2.m[_M23], matrix1.m[_M24] / matrix2.m[_M24],
-      matrix1.m[_M31] / matrix2.m[_M31], matrix1.m[_M32] / matrix2.m[_M32], matrix1.m[_M33] / matrix2.m[_M33], matrix1.m[_M34] / matrix2.m[_M34],
-      matrix1.m[_M41] / matrix2.m[_M41], matrix1.m[_M42] / matrix2.m[_M42], matrix1.m[_M43] / matrix2.m[_M43], matrix1.m[_M44] / matrix2.m[_M44]);
-  }
-
-
-  void Matrix::Divide(Matrix& rResult, const Matrix& matrix1, const Matrix& matrix2)
-  {
-    rResult.m[_M11] = matrix1.m[_M11] / matrix2.m[_M11];
-    rResult.m[_M12] = matrix1.m[_M12] / matrix2.m[_M12];
-    rResult.m[_M13] = matrix1.m[_M13] / matrix2.m[_M13];
-    rResult.m[_M14] = matrix1.m[_M14] / matrix2.m[_M14];
-    rResult.m[_M21] = matrix1.m[_M21] / matrix2.m[_M21];
-    rResult.m[_M22] = matrix1.m[_M22] / matrix2.m[_M22];
-    rResult.m[_M23] = matrix1.m[_M23] / matrix2.m[_M23];
-    rResult.m[_M24] = matrix1.m[_M24] / matrix2.m[_M24];
-    rResult.m[_M31] = matrix1.m[_M31] / matrix2.m[_M31];
-    rResult.m[_M32] = matrix1.m[_M32] / matrix2.m[_M32];
-    rResult.m[_M33] = matrix1.m[_M33] / matrix2.m[_M33];
-    rResult.m[_M34] = matrix1.m[_M34] / matrix2.m[_M34];
-    rResult.m[_M41] = matrix1.m[_M41] / matrix2.m[_M41];
-    rResult.m[_M42] = matrix1.m[_M42] / matrix2.m[_M42];
-    rResult.m[_M43] = matrix1.m[_M43] / matrix2.m[_M43];
-    rResult.m[_M44] = matrix1.m[_M44] / matrix2.m[_M44];
-  }
-
-
-  Matrix Matrix::Divide(const Matrix& matrix1, const float divider)
-  {
-    // Multiply usually has better performance
-    const float num = 1.0f / divider;
-
-    return Matrix(matrix1.m[_M11] * num, matrix1.m[_M12] * num, matrix1.m[_M13] * num, matrix1.m[_M14] * num, matrix1.m[_M21] * num,
-                  matrix1.m[_M22] * num, matrix1.m[_M23] * num, matrix1.m[_M24] * num, matrix1.m[_M31] * num, matrix1.m[_M32] * num,
-                  matrix1.m[_M33] * num, matrix1.m[_M34] * num, matrix1.m[_M41] * num, matrix1.m[_M42] * num, matrix1.m[_M43] * num,
-                  matrix1.m[_M44] * num);
-  }
-
-
-  void Matrix::Divide(Matrix& rResult, const Matrix& matrix1, const float divider)
-  {
-    // Multiply usually has better performance
-    const float num = 1.0f / divider;
-    rResult.m[_M11] = matrix1.m[_M11] * num;
-    rResult.m[_M12] = matrix1.m[_M12] * num;
-    rResult.m[_M13] = matrix1.m[_M13] * num;
-    rResult.m[_M14] = matrix1.m[_M14] * num;
-    rResult.m[_M21] = matrix1.m[_M21] * num;
-    rResult.m[_M22] = matrix1.m[_M22] * num;
-    rResult.m[_M23] = matrix1.m[_M23] * num;
-    rResult.m[_M24] = matrix1.m[_M24] * num;
-    rResult.m[_M31] = matrix1.m[_M31] * num;
-    rResult.m[_M32] = matrix1.m[_M32] * num;
-    rResult.m[_M33] = matrix1.m[_M33] * num;
-    rResult.m[_M34] = matrix1.m[_M34] * num;
-    rResult.m[_M41] = matrix1.m[_M41] * num;
-    rResult.m[_M42] = matrix1.m[_M42] * num;
-    rResult.m[_M43] = matrix1.m[_M43] * num;
-    rResult.m[_M44] = matrix1.m[_M44] * num;
-  }
-
-
   Matrix Matrix::Invert(const Matrix& matrix)
   {
-    Matrix result(OptimizationFlag::NoInitialization);
-    Invert(result, matrix);
-    return matrix;
+    // Matrix result(OptimizationFlag::NoInitialization);
+    Matrix result;
+    Invert(matrix, result);
+    return result;
   }
 
 
-  void Matrix::Invert(Matrix& rResult, const Matrix& matrix)
+  void Matrix::Invert(const Matrix& matrix, Matrix& rResult)
   {
     const float num1 = matrix.m[_M11];
     const float num2 = matrix.m[_M12];
@@ -1164,47 +1040,110 @@ namespace Fsl
     const float num14 = matrix.m[_M42];
     const float num15 = matrix.m[_M43];
     const float num16 = matrix.m[_M44];
-    const float num17 = (float)((double)num11 * (double)num16 - (double)num12 * (double)num15);
-    const float num18 = (float)((double)num10 * (double)num16 - (double)num12 * (double)num14);
-    const float num19 = (float)((double)num10 * (double)num15 - (double)num11 * (double)num14);
-    const float num20 = (float)((double)num9 * (double)num16 - (double)num12 * (double)num13);
-    const float num21 = (float)((double)num9 * (double)num15 - (double)num11 * (double)num13);
-    const float num22 = (float)((double)num9 * (double)num14 - (double)num10 * (double)num13);
-    const float num23 = (float)((double)num6 * (double)num17 - (double)num7 * (double)num18 + (double)num8 * (double)num19);
-    const float num24 = (float)-((double)num5 * (double)num17 - (double)num7 * (double)num20 + (double)num8 * (double)num21);
-    const float num25 = (float)((double)num5 * (double)num18 - (double)num6 * (double)num20 + (double)num8 * (double)num22);
-    const float num26 = (float)-((double)num5 * (double)num19 - (double)num6 * (double)num21 + (double)num7 * (double)num22);
-    const float num27 =
-      (float)(1.0 / ((double)num1 * (double)num23 + (double)num2 * (double)num24 + (double)num3 * (double)num25 + (double)num4 * (double)num26));
+    const auto num17 =
+      static_cast<float>(static_cast<double>(num11) * static_cast<double>(num16) - static_cast<double>(num12) * static_cast<double>(num15));
+    const auto num18 =
+      static_cast<float>(static_cast<double>(num10) * static_cast<double>(num16) - static_cast<double>(num12) * static_cast<double>(num14));
+    const auto num19 =
+      static_cast<float>(static_cast<double>(num10) * static_cast<double>(num15) - static_cast<double>(num11) * static_cast<double>(num14));
+    const auto num20 =
+      static_cast<float>(static_cast<double>(num9) * static_cast<double>(num16) - static_cast<double>(num12) * static_cast<double>(num13));
+    const auto num21 =
+      static_cast<float>(static_cast<double>(num9) * static_cast<double>(num15) - static_cast<double>(num11) * static_cast<double>(num13));
+    const auto num22 =
+      static_cast<float>(static_cast<double>(num9) * static_cast<double>(num14) - static_cast<double>(num10) * static_cast<double>(num13));
+    const auto num23 =
+      static_cast<float>(static_cast<double>(num6) * static_cast<double>(num17) - static_cast<double>(num7) * static_cast<double>(num18) +
+                         static_cast<double>(num8) * static_cast<double>(num19));
+    const auto num24 =
+      static_cast<float>(-(static_cast<double>(num5) * static_cast<double>(num17) - static_cast<double>(num7) * static_cast<double>(num20) +
+                           static_cast<double>(num8) * static_cast<double>(num21)));
+    const auto num25 =
+      static_cast<float>(static_cast<double>(num5) * static_cast<double>(num18) - static_cast<double>(num6) * static_cast<double>(num20) +
+                         static_cast<double>(num8) * static_cast<double>(num22));
+    const auto num26 =
+      static_cast<float>(-(static_cast<double>(num5) * static_cast<double>(num19) - static_cast<double>(num6) * static_cast<double>(num21) +
+                           static_cast<double>(num7) * static_cast<double>(num22)));
+    const auto num27 =
+      static_cast<float>(1.0 / (static_cast<double>(num1) * static_cast<double>(num23) + static_cast<double>(num2) * static_cast<double>(num24) +
+                                static_cast<double>(num3) * static_cast<double>(num25) + static_cast<double>(num4) * static_cast<double>(num26)));
 
     rResult.m[_M11] = num23 * num27;
     rResult.m[_M21] = num24 * num27;
     rResult.m[_M31] = num25 * num27;
     rResult.m[_M41] = num26 * num27;
-    rResult.m[_M12] = (float)-((double)num2 * (double)num17 - (double)num3 * (double)num18 + (double)num4 * (double)num19) * num27;
-    rResult.m[_M22] = (float)((double)num1 * (double)num17 - (double)num3 * (double)num20 + (double)num4 * (double)num21) * num27;
-    rResult.m[_M32] = (float)-((double)num1 * (double)num18 - (double)num2 * (double)num20 + (double)num4 * (double)num22) * num27;
-    rResult.m[_M42] = (float)((double)num1 * (double)num19 - (double)num2 * (double)num21 + (double)num3 * (double)num22) * num27;
-    const float num28 = (float)((double)num7 * (double)num16 - (double)num8 * (double)num15);
-    const float num29 = (float)((double)num6 * (double)num16 - (double)num8 * (double)num14);
-    const float num30 = (float)((double)num6 * (double)num15 - (double)num7 * (double)num14);
-    const float num31 = (float)((double)num5 * (double)num16 - (double)num8 * (double)num13);
-    const float num32 = (float)((double)num5 * (double)num15 - (double)num7 * (double)num13);
-    const float num33 = (float)((double)num5 * (double)num14 - (double)num6 * (double)num13);
-    rResult.m[_M13] = (float)((double)num2 * (double)num28 - (double)num3 * (double)num29 + (double)num4 * (double)num30) * num27;
-    rResult.m[_M23] = (float)-((double)num1 * (double)num28 - (double)num3 * (double)num31 + (double)num4 * (double)num32) * num27;
-    rResult.m[_M33] = (float)((double)num1 * (double)num29 - (double)num2 * (double)num31 + (double)num4 * (double)num33) * num27;
-    rResult.m[_M43] = (float)-((double)num1 * (double)num30 - (double)num2 * (double)num32 + (double)num3 * (double)num33) * num27;
-    const float num34 = (float)((double)num7 * (double)num12 - (double)num8 * (double)num11);
-    const float num35 = (float)((double)num6 * (double)num12 - (double)num8 * (double)num10);
-    const float num36 = (float)((double)num6 * (double)num11 - (double)num7 * (double)num10);
-    const float num37 = (float)((double)num5 * (double)num12 - (double)num8 * (double)num9);
-    const float num38 = (float)((double)num5 * (double)num11 - (double)num7 * (double)num9);
-    const float num39 = (float)((double)num5 * (double)num10 - (double)num6 * (double)num9);
-    rResult.m[_M14] = (float)-((double)num2 * (double)num34 - (double)num3 * (double)num35 + (double)num4 * (double)num36) * num27;
-    rResult.m[_M24] = (float)((double)num1 * (double)num34 - (double)num3 * (double)num37 + (double)num4 * (double)num38) * num27;
-    rResult.m[_M34] = (float)-((double)num1 * (double)num35 - (double)num2 * (double)num37 + (double)num4 * (double)num39) * num27;
-    rResult.m[_M44] = (float)((double)num1 * (double)num36 - (double)num2 * (double)num38 + (double)num3 * (double)num39) * num27;
+    rResult.m[_M12] =
+      static_cast<float>(-(static_cast<double>(num2) * static_cast<double>(num17) - static_cast<double>(num3) * static_cast<double>(num18) +
+                           static_cast<double>(num4) * static_cast<double>(num19))) *
+      num27;
+    rResult.m[_M22] =
+      static_cast<float>(static_cast<double>(num1) * static_cast<double>(num17) - static_cast<double>(num3) * static_cast<double>(num20) +
+                         static_cast<double>(num4) * static_cast<double>(num21)) *
+      num27;
+    rResult.m[_M32] =
+      static_cast<float>(-(static_cast<double>(num1) * static_cast<double>(num18) - static_cast<double>(num2) * static_cast<double>(num20) +
+                           static_cast<double>(num4) * static_cast<double>(num22))) *
+      num27;
+    rResult.m[_M42] =
+      static_cast<float>(static_cast<double>(num1) * static_cast<double>(num19) - static_cast<double>(num2) * static_cast<double>(num21) +
+                         static_cast<double>(num3) * static_cast<double>(num22)) *
+      num27;
+    const auto num28 =
+      static_cast<float>(static_cast<double>(num7) * static_cast<double>(num16) - static_cast<double>(num8) * static_cast<double>(num15));
+    const auto num29 =
+      static_cast<float>(static_cast<double>(num6) * static_cast<double>(num16) - static_cast<double>(num8) * static_cast<double>(num14));
+    const auto num30 =
+      static_cast<float>(static_cast<double>(num6) * static_cast<double>(num15) - static_cast<double>(num7) * static_cast<double>(num14));
+    const auto num31 =
+      static_cast<float>(static_cast<double>(num5) * static_cast<double>(num16) - static_cast<double>(num8) * static_cast<double>(num13));
+    const auto num32 =
+      static_cast<float>(static_cast<double>(num5) * static_cast<double>(num15) - static_cast<double>(num7) * static_cast<double>(num13));
+    const auto num33 =
+      static_cast<float>(static_cast<double>(num5) * static_cast<double>(num14) - static_cast<double>(num6) * static_cast<double>(num13));
+    rResult.m[_M13] =
+      static_cast<float>(static_cast<double>(num2) * static_cast<double>(num28) - static_cast<double>(num3) * static_cast<double>(num29) +
+                         static_cast<double>(num4) * static_cast<double>(num30)) *
+      num27;
+    rResult.m[_M23] =
+      static_cast<float>(-(static_cast<double>(num1) * static_cast<double>(num28) - static_cast<double>(num3) * static_cast<double>(num31) +
+                           static_cast<double>(num4) * static_cast<double>(num32))) *
+      num27;
+    rResult.m[_M33] =
+      static_cast<float>(static_cast<double>(num1) * static_cast<double>(num29) - static_cast<double>(num2) * static_cast<double>(num31) +
+                         static_cast<double>(num4) * static_cast<double>(num33)) *
+      num27;
+    rResult.m[_M43] =
+      static_cast<float>(-(static_cast<double>(num1) * static_cast<double>(num30) - static_cast<double>(num2) * static_cast<double>(num32) +
+                           static_cast<double>(num3) * static_cast<double>(num33))) *
+      num27;
+    const auto num34 =
+      static_cast<float>(static_cast<double>(num7) * static_cast<double>(num12) - static_cast<double>(num8) * static_cast<double>(num11));
+    const auto num35 =
+      static_cast<float>(static_cast<double>(num6) * static_cast<double>(num12) - static_cast<double>(num8) * static_cast<double>(num10));
+    const auto num36 =
+      static_cast<float>(static_cast<double>(num6) * static_cast<double>(num11) - static_cast<double>(num7) * static_cast<double>(num10));
+    const auto num37 =
+      static_cast<float>(static_cast<double>(num5) * static_cast<double>(num12) - static_cast<double>(num8) * static_cast<double>(num9));
+    const auto num38 =
+      static_cast<float>(static_cast<double>(num5) * static_cast<double>(num11) - static_cast<double>(num7) * static_cast<double>(num9));
+    const auto num39 =
+      static_cast<float>(static_cast<double>(num5) * static_cast<double>(num10) - static_cast<double>(num6) * static_cast<double>(num9));
+    rResult.m[_M14] =
+      static_cast<float>(-(static_cast<double>(num2) * static_cast<double>(num34) - static_cast<double>(num3) * static_cast<double>(num35) +
+                           static_cast<double>(num4) * static_cast<double>(num36))) *
+      num27;
+    rResult.m[_M24] =
+      static_cast<float>(static_cast<double>(num1) * static_cast<double>(num34) - static_cast<double>(num3) * static_cast<double>(num37) +
+                         static_cast<double>(num4) * static_cast<double>(num38)) *
+      num27;
+    rResult.m[_M34] =
+      static_cast<float>(-(static_cast<double>(num1) * static_cast<double>(num35) - static_cast<double>(num2) * static_cast<double>(num37) +
+                           static_cast<double>(num4) * static_cast<double>(num39))) *
+      num27;
+    rResult.m[_M44] =
+      static_cast<float>(static_cast<double>(num1) * static_cast<double>(num36) - static_cast<double>(num2) * static_cast<double>(num38) +
+                         static_cast<double>(num3) * static_cast<double>(num39)) *
+      num27;
   }
 
 
@@ -1223,7 +1162,7 @@ namespace Fsl
   }
 
 
-  void Matrix::Lerp(Matrix& rResult, const Matrix& value1, const Matrix& value2, const float amount)
+  void Matrix::Lerp(const Matrix& value1, const Matrix& value2, const float amount, Matrix& rResult)
   {
     const float* pMatrix1 = value1.m;
     const float* pMatrix2 = value2.m;
@@ -1251,138 +1190,7 @@ namespace Fsl
     pResult[_M44] = pMatrix1[_M44] + ((pMatrix2[_M44] - pMatrix1[_M44]) * amount);
   }
 
-  Matrix Matrix::Multiply(const Matrix& matrix1, const Matrix& matrix2)
-  {
-    return Matrix((((matrix1.m[_M11] * matrix2.m[_M11]) + (matrix1.m[_M12] * matrix2.m[_M21])) + (matrix1.m[_M13] * matrix2.m[_M31])) +
-                    (matrix1.m[_M14] * matrix2.m[_M41]),
-                  (((matrix1.m[_M11] * matrix2.m[_M12]) + (matrix1.m[_M12] * matrix2.m[_M22])) + (matrix1.m[_M13] * matrix2.m[_M32])) +
-                    (matrix1.m[_M14] * matrix2.m[_M42]),
-                  (((matrix1.m[_M11] * matrix2.m[_M13]) + (matrix1.m[_M12] * matrix2.m[_M23])) + (matrix1.m[_M13] * matrix2.m[_M33])) +
-                    (matrix1.m[_M14] * matrix2.m[_M43]),
-                  (((matrix1.m[_M11] * matrix2.m[_M14]) + (matrix1.m[_M12] * matrix2.m[_M24])) + (matrix1.m[_M13] * matrix2.m[_M34])) +
-                    (matrix1.m[_M14] * matrix2.m[_M44]),
-                  (((matrix1.m[_M21] * matrix2.m[_M11]) + (matrix1.m[_M22] * matrix2.m[_M21])) + (matrix1.m[_M23] * matrix2.m[_M31])) +
-                    (matrix1.m[_M24] * matrix2.m[_M41]),
-                  (((matrix1.m[_M21] * matrix2.m[_M12]) + (matrix1.m[_M22] * matrix2.m[_M22])) + (matrix1.m[_M23] * matrix2.m[_M32])) +
-                    (matrix1.m[_M24] * matrix2.m[_M42]),
-                  (((matrix1.m[_M21] * matrix2.m[_M13]) + (matrix1.m[_M22] * matrix2.m[_M23])) + (matrix1.m[_M23] * matrix2.m[_M33])) +
-                    (matrix1.m[_M24] * matrix2.m[_M43]),
-                  (((matrix1.m[_M21] * matrix2.m[_M14]) + (matrix1.m[_M22] * matrix2.m[_M24])) + (matrix1.m[_M23] * matrix2.m[_M34])) +
-                    (matrix1.m[_M24] * matrix2.m[_M44]),
-                  (((matrix1.m[_M31] * matrix2.m[_M11]) + (matrix1.m[_M32] * matrix2.m[_M21])) + (matrix1.m[_M33] * matrix2.m[_M31])) +
-                    (matrix1.m[_M34] * matrix2.m[_M41]),
-                  (((matrix1.m[_M31] * matrix2.m[_M12]) + (matrix1.m[_M32] * matrix2.m[_M22])) + (matrix1.m[_M33] * matrix2.m[_M32])) +
-                    (matrix1.m[_M34] * matrix2.m[_M42]),
-                  (((matrix1.m[_M31] * matrix2.m[_M13]) + (matrix1.m[_M32] * matrix2.m[_M23])) + (matrix1.m[_M33] * matrix2.m[_M33])) +
-                    (matrix1.m[_M34] * matrix2.m[_M43]),
-                  (((matrix1.m[_M31] * matrix2.m[_M14]) + (matrix1.m[_M32] * matrix2.m[_M24])) + (matrix1.m[_M33] * matrix2.m[_M34])) +
-                    (matrix1.m[_M34] * matrix2.m[_M44]),
-                  (((matrix1.m[_M41] * matrix2.m[_M11]) + (matrix1.m[_M42] * matrix2.m[_M21])) + (matrix1.m[_M43] * matrix2.m[_M31])) +
-                    (matrix1.m[_M44] * matrix2.m[_M41]),
-                  (((matrix1.m[_M41] * matrix2.m[_M12]) + (matrix1.m[_M42] * matrix2.m[_M22])) + (matrix1.m[_M43] * matrix2.m[_M32])) +
-                    (matrix1.m[_M44] * matrix2.m[_M42]),
-                  (((matrix1.m[_M41] * matrix2.m[_M13]) + (matrix1.m[_M42] * matrix2.m[_M23])) + (matrix1.m[_M43] * matrix2.m[_M33])) +
-                    (matrix1.m[_M44] * matrix2.m[_M43]),
-                  (((matrix1.m[_M41] * matrix2.m[_M14]) + (matrix1.m[_M42] * matrix2.m[_M24])) + (matrix1.m[_M43] * matrix2.m[_M34])) +
-                    (matrix1.m[_M44] * matrix2.m[_M44]));
-  }
-
-
-  void Matrix::Multiply(Matrix& rResult, const Matrix& matrix1, const Matrix& matrix2)
-  {
-    const float* pMatrix1 = matrix1.m;
-    const float* pMatrix2 = matrix2.m;
-
-    const float m11 = (((pMatrix1[_M11] * pMatrix2[_M11]) + (pMatrix1[_M12] * pMatrix2[_M21])) + (pMatrix1[_M13] * pMatrix2[_M31])) +
-                      (pMatrix1[_M14] * pMatrix2[_M41]);
-    const float m12 = (((pMatrix1[_M11] * pMatrix2[_M12]) + (pMatrix1[_M12] * pMatrix2[_M22])) + (pMatrix1[_M13] * pMatrix2[_M32])) +
-                      (pMatrix1[_M14] * pMatrix2[_M42]);
-    const float m13 = (((pMatrix1[_M11] * pMatrix2[_M13]) + (pMatrix1[_M12] * pMatrix2[_M23])) + (pMatrix1[_M13] * pMatrix2[_M33])) +
-                      (pMatrix1[_M14] * pMatrix2[_M43]);
-    const float m14 = (((pMatrix1[_M11] * pMatrix2[_M14]) + (pMatrix1[_M12] * pMatrix2[_M24])) + (pMatrix1[_M13] * pMatrix2[_M34])) +
-                      (pMatrix1[_M14] * pMatrix2[_M44]);
-    const float m21 = (((pMatrix1[_M21] * pMatrix2[_M11]) + (pMatrix1[_M22] * pMatrix2[_M21])) + (pMatrix1[_M23] * pMatrix2[_M31])) +
-                      (pMatrix1[_M24] * pMatrix2[_M41]);
-    const float m22 = (((pMatrix1[_M21] * pMatrix2[_M12]) + (pMatrix1[_M22] * pMatrix2[_M22])) + (pMatrix1[_M23] * pMatrix2[_M32])) +
-                      (pMatrix1[_M24] * pMatrix2[_M42]);
-    const float m23 = (((pMatrix1[_M21] * pMatrix2[_M13]) + (pMatrix1[_M22] * pMatrix2[_M23])) + (pMatrix1[_M23] * pMatrix2[_M33])) +
-                      (pMatrix1[_M24] * pMatrix2[_M43]);
-    const float m24 = (((pMatrix1[_M21] * pMatrix2[_M14]) + (pMatrix1[_M22] * pMatrix2[_M24])) + (pMatrix1[_M23] * pMatrix2[_M34])) +
-                      (pMatrix1[_M24] * pMatrix2[_M44]);
-    const float m31 = (((pMatrix1[_M31] * pMatrix2[_M11]) + (pMatrix1[_M32] * pMatrix2[_M21])) + (pMatrix1[_M33] * pMatrix2[_M31])) +
-                      (pMatrix1[_M34] * pMatrix2[_M41]);
-    const float m32 = (((pMatrix1[_M31] * pMatrix2[_M12]) + (pMatrix1[_M32] * pMatrix2[_M22])) + (pMatrix1[_M33] * pMatrix2[_M32])) +
-                      (pMatrix1[_M34] * pMatrix2[_M42]);
-    const float m33 = (((pMatrix1[_M31] * pMatrix2[_M13]) + (pMatrix1[_M32] * pMatrix2[_M23])) + (pMatrix1[_M33] * pMatrix2[_M33])) +
-                      (pMatrix1[_M34] * pMatrix2[_M43]);
-    const float m34 = (((pMatrix1[_M31] * pMatrix2[_M14]) + (pMatrix1[_M32] * pMatrix2[_M24])) + (pMatrix1[_M33] * pMatrix2[_M34])) +
-                      (pMatrix1[_M34] * pMatrix2[_M44]);
-    const float m41 = (((pMatrix1[_M41] * pMatrix2[_M11]) + (pMatrix1[_M42] * pMatrix2[_M21])) + (pMatrix1[_M43] * pMatrix2[_M31])) +
-                      (pMatrix1[_M44] * pMatrix2[_M41]);
-    const float m42 = (((pMatrix1[_M41] * pMatrix2[_M12]) + (pMatrix1[_M42] * pMatrix2[_M22])) + (pMatrix1[_M43] * pMatrix2[_M32])) +
-                      (pMatrix1[_M44] * pMatrix2[_M42]);
-    const float m43 = (((pMatrix1[_M41] * pMatrix2[_M13]) + (pMatrix1[_M42] * pMatrix2[_M23])) + (pMatrix1[_M43] * pMatrix2[_M33])) +
-                      (pMatrix1[_M44] * pMatrix2[_M43]);
-    const float m44 = (((pMatrix1[_M41] * pMatrix2[_M14]) + (pMatrix1[_M42] * pMatrix2[_M24])) + (pMatrix1[_M43] * pMatrix2[_M34])) +
-                      (pMatrix1[_M44] * pMatrix2[_M44]);
-
-    rResult.m[_M11] = m11;
-    rResult.m[_M12] = m12;
-    rResult.m[_M13] = m13;
-    rResult.m[_M14] = m14;
-    rResult.m[_M21] = m21;
-    rResult.m[_M22] = m22;
-    rResult.m[_M23] = m23;
-    rResult.m[_M24] = m24;
-    rResult.m[_M31] = m31;
-    rResult.m[_M32] = m32;
-    rResult.m[_M33] = m33;
-    rResult.m[_M34] = m34;
-    rResult.m[_M41] = m41;
-    rResult.m[_M42] = m42;
-    rResult.m[_M43] = m43;
-    rResult.m[_M44] = m44;
-  }
-
-
-  Matrix Matrix::Multiply(const Matrix& matrix1, const float factor)
-  {
-    return Matrix(matrix1.m[_M11] * factor, matrix1.m[_M12] * factor, matrix1.m[_M13] * factor, matrix1.m[_M14] * factor, matrix1.m[_M21] * factor,
-                  matrix1.m[_M22] * factor, matrix1.m[_M23] * factor, matrix1.m[_M24] * factor, matrix1.m[_M31] * factor, matrix1.m[_M32] * factor,
-                  matrix1.m[_M33] * factor, matrix1.m[_M34] * factor, matrix1.m[_M41] * factor, matrix1.m[_M42] * factor, matrix1.m[_M43] * factor,
-                  matrix1.m[_M44] * factor);
-  }
-
-  void Matrix::Multiply(Matrix& rResult, const Matrix& matrix1, const float factor)
-  {
-    rResult.m[_M11] = matrix1.m[_M11] * factor;
-    rResult.m[_M12] = matrix1.m[_M12] * factor;
-    rResult.m[_M13] = matrix1.m[_M13] * factor;
-    rResult.m[_M14] = matrix1.m[_M14] * factor;
-    rResult.m[_M21] = matrix1.m[_M21] * factor;
-    rResult.m[_M22] = matrix1.m[_M22] * factor;
-    rResult.m[_M23] = matrix1.m[_M23] * factor;
-    rResult.m[_M24] = matrix1.m[_M24] * factor;
-    rResult.m[_M31] = matrix1.m[_M31] * factor;
-    rResult.m[_M32] = matrix1.m[_M32] * factor;
-    rResult.m[_M33] = matrix1.m[_M33] * factor;
-    rResult.m[_M34] = matrix1.m[_M34] * factor;
-    rResult.m[_M41] = matrix1.m[_M41] * factor;
-    rResult.m[_M42] = matrix1.m[_M42] * factor;
-    rResult.m[_M43] = matrix1.m[_M43] * factor;
-    rResult.m[_M44] = matrix1.m[_M44] * factor;
-  }
-
-
-  Matrix Matrix::Negate(const Matrix& matrix) const
-  {
-    return Matrix(-matrix.m[_M11], -matrix.m[_M12], -matrix.m[_M13], -matrix.m[_M14], -matrix.m[_M21], -matrix.m[_M22], -matrix.m[_M23],
-                  -matrix.m[_M24], -matrix.m[_M31], -matrix.m[_M32], -matrix.m[_M33], -matrix.m[_M34], -matrix.m[_M41], -matrix.m[_M42],
-                  -matrix.m[_M43], -matrix.m[_M44]);
-  }
-
-
-  void Matrix::Negate(Matrix& rResult, const Matrix& matrix)
+  void Matrix::Negate(const Matrix& matrix, Matrix& rResult)
   {
     rResult.m[_M11] = -matrix.m[_M11];
     rResult.m[_M12] = -matrix.m[_M12];
@@ -1423,17 +1231,8 @@ namespace Fsl
     m[_M44] = 1.0f;
   }
 
-  Matrix Matrix::Subtract(const Matrix& matrix1, const Matrix& matrix2)
-  {
-    return Matrix(
-      matrix1.m[_M11] - matrix2.m[_M11], matrix1.m[_M12] - matrix2.m[_M12], matrix1.m[_M13] - matrix2.m[_M13], matrix1.m[_M14] - matrix2.m[_M14],
-      matrix1.m[_M21] - matrix2.m[_M21], matrix1.m[_M22] - matrix2.m[_M22], matrix1.m[_M23] - matrix2.m[_M23], matrix1.m[_M24] - matrix2.m[_M24],
-      matrix1.m[_M31] - matrix2.m[_M31], matrix1.m[_M32] - matrix2.m[_M32], matrix1.m[_M33] - matrix2.m[_M33], matrix1.m[_M34] - matrix2.m[_M34],
-      matrix1.m[_M41] - matrix2.m[_M41], matrix1.m[_M42] - matrix2.m[_M42], matrix1.m[_M43] - matrix2.m[_M43], matrix1.m[_M44] - matrix2.m[_M44]);
-  }
 
-
-  void Matrix::Subtract(Matrix& rResult, const Matrix& matrix1, const Matrix& matrix2)
+  void Matrix::Subtract(const Matrix& matrix1, const Matrix& matrix2, Matrix& rResult)
   {
     rResult.m[_M11] = matrix1.m[_M11] - matrix2.m[_M11];
     rResult.m[_M12] = matrix1.m[_M12] - matrix2.m[_M12];
@@ -1454,14 +1253,7 @@ namespace Fsl
   }
 
 
-  Matrix Matrix::Transpose(const Matrix& matrix)
-  {
-    return Matrix(matrix.m[_M11], matrix.m[_M21], matrix.m[_M31], matrix.m[_M41], matrix.m[_M12], matrix.m[_M22], matrix.m[_M32], matrix.m[_M42],
-                  matrix.m[_M13], matrix.m[_M23], matrix.m[_M33], matrix.m[_M43], matrix.m[_M14], matrix.m[_M24], matrix.m[_M34], matrix.m[_M44]);
-  }
-
-
-  void Matrix::Transpose(Matrix& rResult, const Matrix& src)
+  void Matrix::Transpose(const Matrix& src, Matrix& rResult)
   {
     rResult = Transpose(src);
   }
@@ -1470,172 +1262,93 @@ namespace Fsl
   void MatrixInternals::Transform(Vector2& rResult, const Vector2& position, const Matrix& matrix)
   {
     const float* pMatrix = matrix.DirectAccess();
-    rResult = Vector2((position.X * pMatrix[_M12]) + (position.Y * pMatrix[_M21]) + pMatrix[_M41],
-                      (position.X * pMatrix[_M13]) + (position.Y * pMatrix[_M22]) + pMatrix[_M42]);
+    // Done like this to ensure that position and rResult can be the same.
+    const auto x = (position.X * pMatrix[_M11]) + (position.Y * pMatrix[_M21]) + pMatrix[_M41];
+    const auto y = (position.X * pMatrix[_M12]) + (position.Y * pMatrix[_M22]) + pMatrix[_M42];
+    rResult.X = x;
+    rResult.Y = y;
   }
 
 
   void MatrixInternals::TransformNormal(Vector2& rResult, const Vector2& position, const Matrix& matrix)
   {
     const float* pMatrix = matrix.DirectAccess();
-    rResult = Vector2((position.X * pMatrix[_M12]) + (position.Y * pMatrix[_M21]), (position.X * pMatrix[_M13]) + (position.Y * pMatrix[_M22]));
+    // Done like this to ensure that position and rResult can be the same.
+    const auto x = (position.X * pMatrix[_M11]) + (position.Y * pMatrix[_M21]);
+    const auto y = (position.X * pMatrix[_M12]) + (position.Y * pMatrix[_M22]);
+    rResult.X = x;
+    rResult.Y = y;
   }
+
 
   void MatrixInternals::Transform(Vector3& rResult, const Vector3& position, const Matrix& matrix)
   {
+    // rResult and Position can not be the same
     const float* pMatrix = matrix.DirectAccess();
-    rResult = Vector3((position.X * pMatrix[_M12]) + (position.Y * pMatrix[_M21]) + (position.Z * pMatrix[_M31]) + pMatrix[_M41],
-                      (position.X * pMatrix[_M13]) + (position.Y * pMatrix[_M22]) + (position.Z * pMatrix[_M32]) + pMatrix[_M42],
-                      (position.X * pMatrix[_M14]) + (position.Y * pMatrix[_M23]) + (position.Z * pMatrix[_M33]) + pMatrix[_M43]);
+
+    // Done like this to ensure that position and rResult can be the same.
+    const auto x = (position.X * pMatrix[_M11]) + (position.Y * pMatrix[_M21]) + (position.Z * pMatrix[_M31]) + pMatrix[_M41];
+    const auto y = (position.X * pMatrix[_M12]) + (position.Y * pMatrix[_M22]) + (position.Z * pMatrix[_M32]) + pMatrix[_M42];
+    const auto z = (position.X * pMatrix[_M13]) + (position.Y * pMatrix[_M23]) + (position.Z * pMatrix[_M33]) + pMatrix[_M43];
+    rResult.X = x;
+    rResult.Y = y;
+    rResult.Z = z;
   }
 
 
   void MatrixInternals::TransformNormal(Vector3& rResult, const Vector3& position, const Matrix& matrix)
   {
     const float* pMatrix = matrix.DirectAccess();
-    rResult = Vector3((position.X * pMatrix[_M12]) + (position.Y * pMatrix[_M21]) + (position.Z * pMatrix[_M31]),
-                      (position.X * pMatrix[_M13]) + (position.Y * pMatrix[_M22]) + (position.Z * pMatrix[_M32]),
-                      (position.X * pMatrix[_M14]) + (position.Y * pMatrix[_M23]) + (position.Z * pMatrix[_M33]));
+
+    // Done like this to ensure that position and rResult can be the same.
+    const auto x = (position.X * pMatrix[_M11]) + (position.Y * pMatrix[_M21]) + (position.Z * pMatrix[_M31]);
+    const auto y = (position.X * pMatrix[_M12]) + (position.Y * pMatrix[_M22]) + (position.Z * pMatrix[_M32]);
+    const auto z = (position.X * pMatrix[_M13]) + (position.Y * pMatrix[_M23]) + (position.Z * pMatrix[_M33]);
+    rResult.X = x;
+    rResult.Y = y;
+    rResult.Z = z;
   }
 
   void MatrixInternals::Transform(Vector4& rResult, const Vector2& position, const Matrix& matrix)
   {
     const float* pMatrix = matrix.DirectAccess();
-    rResult = Vector4((position.X * pMatrix[_M11]) + (position.Y * pMatrix[_M21]) + pMatrix[_M41],
-                      (position.X * pMatrix[_M12]) + (position.Y * pMatrix[_M22]) + pMatrix[_M42],
-                      (position.X * pMatrix[_M13]) + (position.Y * pMatrix[_M23]) + pMatrix[_M43],
-                      (position.X * pMatrix[_M14]) + (position.Y * pMatrix[_M24]) + pMatrix[_M44]);
+    // Done like this to ensure that position and rResult can be the same.
+    const auto x = (position.X * pMatrix[_M11]) + (position.Y * pMatrix[_M21]) + pMatrix[_M41];
+    const auto y = (position.X * pMatrix[_M12]) + (position.Y * pMatrix[_M22]) + pMatrix[_M42];
+    const auto z = (position.X * pMatrix[_M13]) + (position.Y * pMatrix[_M23]) + pMatrix[_M43];
+    const auto w = (position.X * pMatrix[_M14]) + (position.Y * pMatrix[_M24]) + pMatrix[_M44];
+    rResult.X = x;
+    rResult.Y = y;
+    rResult.Z = z;
+    rResult.W = w;
   }
 
   void MatrixInternals::Transform(Vector4& rResult, const Vector3& position, const Matrix& matrix)
   {
     const float* pMatrix = matrix.DirectAccess();
-    rResult = Vector4((position.X * pMatrix[_M11]) + (position.Y * pMatrix[_M21]) + (position.Z * pMatrix[_M31]) + pMatrix[_M41],
-                      (position.X * pMatrix[_M12]) + (position.Y * pMatrix[_M22]) + (position.Z * pMatrix[_M32]) + pMatrix[_M42],
-                      (position.X * pMatrix[_M13]) + (position.Y * pMatrix[_M23]) + (position.Z * pMatrix[_M33]) + pMatrix[_M43],
-                      (position.X * pMatrix[_M14]) + (position.Y * pMatrix[_M24]) + (position.Z * pMatrix[_M34]) + pMatrix[_M44]);
+    // Done like this to ensure that position and rResult can be the same.
+    const auto x = (position.X * pMatrix[_M11]) + (position.Y * pMatrix[_M21]) + (position.Z * pMatrix[_M31]) + pMatrix[_M41];
+    const auto y = (position.X * pMatrix[_M12]) + (position.Y * pMatrix[_M22]) + (position.Z * pMatrix[_M32]) + pMatrix[_M42];
+    const auto z = (position.X * pMatrix[_M13]) + (position.Y * pMatrix[_M23]) + (position.Z * pMatrix[_M33]) + pMatrix[_M43];
+    const auto w = (position.X * pMatrix[_M14]) + (position.Y * pMatrix[_M24]) + (position.Z * pMatrix[_M34]) + pMatrix[_M44];
+    rResult.X = x;
+    rResult.Y = y;
+    rResult.Z = z;
+    rResult.W = w;
   }
 
 
   void MatrixInternals::Transform(Vector4& rResult, const Vector4& position, const Matrix& matrix)
   {
     const float* pMatrix = matrix.DirectAccess();
-    rResult = Vector4((position.X * pMatrix[_M11]) + (position.Y * pMatrix[_M21]) + (position.Z * pMatrix[_M31]) + (position.W * pMatrix[_M41]),
-                      (position.X * pMatrix[_M12]) + (position.Y * pMatrix[_M22]) + (position.Z * pMatrix[_M32]) + (position.W * pMatrix[_M42]),
-                      (position.X * pMatrix[_M13]) + (position.Y * pMatrix[_M23]) + (position.Z * pMatrix[_M33]) + (position.W * pMatrix[_M43]),
-                      (position.X * pMatrix[_M14]) + (position.Y * pMatrix[_M24]) + (position.Z * pMatrix[_M34]) + (position.W * pMatrix[_M44]));
+    // Done like this to ensure that position and rResult can be the same.
+    const auto x = (position.X * pMatrix[_M11]) + (position.Y * pMatrix[_M21]) + (position.Z * pMatrix[_M31]) + (position.W * pMatrix[_M41]);
+    const auto y = (position.X * pMatrix[_M12]) + (position.Y * pMatrix[_M22]) + (position.Z * pMatrix[_M32]) + (position.W * pMatrix[_M42]);
+    const auto z = (position.X * pMatrix[_M13]) + (position.Y * pMatrix[_M23]) + (position.Z * pMatrix[_M33]) + (position.W * pMatrix[_M43]);
+    const auto w = (position.X * pMatrix[_M14]) + (position.Y * pMatrix[_M24]) + (position.Z * pMatrix[_M34]) + (position.W * pMatrix[_M44]);
+    rResult.X = x;
+    rResult.Y = y;
+    rResult.Z = z;
+    rResult.W = w;
   }
-
-  Matrix Matrix::operator-() const
-  {
-    return Negate(*this);
-  }
-
-
-  Matrix& Matrix::operator*=(const Matrix& rhs)
-  {
-    const float* pRhs = rhs.DirectAccess();
-
-    const float m11 = (((m[_M11] * pRhs[_M11]) + (m[_M12] * pRhs[_M21]) + (m[_M13] * pRhs[_M31])) + (m[_M14] * pRhs[_M41]));
-    const float m12 = (((m[_M11] * pRhs[_M12]) + (m[_M12] * pRhs[_M22]) + (m[_M13] * pRhs[_M32])) + (m[_M14] * pRhs[_M42]));
-    const float m13 = (((m[_M11] * pRhs[_M13]) + (m[_M12] * pRhs[_M23]) + (m[_M13] * pRhs[_M33])) + (m[_M14] * pRhs[_M43]));
-    const float m14 = (((m[_M11] * pRhs[_M14]) + (m[_M12] * pRhs[_M24]) + (m[_M13] * pRhs[_M34])) + (m[_M14] * pRhs[_M44]));
-    const float m21 = (((m[_M21] * pRhs[_M11]) + (m[_M22] * pRhs[_M21]) + (m[_M23] * pRhs[_M31])) + (m[_M24] * pRhs[_M41]));
-    const float m22 = (((m[_M21] * pRhs[_M12]) + (m[_M22] * pRhs[_M22]) + (m[_M23] * pRhs[_M32])) + (m[_M24] * pRhs[_M42]));
-    const float m23 = (((m[_M21] * pRhs[_M13]) + (m[_M22] * pRhs[_M23]) + (m[_M23] * pRhs[_M33])) + (m[_M24] * pRhs[_M43]));
-    const float m24 = (((m[_M21] * pRhs[_M14]) + (m[_M22] * pRhs[_M24]) + (m[_M23] * pRhs[_M34])) + (m[_M24] * pRhs[_M44]));
-    const float m31 = (((m[_M31] * pRhs[_M11]) + (m[_M32] * pRhs[_M21]) + (m[_M33] * pRhs[_M31])) + (m[_M34] * pRhs[_M41]));
-    const float m32 = (((m[_M31] * pRhs[_M12]) + (m[_M32] * pRhs[_M22]) + (m[_M33] * pRhs[_M32])) + (m[_M34] * pRhs[_M42]));
-    const float m33 = (((m[_M31] * pRhs[_M13]) + (m[_M32] * pRhs[_M23]) + (m[_M33] * pRhs[_M33])) + (m[_M34] * pRhs[_M43]));
-    const float m34 = (((m[_M31] * pRhs[_M14]) + (m[_M32] * pRhs[_M24]) + (m[_M33] * pRhs[_M34])) + (m[_M34] * pRhs[_M44]));
-    const float m41 = (((m[_M41] * pRhs[_M11]) + (m[_M42] * pRhs[_M21]) + (m[_M43] * pRhs[_M31])) + (m[_M44] * pRhs[_M41]));
-    const float m42 = (((m[_M41] * pRhs[_M12]) + (m[_M42] * pRhs[_M22]) + (m[_M43] * pRhs[_M32])) + (m[_M44] * pRhs[_M42]));
-    const float m43 = (((m[_M41] * pRhs[_M13]) + (m[_M42] * pRhs[_M23]) + (m[_M43] * pRhs[_M33])) + (m[_M44] * pRhs[_M43]));
-    const float m44 = (((m[_M41] * pRhs[_M14]) + (m[_M42] * pRhs[_M24]) + (m[_M43] * pRhs[_M34])) + (m[_M44] * pRhs[_M44]));
-
-    m[_M11] = m11;
-    m[_M12] = m12;
-    m[_M13] = m13;
-    m[_M14] = m14;
-    m[_M21] = m21;
-    m[_M22] = m22;
-    m[_M23] = m23;
-    m[_M24] = m24;
-    m[_M31] = m31;
-    m[_M32] = m32;
-    m[_M33] = m33;
-    m[_M34] = m34;
-    m[_M41] = m41;
-    m[_M42] = m42;
-    m[_M43] = m43;
-    m[_M44] = m44;
-    return *this;
-  }
-
-
-  Matrix& Matrix::operator+=(const Matrix& rhs)
-  {
-    *this = Add(*this, rhs);
-    return *this;
-  }
-
-
-  Matrix& Matrix::operator-=(const Matrix& rhs)
-  {
-    *this = Subtract(*this, rhs);
-    return *this;
-  }
-
-
-  bool Matrix::operator==(const Matrix& rhs) const
-  {
-    return (m[_M11] == rhs.m[_M11] && m[_M12] == rhs.m[_M12] && m[_M13] == rhs.m[_M13] && m[_M14] == rhs.m[_M14] && m[_M21] == rhs.m[_M21] &&
-            m[_M22] == rhs.m[_M22] && m[_M23] == rhs.m[_M23] && m[_M24] == rhs.m[_M24] && m[_M31] == rhs.m[_M31] && m[_M32] == rhs.m[_M32] &&
-            m[_M33] == rhs.m[_M33] && m[_M34] == rhs.m[_M34] && m[_M41] == rhs.m[_M41] && m[_M42] == rhs.m[_M42] && m[_M43] == rhs.m[_M43] &&
-            m[_M44] == rhs.m[_M44]);
-  }
-
-
-  bool Matrix::operator!=(const Matrix& rhs) const
-  {
-    return (m[_M11] != rhs.m[_M11] || m[_M12] != rhs.m[_M12] || m[_M13] != rhs.m[_M13] || m[_M14] != rhs.m[_M14] || m[_M21] != rhs.m[_M21] ||
-            m[_M22] != rhs.m[_M22] || m[_M23] != rhs.m[_M23] || m[_M24] != rhs.m[_M24] || m[_M31] != rhs.m[_M31] || m[_M32] != rhs.m[_M32] ||
-            m[_M33] != rhs.m[_M33] || m[_M34] != rhs.m[_M34] || m[_M41] != rhs.m[_M41] || m[_M42] != rhs.m[_M42] || m[_M43] != rhs.m[_M43] ||
-            m[_M44] != rhs.m[_M44]);
-  }
-}
-
-
-const Fsl::Matrix operator*(const Fsl::Matrix& lhs, const Fsl::Matrix& rhs)
-{
-  const float* pLhs = lhs.DirectAccess();
-  const float* pRhs = rhs.DirectAccess();
-  return Fsl::Matrix((((pLhs[_M11] * pRhs[_M11]) + (pLhs[_M12] * pRhs[_M21])) + (pLhs[_M13] * pRhs[_M31])) + (pLhs[_M14] * pRhs[_M41]),
-                     (((pLhs[_M11] * pRhs[_M12]) + (pLhs[_M12] * pRhs[_M22])) + (pLhs[_M13] * pRhs[_M32])) + (pLhs[_M14] * pRhs[_M42]),
-                     (((pLhs[_M11] * pRhs[_M13]) + (pLhs[_M12] * pRhs[_M23])) + (pLhs[_M13] * pRhs[_M33])) + (pLhs[_M14] * pRhs[_M43]),
-                     (((pLhs[_M11] * pRhs[_M14]) + (pLhs[_M12] * pRhs[_M24])) + (pLhs[_M13] * pRhs[_M34])) + (pLhs[_M14] * pRhs[_M44]),
-                     (((pLhs[_M21] * pRhs[_M11]) + (pLhs[_M22] * pRhs[_M21])) + (pLhs[_M23] * pRhs[_M31])) + (pLhs[_M24] * pRhs[_M41]),
-                     (((pLhs[_M21] * pRhs[_M12]) + (pLhs[_M22] * pRhs[_M22])) + (pLhs[_M23] * pRhs[_M32])) + (pLhs[_M24] * pRhs[_M42]),
-                     (((pLhs[_M21] * pRhs[_M13]) + (pLhs[_M22] * pRhs[_M23])) + (pLhs[_M23] * pRhs[_M33])) + (pLhs[_M24] * pRhs[_M43]),
-                     (((pLhs[_M21] * pRhs[_M14]) + (pLhs[_M22] * pRhs[_M24])) + (pLhs[_M23] * pRhs[_M34])) + (pLhs[_M24] * pRhs[_M44]),
-                     (((pLhs[_M31] * pRhs[_M11]) + (pLhs[_M32] * pRhs[_M21])) + (pLhs[_M33] * pRhs[_M31])) + (pLhs[_M34] * pRhs[_M41]),
-                     (((pLhs[_M31] * pRhs[_M12]) + (pLhs[_M32] * pRhs[_M22])) + (pLhs[_M33] * pRhs[_M32])) + (pLhs[_M34] * pRhs[_M42]),
-                     (((pLhs[_M31] * pRhs[_M13]) + (pLhs[_M32] * pRhs[_M23])) + (pLhs[_M33] * pRhs[_M33])) + (pLhs[_M34] * pRhs[_M43]),
-                     (((pLhs[_M31] * pRhs[_M14]) + (pLhs[_M32] * pRhs[_M24])) + (pLhs[_M33] * pRhs[_M34])) + (pLhs[_M34] * pRhs[_M44]),
-                     (((pLhs[_M41] * pRhs[_M11]) + (pLhs[_M42] * pRhs[_M21])) + (pLhs[_M43] * pRhs[_M31])) + (pLhs[_M44] * pRhs[_M41]),
-                     (((pLhs[_M41] * pRhs[_M12]) + (pLhs[_M42] * pRhs[_M22])) + (pLhs[_M43] * pRhs[_M32])) + (pLhs[_M44] * pRhs[_M42]),
-                     (((pLhs[_M41] * pRhs[_M13]) + (pLhs[_M42] * pRhs[_M23])) + (pLhs[_M43] * pRhs[_M33])) + (pLhs[_M44] * pRhs[_M43]),
-                     (((pLhs[_M41] * pRhs[_M14]) + (pLhs[_M42] * pRhs[_M24])) + (pLhs[_M43] * pRhs[_M34])) + (pLhs[_M44] * pRhs[_M44]));
-}
-
-
-const Fsl::Matrix operator+(const Fsl::Matrix& lhs, const Fsl::Matrix& rhs)
-{
-  return Fsl::Matrix::Add(lhs, rhs);
-}
-
-
-const Fsl::Matrix operator-(const Fsl::Matrix& lhs, const Fsl::Matrix& rhs)
-{
-  return Fsl::Matrix::Subtract(lhs, rhs);
 }

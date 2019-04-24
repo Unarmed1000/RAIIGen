@@ -1,5 +1,6 @@
 #ifndef FSLBASE_SYSTEM_PLATFORM_PLATFORMWIN32_HPP
 #define FSLBASE_SYSTEM_PLATFORM_PLATFORMWIN32_HPP
+#ifdef _WIN32
 /****************************************************************************************************************************************************
  * Copyright (c) 2014 Freescale Semiconductor, Inc.
  * All rights reserved.
@@ -31,10 +32,6 @@
  *
  ****************************************************************************************************************************************************/
 
-#ifndef _WIN32
-#error This is a windows only header file
-#endif
-
 #include <cstdint>
 #include <string>
 
@@ -52,4 +49,5 @@ namespace Fsl
   };
 }
 
+#endif
 #endif

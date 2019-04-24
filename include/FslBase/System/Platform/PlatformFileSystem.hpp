@@ -56,12 +56,13 @@ namespace Fsl
       //! @brief Create a platform specific token that can be used to monitor a path for changes
       //! @return return the platform specific token or null if not supported
       //! @note Experimental interface, might change.
-      static std::shared_ptr<PlatformPathMonitorToken> CreatePathMonitorToken(const Path& path);
+      static std::shared_ptr<PlatformPathMonitorToken> CreatePathMonitorToken(const Path& fullPath);
 
       //! @brief Check if the token was changed since the last time
       //! @return true if changed, false if not
       //! @note Experimental interface, might change.
       static bool CheckPathForChanges(const std::shared_ptr<PlatformPathMonitorToken>& token);
+
 
       //! @brief Get the files under the path directory
       static void GetContent(PathDeque& rResult, const Path& path, const SearchOptions searchOptions, const FileAttributes& attributeFilter);

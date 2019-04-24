@@ -53,7 +53,6 @@ namespace Fsl
       Hidden = 0x40000000,
     };
   };
-
 }
 
 #endif

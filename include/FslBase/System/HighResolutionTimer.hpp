@@ -33,14 +33,13 @@
 
 #include <FslBase/BasicTypes.hpp>
 #include <FslBase/Noncopyable.hpp>
-#include <FslBase/System/HighResolutionTimer.hpp>
 
 namespace Fsl
 {
   // This can only be used for relative timer compares
   class HighResolutionTimer : private Noncopyable
   {
-    uint64_t m_frequency;
+    double m_frequency{};
 
   public:
     HighResolutionTimer();
@@ -48,7 +47,6 @@ namespace Fsl
     // Returns the current time value in microseconds
     uint64_t GetTime() const;
   };
-
 }
 
 #endif

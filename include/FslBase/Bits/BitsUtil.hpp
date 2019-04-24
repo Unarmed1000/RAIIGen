@@ -51,7 +51,7 @@ namespace Fsl
       value = value - n;
       value = ((value + (value >> 4)) & 0xF0F0F0F);
       value = value * 0x01010101;
-      return (int)(value >> 24);
+      return static_cast<int>(value >> 24);
     }
 
     //------------------------------------------------------------------------------------------------------------------------------------------------
@@ -100,7 +100,9 @@ namespace Fsl
         ++value;    // Val is now the next highest power of 2.
       }
       else
+      {
         value = 1;
+      }
       return value;
     }
 

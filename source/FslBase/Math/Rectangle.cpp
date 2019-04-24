@@ -66,7 +66,9 @@ namespace Fsl
       FSLLOG_WARNING("Tried to set width to less than zero");
     }
     else
+    {
       m_width = value;
+    }
   }
 
 
@@ -78,7 +80,8 @@ namespace Fsl
       FSLLOG_WARNING("Tried to set height to less than zero");
     }
     else
+    {
       m_height = value;
+    }
   }
-
 }

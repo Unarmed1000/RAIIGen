@@ -31,20 +31,22 @@
  *
  ****************************************************************************************************************************************************/
 
-#include <FslBase/Noncopyable.hpp>
-#include <FslBase/Log/LogLocation.hpp>
+#include <FslBase/Log/BasicLogger.hpp>
 #include <sstream>
-#include <string>
 
 namespace Fsl
 {
   // WARNING: It is not a good idea to utilize this code before 'main' has been hit (so don't use it from static object constructors)
-  class Logger : private Noncopyable
+  class Logger : public BasicLogger
   {
   public:
-    static void WriteLine(const LogLocation& location, const char* const psz);
-    static void WriteLine(const LogLocation& location, const std::string& str);
-    static void WriteLine(const LogLocation& location, const std::stringstream& str);
+    Logger(const Logger&) = delete;
+    Logger& operator=(const Logger&) = delete;
+
+    static void WriteLine(const LogType logType, const std::stringstream& str, const LogLocation& location)
+    {
+      BasicLogger::WriteLine(logType, str.str().c_str(), location);
+    }
   };
 }
 

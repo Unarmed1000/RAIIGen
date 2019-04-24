@@ -36,9 +36,7 @@ namespace Fsl
   class ITag
   {
   public:
-    virtual ~ITag()
-    {
-    }
+    virtual ~ITag() = default;
   };
 }
 

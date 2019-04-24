@@ -32,111 +32,104 @@
 #include <FslBase/Getopt/Option.hpp>
 #include <FslBase/Exceptions.hpp>
 #include <cstring>
+#include <utility>
 
 namespace Fsl
 {
-  Option::Option(const char* const pszSmartName, const OptionArgument::Enum hasArg, const int32_t cmdId, const char* const pszDescription)
-    : ShortName(nullptr)
-    , Name(nullptr)
-    , HasArg(hasArg)
+  Option::Option(const std::string& smartName, const OptionArgument::Enum hasArg, const int32_t cmdId, std::string description)
+    : HasArg(hasArg)
     , CmdId(cmdId)
-    , Description(pszDescription)
-    , Group(OptionGroup::Default)
-    , Type(OptionType::Default)
-    , IsPositional(false)
+    , Description(std::move(description))
   {
-    if (pszSmartName == nullptr)
-      throw std::invalid_argument("pszSmartName can not be null");
-    const std::size_t len = strlen(pszSmartName);
-    if (len == 0)
-      throw std::invalid_argument("pszSmartName can not be empty");
-    else if (len == 1)
-      ShortName = pszSmartName;
+    if (smartName.empty())
+    {
+      throw std::invalid_argument("smartName can not be empty");
+    }
+    if (smartName.size() == 1)
+    {
+      ShortName = smartName;
+    }
     else
-      Name = pszSmartName;
+    {
+      Name = smartName;
+    }
   }
 
 
-  Option::Option(const char* const pszSmartName, const OptionArgument::Enum hasArg, const int32_t cmdId, const char* const pszDescription,
+  Option::Option(const std::string& smartName, const OptionArgument::Enum hasArg, const int32_t cmdId, std::string description,
                  const OptionGroup::Enum group)
-    : ShortName(nullptr)
-    , Name(nullptr)
-    , HasArg(hasArg)
+    : HasArg(hasArg)
     , CmdId(cmdId)
-    , Description(pszDescription)
+    , Description(std::move(description))
     , Group(group)
-    , Type(OptionType::Default)
-    , IsPositional(false)
   {
-    if (pszSmartName == nullptr)
-      throw std::invalid_argument("pszSmartName can not be null");
-    const std::size_t len = strlen(pszSmartName);
-    if (len == 0)
-      throw std::invalid_argument("pszSmartName can not be empty");
-    else if (len == 1)
-      ShortName = pszSmartName;
+    if (smartName.empty())
+    {
+      throw std::invalid_argument("smartName can not be empty");
+    }
+    if (smartName.size() == 1)
+    {
+      ShortName = smartName;
+    }
     else
-      Name = pszSmartName;
+    {
+      Name = smartName;
+    }
   }
 
 
-  Option::Option(const char* const pszShortName, const char* const pszName, const OptionArgument::Enum hasArg, const int32_t cmdId,
-                 const char* const pszDescription)
-    : ShortName(pszShortName)
-    , Name(pszName)
+  Option::Option(const std::string& shortName, const std::string& name, const OptionArgument::Enum hasArg, const int32_t cmdId,
+                 std::string description)
+    : ShortName(shortName)
+    , Name(name)
     , HasArg(hasArg)
     , CmdId(cmdId)
-    , Description(pszDescription)
-    , Group(OptionGroup::Default)
-    , Type(OptionType::Default)
-    , IsPositional(false)
+    , Description(std::move(description))
   {
-    if (pszShortName == nullptr && pszName == nullptr)
-      throw std::invalid_argument("pszShortName and pszName can not both be null");
-
-    if (pszShortName != nullptr && strlen(pszShortName) != 1)
+    if (shortName.size() != 1)
+    {
       throw std::invalid_argument("A short name is expected to have a length of 1");
+    }
 
-    if (pszName != nullptr && strlen(pszName) <= 1)
+    if (name.size() <= 1)
+    {
       throw std::invalid_argument("A name is expected to have a length that is greater than one");
+    }
   }
 
 
-  Option::Option(const char* const pszShortName, const char* const pszName, const OptionArgument::Enum hasArg, const int32_t cmdId,
-                 const char* const pszDescription, const OptionGroup::Enum group)
-    : ShortName(pszShortName)
-    , Name(pszName)
+  Option::Option(const std::string& shortName, const std::string& name, const OptionArgument::Enum hasArg, const int32_t cmdId,
+                 std::string description, const OptionGroup::Enum group)
+    : ShortName(shortName)
+    , Name(name)
     , HasArg(hasArg)
     , CmdId(cmdId)
-    , Description(pszDescription)
+    , Description(std::move(description))
     , Group(group)
-    , Type(OptionType::Default)
-    , IsPositional(false)
   {
-    if (pszShortName == nullptr && pszName == nullptr)
-      throw std::invalid_argument("pszShortName and pszName can not both be null");
-
-    if (pszShortName != nullptr && strlen(pszShortName) != 1)
+    if (shortName.size() != 1)
+    {
       throw std::invalid_argument("A short name is expected to have a length of 1");
+    }
 
-    if (pszName != nullptr && strlen(pszName) <= 1)
+    if (name.size() <= 1)
+    {
       throw std::invalid_argument("A name is expected to have a length that is greater than one");
+    }
   }
 
 
-  PositionalOption::PositionalOption(const char* const pszName, const OptionArgument::Enum hasArg, const int32_t cmdId,
-                                     const char* const pszDescription)
-    : Option(pszName, hasArg, cmdId, pszDescription)
+  PositionalOption::PositionalOption(const std::string& name, const OptionArgument::Enum hasArg, const int32_t cmdId, const std::string& description)
+    : Option(name, hasArg, cmdId, description)
   {
     IsPositional = true;
   }
 
 
-  PositionalOption::PositionalOption(const char* const pszName, const OptionArgument::Enum hasArg, const int32_t cmdId,
-                                     const char* const pszDescription, const OptionGroup::Enum group)
-    : Option(pszName, hasArg, cmdId, pszDescription, group)
+  PositionalOption::PositionalOption(const std::string& name, const OptionArgument::Enum hasArg, const int32_t cmdId, const std::string& description,
+                                     const OptionGroup::Enum group)
+    : Option(name, hasArg, cmdId, description, group)
   {
     IsPositional = true;
   }
-
 }

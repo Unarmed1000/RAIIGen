@@ -35,6 +35,7 @@
 #include <FslBase/IO/PathDeque.hpp>
 #include <FslBase/Log/Log.hpp>
 #include <FslBase/System/Platform/PlatformWin32.hpp>
+#include <utility>
 #include <windows.h>
 
 
@@ -44,18 +45,20 @@ namespace Fsl
   {
     struct FileData
     {
-      bool IsDataValid;
+      bool IsDataValid{false};
       _WIN32_FILE_ATTRIBUTE_DATA AttributeData;
 
       FileData()
-        : IsDataValid(false)
+        : AttributeData{}
       {
       }
 
       bool operator==(const FileData& rhs) const
       {
         if (!IsDataValid)
+        {
           return !rhs.IsDataValid;
+        }
 
         return AttributeData.dwFileAttributes == rhs.AttributeData.dwFileAttributes && AttributeData.nFileSizeLow == rhs.AttributeData.nFileSizeLow &&
                AttributeData.nFileSizeHigh == rhs.AttributeData.nFileSizeHigh &&
@@ -74,9 +77,9 @@ namespace Fsl
       Path FullPath;
       FileData Data;
 
-      PlatformPathMonitorToken(const Path& fullPath)
-        : FullPath(fullPath)
-        , Data()
+      PlatformPathMonitorToken(Path fullPath)
+        : FullPath(std::move(fullPath))
+
       {
       }
     };
@@ -86,18 +89,18 @@ namespace Fsl
       void ExtractData(FileData& rData, const Path& fullPath)
       {
         rData = FileData();
-        rData.IsDataValid = (GetFileAttributesEx(fullPath.ToWString().c_str(), GetFileExInfoStandard, &rData.AttributeData) != 0);
+        rData.IsDataValid =
+          (GetFileAttributesEx(PlatformWin32::Widen(fullPath.ToUTF8String()).c_str(), GetFileExInfoStandard, &rData.AttributeData) != 0);
       }
 
 
       inline void AppendEntry(PathDeque& rResult, const IO::Path& path, const WIN32_FIND_DATA& fd)
       {
-        const std::string strFilename(PlatformWin32::Narrow(std::wstring(fd.cFileName)));
+        std::string strFilename(PlatformWin32::Narrow(std::wstring(fd.cFileName)));
         rResult.push_back(std::make_shared<Path>(Path::Combine(path, strFilename)));
       }
 
-
-      inline bool IsSpecialDirectory(const WIN32_FIND_DATA& fd)
+	  inline bool IsSpecialDirectory(const WIN32_FIND_DATA& fd)
       {
         return (fd.cFileName[0] == L'.' && fd.cFileName[1] == 0) || (fd.cFileName[0] == L'.' && fd.cFileName[1] == L'.' && fd.cFileName[2] == 0);
       }
@@ -105,9 +108,9 @@ namespace Fsl
 
       void GetContentInDirectory(PathDeque& rResult, const IO::Path& path, const bool includeSubdirectories, const FileAttributes& attributeFilter)
       {
-        const std::wstring searchPath = path.ToWString() + L"/*";
+        const std::wstring searchPath = PlatformWin32::Widen(path.ToUTF8String()) + L"/*";
 
-        WIN32_FIND_DATA fd;
+        WIN32_FIND_DATA fd{};
         HANDLE hFind = ::FindFirstFile(searchPath.c_str(), &fd);
         if (hFind != INVALID_HANDLE_VALUE)
         {
@@ -133,7 +136,7 @@ namespace Fsl
                 const Path subDir = Path::Combine(path, strFilename);
                 GetContentInDirectory(rResult, subDir, true, attributeFilter);
               }
-            } while (::FindNextFile(hFind, &fd));
+            } while (::FindNextFile(hFind, &fd) != 0);
             ::FindClose(hFind);
           }
           catch (const std::exception&)
@@ -148,15 +151,21 @@ namespace Fsl
 
     bool PlatformFileSystem::TryGetAttributes(const Path& path, FileAttributes& rAttributes)
     {
-      DWORD res = GetFileAttributes(path.ToWString().c_str());
+      DWORD res = GetFileAttributes(PlatformWin32::Widen(path.ToUTF8String()).c_str());
       if (res == INVALID_FILE_ATTRIBUTES)
+      {
         return false;
+      }
 
       rAttributes = FileAttributes();
       if ((res & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY)
+      {
         rAttributes.SetFlag(FileAttributes::Directory);
+      }
       else
+      {
         rAttributes.SetFlag(FileAttributes::File);
+      }
       return true;
     }
 
@@ -164,7 +173,9 @@ namespace Fsl
     std::shared_ptr<PlatformPathMonitorToken> PlatformFileSystem::CreatePathMonitorToken(const Path& fullPath)
     {
       if (!Path::IsPathRooted(fullPath))
+      {
         throw std::invalid_argument("path must be rooted");
+      }
 
       auto result = std::make_shared<PlatformPathMonitorToken>(fullPath);
       ExtractData(result->Data, fullPath);
@@ -175,7 +186,9 @@ namespace Fsl
     bool PlatformFileSystem::CheckPathForChanges(const std::shared_ptr<PlatformPathMonitorToken>& token)
     {
       if (!token)
+      {
         throw std::invalid_argument("token can not be null");
+      }
 
       FileData data;
       ExtractData(data, token->FullPath);
@@ -190,12 +203,14 @@ namespace Fsl
 
 
     void PlatformFileSystem::GetContent(PathDeque& rResult, const Path& path, const SearchOptions searchOptions,
-                                        const FileAttributes& attributeFilter)
+										const FileAttributes& attributeFilter)
     {
       rResult.clear();
       FileAttributes attr;
       if (!TryGetAttributes(path, attr) || !attr.HasFlag(FileAttributes::Directory))
+      {
         throw DirectoryNotFoundException(path.ToAsciiString());
+      }
 
       switch (searchOptions)
       {
@@ -213,12 +228,13 @@ namespace Fsl
 
     void PlatformFileSystem::CreateDir(const Path& path)
     {
-      const std::wstring name = path.ToWString();
+      const std::wstring name = PlatformWin32::Widen(path.ToUTF8String());
       auto res = CreateDirectory(name.c_str(), nullptr);
       if (res == 0 && GetLastError() != ERROR_ALREADY_EXISTS)
+      {
         throw IOException("Failed to create directory");
+      }
     }
-
   }
 }
 

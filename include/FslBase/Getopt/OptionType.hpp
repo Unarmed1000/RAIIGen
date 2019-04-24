@@ -41,7 +41,6 @@ namespace Fsl
       Rectangle
     };
   };
-
 }
 
 #endif

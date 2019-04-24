@@ -117,7 +117,6 @@ namespace Fsl
     *static_cast<uint32_t*>(m_pVirtAddress) = value;
     m_lastValue = *static_cast<uint32_t*>(m_pVirtAddress);
   }
-
 }
 
 #endif

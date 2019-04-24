@@ -51,8 +51,6 @@ namespace Fsl
 
     // static int64_t GetPerformanceFrequency();
     // static int64_t GetPerformanceCounter();
-
-    static std::wstring UTF8ToWString(const std::string& str);
   };
 }
 

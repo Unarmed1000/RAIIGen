@@ -42,18 +42,18 @@ namespace Fsl
 
   public:
     // move assignment operator
-    UTF8String& operator=(UTF8String&& other);
+    UTF8String& operator=(UTF8String&& other) noexcept;
     // move constructor
-    UTF8String(UTF8String&& other);
+    UTF8String(UTF8String&& other) noexcept;
     // Request that the compiler generates a copy constructor and assignment operator
     UTF8String(const UTF8String&) = default;
     UTF8String& operator=(const UTF8String&) = default;
 
     UTF8String();
-    explicit UTF8String(const std::string& str);
+    explicit UTF8String(std::string str);
     UTF8String(const char* const psz);
-    UTF8String(const std::string& str, const int32_t startIndex, const int32_t length);
-    UTF8String(const UTF8String& str, const int32_t startIndex, const int32_t length);
+    UTF8String(const std::string& str, const std::size_t startIndex, const std::size_t length);
+    UTF8String(const UTF8String& str, const std::size_t startIndex, const std::size_t length);
     ~UTF8String();
 
     void Clear();
@@ -68,38 +68,43 @@ namespace Fsl
     bool EndsWith(const char ch) const;
     bool EndsWith(const UTF8String& path) const;
     void Replace(const char from, const char to);
-    int32_t IndexOf(const char ch) const;
+    int32_t IndexOf(const char ch, const std::size_t fromIndex = 0) const;
     int32_t LastIndexOf(const char ch) const;
 
-    std::string ToUTF8String() const
+    const std::string& ToUTF8String() const
     {
       return m_content;
     }
-    std::string ToAsciiString() const;
-    std::wstring ToWString() const;
 
-    void Reset(const char* const psz, const int32_t startIndex, const int32_t length);
+    std::string ToAsciiString() const;
+
+    void Reset(const char* const psz, const std::size_t startIndex, const std::size_t length);
 
     bool operator==(const UTF8String& rhs) const
     {
       return m_content == rhs.m_content;
     }
+
     bool operator!=(const UTF8String& rhs) const
     {
       return m_content != rhs.m_content;
     }
+
     bool operator<(const UTF8String& rhs) const
     {
       return m_content < rhs.m_content;
     }
+
     bool operator>(const UTF8String& rhs) const
     {
       return m_content > rhs.m_content;
     }
+
     bool operator<=(const UTF8String& rhs) const
     {
       return m_content <= rhs.m_content;
     }
+
     bool operator>=(const UTF8String& rhs) const
     {
       return m_content >= rhs.m_content;

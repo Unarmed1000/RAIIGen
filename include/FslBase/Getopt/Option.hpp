@@ -35,35 +35,36 @@
 #include <FslBase/Getopt/OptionArgument.hpp>
 #include <FslBase/Getopt/OptionGroup.hpp>
 #include <FslBase/Getopt/OptionType.hpp>
+#include <string>
 
 namespace Fsl
 {
   //! @brief Extension of the normal getopt option with a number of extra parameters
   struct Option
   {
-    const char* ShortName;
-    const char* Name;
-    OptionArgument::Enum HasArg;
-    int32_t CmdId;
-    const char* Description;
-    OptionGroup::Enum Group;
-    OptionType::Enum Type;
-    bool IsPositional;
+    std::string ShortName;
+    std::string Name;
+    OptionArgument::Enum HasArg{OptionArgument::OptionNone};
+    int32_t CmdId{0};
+    std::string Description;
+    OptionGroup::Enum Group{OptionGroup::Default};
+    OptionType::Enum Type{OptionType::Default};
+    bool IsPositional{false};
 
-    Option(const char* const pszSmartName, const OptionArgument::Enum hasArg, const int32_t cmdId, const char* const pszDescription);
-    Option(const char* const pszSmartName, const OptionArgument::Enum hasArg, const int32_t cmdId, const char* const pszDescription,
+    Option() = default;
+    Option(const std::string& smartName, const OptionArgument::Enum hasArg, const int32_t cmdId, std::string description);
+    Option(const std::string& smartName, const OptionArgument::Enum hasArg, const int32_t cmdId, std::string description,
            const OptionGroup::Enum group);
-    Option(const char* const pszShortName, const char* const pszName, const OptionArgument::Enum hasArg, const int32_t cmdId,
-           const char* const pszDescription);
-    Option(const char* const pszShortName, const char* const pszName, const OptionArgument::Enum hasArg, const int32_t cmdId,
-           const char* const pszDescription, const OptionGroup::Enum group);
+    Option(const std::string& shortName, const std::string& name, const OptionArgument::Enum hasArg, const int32_t cmdId, std::string description);
+    Option(const std::string& shortName, const std::string& name, const OptionArgument::Enum hasArg, const int32_t cmdId, std::string description,
+           const OptionGroup::Enum group);
   };
 
 
   struct PositionalOption : public Option
   {
-    PositionalOption(const char* const pszName, const OptionArgument::Enum hasArg, const int32_t cmdId, const char* const pszDescription);
-    PositionalOption(const char* const pszName, const OptionArgument::Enum hasArg, const int32_t cmdId, const char* const pszDescription,
+    PositionalOption(const std::string& name, const OptionArgument::Enum hasArg, const int32_t cmdId, const std::string& description);
+    PositionalOption(const std::string& name, const OptionArgument::Enum hasArg, const int32_t cmdId, const std::string& description,
                      const OptionGroup::Enum group);
   };
 }

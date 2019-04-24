@@ -35,7 +35,7 @@
 #include <FslBase/System/Platform/Linux/ScopedSystemMemoryAccessLinux.hpp>
 namespace Fsl
 {
-  typedef ScopedSystemMemoryAccessLinux ScopedSystemMemoryAccess;
+  using ScopedSystemMemoryAccess = ScopedSystemMemoryAccessLinux;
 }
 #elif defined(__QNXNTO__)
 #include <FslBase/System/Platform/QNX/ScopedSystemMemoryAccessQNX.hpp>
@@ -47,7 +47,7 @@ namespace Fsl
 #include <FslBase/System/Platform/All/ScopedSystemMemoryAccessDummy.hpp>
 namespace Fsl
 {
-  typedef ScopedSystemMemoryAccessDummy ScopedSystemMemoryAccess;
+  using ScopedSystemMemoryAccess = ScopedSystemMemoryAccessDummy;
 }
 #endif
 #endif

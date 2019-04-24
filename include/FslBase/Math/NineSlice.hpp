@@ -38,61 +38,60 @@ namespace Fsl
   struct NineSlice
   {
   private:
-    int32_t m_sliceFromTopLeftX;
-    int32_t m_sliceFromTopLeftY;
-    int32_t m_sliceFromBottomRightX;
-    int32_t m_sliceFromBottomRightY;
+    int32_t m_sliceFromTopLeftX{0};
+    int32_t m_sliceFromTopLeftY{0};
+    int32_t m_sliceFromBottomRightX{0};
+    int32_t m_sliceFromBottomRightY{0};
 
   public:
-    NineSlice()
-      : m_sliceFromTopLeftX(0)
-      , m_sliceFromTopLeftY(0)
-      , m_sliceFromBottomRightX(0)
-      , m_sliceFromBottomRightY(0)
-    {
-    }
+    constexpr NineSlice() = default;
 
     //! @brief Create the slice points based on a rectangle
     NineSlice(const int32_t sliceFromTopLeftX, const int32_t sliceFromTopLeftY, const int32_t sliceFromBottomRightX,
               const int32_t sliceFromBottomRightY);
 
-    inline int32_t SliceFromTopLeftX() const
+    constexpr int32_t SliceFromTopLeftX() const
     {
       return m_sliceFromTopLeftX;
     }
-    inline int32_t SliceFromTopLeftY() const
+
+    constexpr int32_t SliceFromTopLeftY() const
     {
       return m_sliceFromTopLeftY;
     }
-    inline int32_t SliceFromBottomRightX() const
+
+    constexpr int32_t SliceFromBottomRightX() const
     {
       return m_sliceFromBottomRightX;
     }
-    inline int32_t SliceFromBottomRightY() const
+
+    constexpr int32_t SliceFromBottomRightY() const
     {
       return m_sliceFromBottomRightY;
     }
 
-    bool operator==(const NineSlice& rhs) const
+    constexpr bool operator==(const NineSlice& rhs) const
     {
       return m_sliceFromTopLeftX == rhs.m_sliceFromTopLeftX && m_sliceFromTopLeftY == rhs.m_sliceFromTopLeftY &&
              m_sliceFromBottomRightX == rhs.m_sliceFromBottomRightX && m_sliceFromBottomRightY == rhs.m_sliceFromBottomRightY;
     }
-    bool operator!=(const NineSlice& rhs) const
+
+    constexpr bool operator!=(const NineSlice& rhs) const
     {
       return !(*this == rhs);
     }
 
-    inline int32_t SumX() const
+    constexpr int32_t SumX() const
     {
       return m_sliceFromTopLeftX + m_sliceFromBottomRightX;
     }
-    inline int32_t SumY() const
+
+    constexpr int32_t SumY() const
     {
       return m_sliceFromTopLeftY + m_sliceFromBottomRightY;
     }
 
-    inline bool IsEmpty() const
+    constexpr bool IsEmpty() const
     {
       return (m_sliceFromTopLeftX + m_sliceFromTopLeftY + m_sliceFromBottomRightX + m_sliceFromBottomRightY) == 0;
     }

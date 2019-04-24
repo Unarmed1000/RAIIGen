@@ -41,7 +41,9 @@ namespace Fsl
     std::lock_guard<std::mutex> lock(m_mutex);
     // std::queue is missing a clear method
     while (!m_queue.empty())
+    {
       m_queue.pop();
+    }
   }
 
 
@@ -55,7 +57,9 @@ namespace Fsl
       m_queue.push(value);
     }
     if (wasEmpty)
+    {
       UnsafeWake();
+    }
   }
 
 
@@ -66,7 +70,9 @@ namespace Fsl
 
     // Wait for a message to arrive
     while (m_queue.empty())
+    {
       m_waitForMsgCondition.wait(lock);
+    }
 
     const T result = m_queue.front();
     m_queue.pop();
@@ -86,6 +92,34 @@ namespace Fsl
     }
     rValue = m_queue.front();
     m_queue.pop();
+    return true;
+  }
+
+
+  template <typename T>
+  bool ConcurrentQueue<T>::TryDequeWait(T& rValue, const std::chrono::milliseconds& duration)
+  {
+    std::unique_lock<std::mutex> lock(m_mutex);
+
+    if (duration.count() > 0)
+    {
+      // Wait for a message to arrive
+      if (m_queue.empty())
+      {
+        m_waitForMsgCondition.wait_for(lock, duration);
+      }
+    }
+
+    if (m_queue.empty())
+    {
+      rValue = T();
+      return false;
+    }
+
+
+    const T result = m_queue.front();
+    m_queue.pop();
+    rValue = result;
     return true;
   }
 

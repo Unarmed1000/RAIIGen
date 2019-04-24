@@ -74,5 +74,4 @@ namespace Fsl
     ScopedSystemMemoryAccess access(targetAddress);
     return access.SetUInt32(value);
   }
-
 }

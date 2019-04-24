@@ -47,7 +47,7 @@ namespace MB
   namespace
   {
     const std::string g_programName = "RAIIGen";
-    const std::string g_programVersion = "V0.5.0";
+    const std::string g_programVersion = "V0.5.1";
 
     using namespace Fsl;
 
@@ -266,7 +266,7 @@ namespace MB
       using namespace MB;
 
       // Ensure that the dst path exist
-      IO::Directory::CreateDirectory(dstPath);
+      IO::Directory::CreateDir(dstPath);
 
       const std::shared_ptr<CustomLog> customLog = std::make_shared<CustomLogConsole>();
 

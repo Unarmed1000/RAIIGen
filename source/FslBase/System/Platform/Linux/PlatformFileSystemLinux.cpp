@@ -34,29 +34,32 @@
 #include <FslBase/Exceptions.hpp>
 #include <FslBase/IO/PathDeque.hpp>
 #include <FslBase/Log/Log.hpp>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <cstring>
 #include <dirent.h>
+#include <cerrno>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 namespace Fsl
 {
   namespace IO
   {
+    using SafeStat = struct stat;
+    using SafeDirent = struct dirent;
+
     struct FileData
     {
-      bool IsDataValid;
-      struct stat AttributeData;
+      bool IsDataValid{false};
+      SafeStat AttributeData{};
 
-      FileData()
-        : IsDataValid(false)
-      {
-      }
+      FileData() = default;
 
       bool operator==(const FileData& rhs) const
       {
         if (!IsDataValid)
+        {
           return !rhs.IsDataValid;
+        }
 
         return AttributeData.st_ctime == rhs.AttributeData.st_ctime;
       }
@@ -75,7 +78,7 @@ namespace Fsl
 
       PlatformPathMonitorToken(const Path& fullPath)
         : FullPath(fullPath)
-        , Data()
+
       {
       }
     };
@@ -95,7 +98,7 @@ namespace Fsl
         DIR* pDir = opendir(path.ToUTF8String().c_str());
         if (pDir != nullptr)
         {
-          struct dirent* pEnt;
+          SafeDirent* pEnt;
           // print all the files and directories within directory
           while ((pEnt = readdir(pDir)) != nullptr)
           {
@@ -106,16 +109,22 @@ namespace Fsl
               if (PlatformFileSystem::TryGetAttributes(fullPath, attr))
               {
                 if (attr.HasFlag(FileAttributes::File))
+                {
                   rResult.push_back(std::make_shared<Path>(fullPath));
+                }
                 else if (includeSubdirectories && attr.HasFlag(FileAttributes::Directory))
+                {
                   GetFilesInDirectory(rResult, fullPath, true);
+                }
               }
             }
           }
           closedir(pDir);
         }
         else
+        {
           throw DirectoryNotFoundException(path.ToAsciiString());
+        }
       }
     }
 
@@ -124,14 +133,20 @@ namespace Fsl
     {
       rAttributes = FileAttributes();
 
-      struct stat s;
+      SafeStat s{};
       if (stat(path.ToUTF8String().c_str(), &s) != 0)
+      {
         return false;
+      }
 
       if (S_ISDIR(s.st_mode))
+      {
         rAttributes.SetFlag(FileAttributes::Directory);
+      }
       else if (S_ISREG(s.st_mode))
+      {
         rAttributes.SetFlag(FileAttributes::File);
+      }
       return true;
     }
 
@@ -139,7 +154,9 @@ namespace Fsl
     std::shared_ptr<PlatformPathMonitorToken> PlatformFileSystem::CreatePathMonitorToken(const Path& fullPath)
     {
       if (!Path::IsPathRooted(fullPath))
+      {
         throw std::invalid_argument("path must be rooted");
+      }
 
       auto result = std::make_shared<PlatformPathMonitorToken>(fullPath);
       ExtractData(result->Data, fullPath);
@@ -150,7 +167,9 @@ namespace Fsl
     bool PlatformFileSystem::CheckPathForChanges(const std::shared_ptr<PlatformPathMonitorToken>& token)
     {
       if (!token)
+      {
         throw std::invalid_argument("token can not be null");
+      }
 
       FileData data;
       ExtractData(data, token->FullPath);
@@ -169,7 +188,9 @@ namespace Fsl
       rResult.clear();
       FileAttributes attr;
       if (!TryGetAttributes(path, attr) || !attr.HasFlag(FileAttributes::Directory))
+      {
         throw DirectoryNotFoundException(path.ToAsciiString());
+      }
 
       switch (searchOptions)
       {
@@ -181,6 +202,22 @@ namespace Fsl
         break;
       default:
         throw NotSupportedException("Unknown search option");
+      }
+    }
+
+
+    void PlatformFileSystem::CreateDir(const Path& path)
+    {
+      const auto dir = path.ToUTF8String();
+
+      auto res = mkdir(dir.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+      if (res != 0)
+      {
+        const auto error = errno;
+        if (error != EEXIST)
+        {
+          throw IOException(std::string("Failed to create directory: '") + dir + "'");
+        }
       }
     }
   }

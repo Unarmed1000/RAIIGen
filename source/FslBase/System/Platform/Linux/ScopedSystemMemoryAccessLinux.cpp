@@ -34,9 +34,9 @@
 #include <FslBase/Log/Log.hpp>
 #include <FslBase/System/Platform/Linux/ScopedSystemMemoryAccessLinux.hpp>
 #include <cstring>
-#include <errno.h>
+#include <cerrno>
 #include <fcntl.h>
-#include <stdio.h>
+#include <cstdio>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -48,6 +48,16 @@
 
 namespace Fsl
 {
+  namespace
+  {
+    inline const char* safeStrerror()
+    {
+      auto errorNumber = errno;
+      auto psz = strerror(errorNumber);
+      return psz != nullptr ? psz : "";
+    }
+  }
+
   ScopedSystemMemoryAccessLinux::ScopedSystemMemoryAccessLinux(const std::size_t targetAddress)
     : m_fd(0)
     , m_pMem(nullptr)
@@ -56,17 +66,17 @@ namespace Fsl
   {
     if ((m_fd = open("/dev/mem", O_RDWR | O_SYNC)) == -1)
     {
-      throw IOException(strerror(errno));
+      throw IOException(safeStrerror());
     }
 
     // Map one page
-    m_pMem = mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, m_fd, targetAddress & ~MAP_MASK);
-    if (m_pMem == (void*)-1)
+    m_pMem = mmap(nullptr, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, m_fd, targetAddress & ~MAP_MASK);
+    if (m_pMem == reinterpret_cast<void*>(-1))
     {
-      throw IOException(strerror(errno));
+      throw IOException(safeStrerror());
     }
 
-    m_pVirtAddress = ((uint8_t*)m_pMem) + (targetAddress & MAP_MASK);
+    m_pVirtAddress = (static_cast<uint8_t*>(m_pMem)) + (targetAddress & MAP_MASK);
   }
 
 
@@ -74,7 +84,7 @@ namespace Fsl
   {
     if (munmap(m_pMem, MAP_SIZE) == -1)
     {
-      FSLLOG_WARNING("munmap failed with '" << strerror(errno) << "'");
+      FSLLOG_WARNING("munmap failed with '" << safeStrerror() << "'");
     }
     close(m_fd);
   }
@@ -117,7 +127,6 @@ namespace Fsl
     *static_cast<uint32_t*>(m_pVirtAddress) = value;
     m_lastValue = *static_cast<uint32_t*>(m_pVirtAddress);
   }
-
 }
 
 #endif
