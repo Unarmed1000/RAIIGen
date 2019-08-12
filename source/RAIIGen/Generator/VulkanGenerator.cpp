@@ -108,6 +108,7 @@ namespace MB
       BlackListEntry("GOOGLE", BlackListMatch::PostfixNotEntityName), BlackListEntry("KHR", BlackListMatch::PostfixNotEntityName),
       BlackListEntry("KHX", BlackListMatch::PostfixNotEntityName),    BlackListEntry("AMD", BlackListMatch::PostfixNotEntityName),
       BlackListEntry("NVX", BlackListMatch::PostfixNotEntityName),    BlackListEntry("NV", BlackListMatch::PostfixNotEntityName),
+      BlackListEntry("INTEL", BlackListMatch::PostfixNotEntityName),
     };
 
 
@@ -136,6 +137,7 @@ namespace MB
       BlackListEntry("_AMD", "AMD", BlackListMatch::PostfixNotEntityNameEx),
       BlackListEntry("_EXT", "EXT", BlackListMatch::PostfixNotEntityNameEx),
       BlackListEntry("_GOOGLE", "GOOGLE", BlackListMatch::PostfixNotEntityNameEx),
+      BlackListEntry("_INTEL", "INTEL", BlackListMatch::PostfixNotEntityNameEx),
       BlackListEntry("_KHR", "KHR", BlackListMatch::PostfixNotEntityNameEx),
       BlackListEntry("_KHX", "KHX", BlackListMatch::PostfixNotEntityNameEx),
       BlackListEntry("_NV", "NV", BlackListMatch::PostfixNotEntityNameEx),
