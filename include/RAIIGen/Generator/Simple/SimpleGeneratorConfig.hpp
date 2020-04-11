@@ -22,13 +22,14 @@
 //* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //***************************************************************************************************************************************************
 
-#include <RAIIGen/Generator/GeneratorConfig.hpp>
 #include <RAIIGen/Generator/BlackListEntry.hpp>
 #include <RAIIGen/Generator/ClassFunctionAbsorb.hpp>
 #include <RAIIGen/Generator/FunctionGuard.hpp>
+#include <RAIIGen/Generator/GeneratorConfig.hpp>
 #include <RAIIGen/Generator/RAIIClassCustomization.hpp>
 #include <RAIIGen/Generator/RAIIClassMethodOverrides.hpp>
 #include <RAIIGen/Generator/Simple/VersionGuardConfig.hpp>
+#include <RAIIGen/Generator/TypeNameAliasEntry.hpp>
 #include <unordered_map>
 
 namespace MB
@@ -44,6 +45,7 @@ namespace MB
     const std::vector<BlackListEntry> FunctionNameBlacklist;
     const std::vector<BlackListEntry> EnumNameBlacklist;
     const std::vector<BlackListEntry> EnumMemberBlacklist;
+    const std::unordered_map<std::string, std::string> TypeNameAliases;
     const std::string TypeNamePrefix;
     const std::string FunctionNamePrefix;
     const std::string ErrorCodeTypeName;
@@ -67,6 +69,7 @@ namespace MB
                           const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
                           const std::vector<FunctionGuard>& functionGuards, const std::vector<BlackListEntry>& functionNameBlacklist,
                           const std::vector<BlackListEntry>& enumNameBlacklist, const std::vector<BlackListEntry>& enumMemberBlacklist,
+                          const std::vector<TypeNameAliasEntry>& typeNameAliases,
                           const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName,
                           const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode,
                           const VersionGuardConfig versionGuard = VersionGuardConfig(), const bool isVulkan = false)
@@ -80,6 +83,7 @@ namespace MB
       , FunctionNameBlacklist(functionNameBlacklist)
       , EnumNameBlacklist(enumNameBlacklist)
       , EnumMemberBlacklist(enumMemberBlacklist)
+      , TypeNameAliases(GenerateAliases(typeNameAliases))
       , TypeNamePrefix(typeNamePrefix)
       , FunctionNamePrefix(functionNamePrefix)
       , ErrorCodeTypeName(errorCodeTypeName)
@@ -98,7 +102,8 @@ namespace MB
                           const std::unordered_map<std::string, std::string>& typeDefaultValues, const std::vector<std::string>& forceNullParameter,
                           const std::vector<FunctionGuard>& functionGuards, const std::vector<BlackListEntry>& functionNameBlacklist,
                           const std::vector<BlackListEntry>& enumNameBlacklist, const std::vector<BlackListEntry>& enumMemberBlacklist,
-                          const std::string& typeNamePrefix, const std::string& functionNamePrefix, const std::string& errorCodeTypeName,
+                          const std::vector<TypeNameAliasEntry>& typeNameAliases, const std::string& typeNamePrefix,
+                          const std::string& functionNamePrefix, const std::string& errorCodeTypeName,
                           const bool unrollCreateStructs, const bool ownershipTransferUseClaimMode,
                           const VersionGuardConfig versionGuard = VersionGuardConfig(), const bool isVulkan = false)
       : GeneratorConfig(basicConfig, functionPairs, manualFunctionMatches)
@@ -111,6 +116,7 @@ namespace MB
       , FunctionNameBlacklist(functionNameBlacklist)
       , EnumNameBlacklist(enumNameBlacklist)
       , EnumMemberBlacklist(enumMemberBlacklist)
+      , TypeNameAliases(GenerateAliases(typeNameAliases))
       , TypeNamePrefix(typeNamePrefix)
       , FunctionNamePrefix(functionNamePrefix)
       , ErrorCodeTypeName(errorCodeTypeName)
@@ -119,6 +125,17 @@ namespace MB
       , VersionGuard(versionGuard)
       , IsVulkan(isVulkan)
     {
+    }
+
+    static std::unordered_map<std::string, std::string> GenerateAliases(const std::vector<TypeNameAliasEntry>& typeNameAliases)
+    {
+      std::unordered_map<std::string, std::string> result(typeNameAliases.size() * 2);
+      for (auto& rEntry : typeNameAliases)
+      {
+        result[rEntry.Name0] = rEntry.Name1;
+        result[rEntry.Name1] = rEntry.Name0;
+      }
+      return result;
     }
   };
 }

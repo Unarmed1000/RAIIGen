@@ -110,6 +110,8 @@ namespace MB
       {"vx_scalar", "##HANDLE_CLASS_NAME##::INVALID_SCALAR"},
       {"vx_threshold", "##HANDLE_CLASS_NAME##::INVALID_THRESHOLD"},
     };
+
+    const std::vector<TypeNameAliasEntry> g_typeNameAliases = {};
   }
 
 
@@ -118,7 +120,8 @@ namespace MB
     : SimpleGenerator(capture,
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization,
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
-                                            g_functionGuards, g_functionNameBlacklist, g_enumNameBlacklist, g_enumMemberBlacklist, TYPE_NAME_PREFIX,
+                                            g_functionGuards, g_functionNameBlacklist, g_enumNameBlacklist, g_enumMemberBlacklist,
+                                            g_typeNameAliases, TYPE_NAME_PREFIX,
                                             FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false,
                                             VersionGuardConfig("VX_VERSION >= VX_VERSION_{0}_{1}")),
                       templateRoot, dstPath)

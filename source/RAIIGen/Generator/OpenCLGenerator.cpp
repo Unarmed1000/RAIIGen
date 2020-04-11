@@ -492,6 +492,7 @@ namespace MB
       {"cl_sampler", "##HANDLE_CLASS_NAME##::INVALID_SAMPLER"},
     };
 
+    const std::vector<TypeNameAliasEntry> g_typeNameAliases = {};
 
     Capture ModCapture(const Capture& capture)
     {
@@ -521,7 +522,8 @@ namespace MB
     : SimpleGenerator(ModCapture(capture),
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization,
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
-                                            g_functionGuards, g_functionNameBlacklist, g_enumNameBlacklist, g_enumMemberBlacklist, TYPE_NAME_PREFIX,
+                                            g_functionGuards, g_functionNameBlacklist, g_enumNameBlacklist, g_enumMemberBlacklist,
+                                            g_typeNameAliases, TYPE_NAME_PREFIX,
                                             FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, false, false, VersionGuardConfig("CL_VERSION_{0}_{1}")),
                       templateRoot, dstPath)
   {

@@ -243,6 +243,19 @@ namespace MB
         {
           auto itrFind = std::find_if(functions.Destroy.Parameters.begin(), functions.Destroy.Parameters.end(),
                                       [typeName](const ParameterRecord& val) { return val.Type.Name == typeName; });
+
+          if (itrFind == functions.Destroy.Parameters.end())
+          {
+            auto itrFindAlias = config.TypeNameAliases.find(typeName);
+            if (itrFindAlias != config.TypeNameAliases.end())
+            {
+              // we found a alias for the typename
+              auto typeAliasName = itrFindAlias->second;
+              itrFind = std::find_if(functions.Destroy.Parameters.begin(), functions.Destroy.Parameters.end(),
+                                     [typeAliasName](const ParameterRecord& val) { return val.Type.Name == typeAliasName; });
+            }
+          }
+
           if (itrFind != functions.Destroy.Parameters.end())
           {
             if (!IsIgnoreParameter(*itr, forceNullParameter))
@@ -364,11 +377,24 @@ namespace MB
       if (!rResourceParameterFound)
       {
         // So no members matched the params to the destroy method, lets check if the return type matches
-        const auto typeName = functions.Create.ReturnType.Name;
+        auto typeName = functions.Create.ReturnType.Name;
         auto itrFind = std::find_if(functions.Destroy.Parameters.begin(), functions.Destroy.Parameters.end(),
                                     [typeName](const ParameterRecord& val) { return val.Type.Name == typeName; });
         if (itrFind == functions.Destroy.Parameters.end())
-          throw NotSupportedException(std::string("Could not find created resource parameter for method: ") + functions.Create.Name);
+        {
+          auto itrFindAlias = config.TypeNameAliases.find(typeName);
+          if (itrFindAlias == config.TypeNameAliases.end())
+          {
+            throw NotSupportedException(fmt::format("Could not find created resource parameter for method: {}", functions.Create.Name));
+          }
+          typeName = itrFindAlias->second;
+          itrFind = std::find_if(functions.Destroy.Parameters.begin(), functions.Destroy.Parameters.end(),
+                                 [typeName](const ParameterRecord& val) { return val.Type.Name == typeName; });
+          if (itrFind == functions.Destroy.Parameters.end())
+          {
+            throw NotSupportedException(fmt::format("Could not find created resource parameter for method using alias: {}", functions.Create.Name));
+          }
+        }
 
         // We found a return type that matches a destroy parameter
         result.IntermediaryName = TypeToVariableName(config.TypeNamePrefix, typeName);

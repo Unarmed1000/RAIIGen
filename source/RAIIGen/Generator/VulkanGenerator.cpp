@@ -188,6 +188,9 @@ namespace MB
       {"VkDescriptorUpdateTemplate", DEFAULT_VALUE},
       {"VkSamplerYcbcrConversion", DEFAULT_VALUE},
     };
+
+    // Technically it would be better to do a real aliasing resolve, but its more complex to implement for now (but it is the real solution)
+    const std::vector<TypeNameAliasEntry> g_typeNameAliases = {{"VkAccelerationStructureKHR", "VkAccelerationStructureNV"}};
   }
 
 
@@ -196,7 +199,8 @@ namespace MB
     : SimpleGenerator(capture,
                       SimpleGeneratorConfig(basicConfig, g_functionPairs, g_manualFunctionMatches, g_arrayRAIIClassCustomization,
                                             g_classFunctionAbsorbtion, g_classMethodOverride, g_typeDefaultValues, g_forceNullParameter,
-                                            g_functionGuards, g_functionNameBlacklist, g_enumNameBlacklist, g_enumMemberBlacklist, TYPE_NAME_PREFIX,
+                                            g_functionGuards, g_functionNameBlacklist, g_enumNameBlacklist, g_enumMemberBlacklist,
+                                            g_typeNameAliases, TYPE_NAME_PREFIX,
                                             FUNCTION_NAME_PREFIX, ERRORCODE_TYPE_NAME, true, true, VersionGuardConfig("VK_HEADER_VERSION >= {2}"),
                                             true),
                       templateRoot, dstPath)
