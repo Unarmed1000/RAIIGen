@@ -87,7 +87,7 @@ namespace RapidVulkan
     }
 
     //! @brief returns the managed handle and releases the ownership.
-    std::vector<##RESOURCE_TYPE##> Release() RAPIDVULKAN_FUNC_POSTFIX_WARN_UNUSED_RESULT
+    RAPIDVULKAN_FUNC_WARN_UNUSED_RESULT std::vector<##RESOURCE_TYPE##> Release()
     {
       auto resource = std::move(##RESOURCE_MEMBER_NAME##); ##RESET_INVALIDATE_MEMBERS##
       return resource;
