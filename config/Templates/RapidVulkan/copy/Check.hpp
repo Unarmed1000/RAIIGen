@@ -28,13 +28,19 @@
 // Please beware that these are not pulled in by any of the RAII classes, so its 100% up to the user of the library to include it
 // if the functionality is desired.
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define RAPIDVULKAN_CHECK(X)                  RapidVulkan::CheckError((X), #X, __FILE__, __LINE__)
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define RAPIDVULKAN_CHECK2(X, mESSAGE)        RapidVulkan::CheckError((X), (mESSAGE), __FILE__, __LINE__)
 
 // The Vulkan version this was based on
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define RAPIDVULKAN_VULKAN_VERSION_MAJOR   ##CURRENT_API_VERSION_MAJOR##
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define RAPIDVULKAN_VULKAN_VERSION_MINOR   ##CURRENT_API_VERSION_MINOR##
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define RAPIDVULKAN_VULKAN_VERSION_BUILD   ##CURRENT_API_VERSION_BUILD##
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define RAPIDVULKAN_VULKAN_VERSION_HOTFIX  ##CURRENT_API_VERSION_HOTFIX##
 
 #endif
