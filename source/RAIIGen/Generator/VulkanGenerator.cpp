@@ -195,6 +195,7 @@ namespace MB
       {"VkDeferredOperationKHR", DEFAULT_VALUE},
       {"VkCuFunctionNVX", DEFAULT_VALUE},
       {"VkCuModuleNVX", DEFAULT_VALUE},
+      {"VkPrivateDataSlot", DEFAULT_VALUE},
     };
 
     // Technically it would be better to do a real aliasing resolve, but its more complex to implement for now (but it is the real solution)
