@@ -110,8 +110,8 @@ namespace MB
       BlackListEntry("GOOGLE", BlackListMatch::PostfixNotEntityName), BlackListEntry("KHR", BlackListMatch::PostfixNotEntityName),
       BlackListEntry("KHX", BlackListMatch::PostfixNotEntityName),    BlackListEntry("AMD", BlackListMatch::PostfixNotEntityName),
       BlackListEntry("NVX", BlackListMatch::PostfixNotEntityName),    BlackListEntry("NV", BlackListMatch::PostfixNotEntityName),
-      BlackListEntry("INTEL", BlackListMatch::PostfixNotEntityName),
-    };
+      BlackListEntry("INTEL", BlackListMatch::PostfixNotEntityName),  BlackListEntry("QCOM", BlackListMatch::PostfixNotEntityName),
+      BlackListEntry("VALVE", BlackListMatch::PostfixNotEntityName)};
 
 
     const std::vector<BlackListEntry> g_enumNameBlacklist{
