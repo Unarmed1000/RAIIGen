@@ -196,6 +196,8 @@ namespace MB
       {"VkCuFunctionNVX", DEFAULT_VALUE},
       {"VkCuModuleNVX", DEFAULT_VALUE},
       {"VkPrivateDataSlot", DEFAULT_VALUE},
+      {"VkMicromapEXT", DEFAULT_VALUE},
+      {"VkOpticalFlowSessionNV", DEFAULT_VALUE},
     };
 
     // Technically it would be better to do a real aliasing resolve, but its more complex to implement for now (but it is the real solution)
