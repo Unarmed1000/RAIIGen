@@ -264,7 +264,7 @@ namespace MB
               {
                 rResourceParameterFound = true;
                 // The non const pointer is normally the 'class' type of the create function
-                std::cout << "  Param matched: " << itr->Type.Name << " (*)\n";
+                std::cout << "  Param matched: " << itr->Type.Name << " " << itr->ArgumentName << " (*)\n";
                 const auto fixedArgumentName = GetResourceArgumentName(*itr);
                 result.ResourceMemberVariable = ToMemberVariable(*itr, fixedArgumentName);
                 result.IntermediaryName = result.ResourceMemberVariable.ArgumentName;
@@ -310,7 +310,7 @@ namespace MB
               }
               else
               {
-                std::cout << "  Param matched: " << itr->Type.Name << "\n";
+                std::cout << "  Param matched: " << itr->Type.Name << " " << itr->ArgumentName << "\n";
 
                 auto member = ToMemberVariable(*itr);
                 auto destroyArgument = ToMethodArgument(*itr, preserveParameterNames);
@@ -451,7 +451,7 @@ namespace MB
           asMember.SourceArgumentName = found.SourceParameter.ArgumentName + "." + asMember.ArgumentName;
           auto asArgument = ToMethodArgument(asMember);
 
-          if (itrCustom != config.RAIIClassCustomizations.end() && itrCustom != config.RAIIClassCustomizations.end() &&
+          if (itrCustom != config.RAIIClassCustomizations.end() &&
               itrCustom->StructMemberArrayCountName == asMember.ArgumentName)
           {
             switch (analyzeMode)

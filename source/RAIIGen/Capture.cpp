@@ -183,9 +183,16 @@ namespace MB
       case CXType_Auto:
         throw std::runtime_error("GetTypeName() failed to get type name for CXType_Auto");
       case CXType_Elaborated:
-        if (log)
-          log->Print("WARNING: CXType_Elaborated not properly supported");
-        return TypeInfo("**CXType_Elaborated**", type, originalType);
+      {
+        const auto actualTypeCursor = clang_getTypeDeclaration(type);
+        if (actualTypeCursor.kind == CXCursor_NoDeclFound)
+          throw std::runtime_error("GetTypeName() failed to get type name");
+        return TypeInfo(GetCursorSpelling(actualTypeCursor), type, originalType);
+        //if (log)
+        //  log->Print("WARNING: CXType_Elaborated not properly supported");
+        //return TypeInfo("**CXType_Elaborated**", type, originalType);
+      }
+
       default:
         throw std::runtime_error("GetTypeName() failed to get type name");
       }

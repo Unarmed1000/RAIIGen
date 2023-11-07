@@ -316,7 +316,6 @@ namespace MB
           for (const auto& enumMember : entry.second.Members)
           {
             auto itrDuplication = valueToNameLookup.find(enumMember.UnsignedValue);
-            assert(itrDuplication != valueToNameLookup.end());
 
             if (itrDuplication != valueToNameLookup.end())
             {

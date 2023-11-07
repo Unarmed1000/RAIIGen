@@ -50,7 +50,10 @@ namespace MB
     std::string ToCppName(const std::string& name)
     {
       if (name.size() < 3 || name[0] != 'V' || name[1] != 'k')
-        throw NotSupportedException(std::string("C type name not of the expected format: '") + name + "'");
+      {
+        //throw NotSupportedException(std::string("C type name not of the expected format: '") + name + "'");
+        return StringHelper::EnforceUpperCamelCaseNameStyle(name);
+      }
       return StringHelper::EnforceUpperCamelCaseNameStyle(name.substr(2));
     }
 
@@ -59,9 +62,7 @@ namespace MB
       MemberRecord Source;
       MemberClassification Classification;
 
-      AnalyzedMemberRecord()
-      {
-      }
+      AnalyzedMemberRecord() = default;
 
       explicit AnalyzedMemberRecord(const MemberRecord& source)
         : Source(source)

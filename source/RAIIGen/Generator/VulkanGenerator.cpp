@@ -75,7 +75,7 @@ namespace MB
       FunctionNamePair("vkCreateComputePipelines", "vkDestroyPipeline"),
       FunctionNamePair("vkCreateDisplayPlaneSurfaceKHR", "vkDestroySurfaceKHR"),
       FunctionNamePair("vkCreateRenderPass2", "vkDestroyRenderPass"),
-      FunctionNamePair("vkCreateHeadlessSurfaceEXT", " vkDestroySurfaceKHR"),
+      FunctionNamePair("vkCreateHeadlessSurfaceEXT", "vkDestroySurfaceKHR"),
     };
 
 
