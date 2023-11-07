@@ -111,8 +111,8 @@ namespace MB
           VersionRecord version(dirName.ToUTF8String());
 
           // Create the history
-          const std::vector<IO::Path> includePaths = {*entry};
-          history.push_back(std::make_shared<CapturedData>(basicConfig, srcFile, includePaths, captureConfig, customLog, version));
+          std::vector<IO::Path> includePaths = {*entry};
+          history.push_back(std::make_shared<CapturedData>(basicConfig, srcFile, std::move(includePaths), captureConfig, customLog, version));
         }
       }
 
@@ -275,6 +275,7 @@ namespace MB
       std::deque<std::shared_ptr<CapturedData>> history;
       BasicConfig currentConfig = basicConfig;
       IO::Path fileToLoad = filename;
+      std::vector<IO::Path> finalIncludePaths(includePaths);
       if (useAPIHistory)
       {
         history = RunCaptureHistory(basicConfig, relativeFilename, apiHistoryPath, captureConfig);
@@ -285,12 +286,14 @@ namespace MB
           history.front()->Version = VersionRecord();
           // use the latest version from history
           fileToLoad = history.back()->FileData.Filename;
+          // Override the include path
+          finalIncludePaths = history.back()->FileData.IncludePaths;
           currentConfig.CurrentAPIVersion = history.back()->Version;
         }
       }
 
       VersionRecord version;
-      CapturedData capturedData(currentConfig, fileToLoad, includePaths, captureConfig, customLog, version);
+      CapturedData capturedData(currentConfig, fileToLoad, finalIncludePaths, captureConfig, customLog, version);
 
       if (useAPIHistory && !history.empty())
       {

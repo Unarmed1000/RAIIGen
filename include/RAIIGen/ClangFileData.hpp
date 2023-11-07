@@ -38,9 +38,11 @@ namespace MB
 
   public:
     Fsl::IO::Path Filename;
+    std::vector<Fsl::IO::Path> IncludePaths;
 
 	ClangFileData(const BasicConfig& basicConfig, const Fsl::IO::Path& filename, const std::vector<Fsl::IO::Path>& includePaths)
       : Filename(filename)
+      , IncludePaths(includePaths)
     {
       using namespace MB;
 
