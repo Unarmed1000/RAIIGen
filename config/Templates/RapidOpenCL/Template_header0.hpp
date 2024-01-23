@@ -3,7 +3,7 @@
 //***************************************************************************************************************************************************
 //* BSD 3-Clause License
 //*
-//* Copyright (c) 2016, Rene Thrane
+//* Copyright (c) 2016-2024, Rene Thrane
 //* All rights reserved.
 //*
 //* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,9 @@ namespace ##NAMESPACE_NAME##
       {
         // Free existing resources then transfer the content of other to this one and fill other with default values
         if (IsValid())
+        {
           Reset();
+        }
 
         // Claim ownership here##MOVE_ASSIGNMENT_CLAIM_MEMBERS##
 
@@ -93,7 +95,9 @@ namespace ##NAMESPACE_NAME##
     void Reset() noexcept
     {
       if (! IsValid())
+      {
         return;
+      }
 ##RESET_MEMBER_ASSERTIONS##
 
       ##DESTROY_FUNCTION##(##DESTROY_FUNCTION_ARGUMENTS##);##RESET_INVALIDATE_MEMBERS##
@@ -103,7 +107,9 @@ namespace ##NAMESPACE_NAME##
     void Reset(##MEMBER_PARAMETERS##)
     {
       if (IsValid())
+      {
         Reset();
+      }
 
 ##RESET_SET_MEMBERS_NORMAL##
     }

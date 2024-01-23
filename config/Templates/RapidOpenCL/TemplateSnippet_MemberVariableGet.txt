@@ -1,6 +1,6 @@
 
-      //! @brief Get the associated '##MEMBER_NICE_NAME##'
-      ##MEMBER_TYPE## Get##MEMBER_NICE_NAME##() const
-      {
-        return ##MEMBER_NAME##;
-      }
+    //! @brief Get the associated '##MEMBER_NICE_NAME##'
+    ##MEMBER_TYPE## Get##MEMBER_NICE_NAME##() const
+    {
+      return ##MEMBER_NAME##;
+    }
