@@ -28,7 +28,9 @@
 // Please beware that these are not pulled in by any of the RAII classes, so its 100% up to the user of the library to include it
 // if the functionality is desired.
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define RAPIDOPENCL_CHECK(X)                  ##NAMESPACE_NAME##::CheckError((X), #X, __FILE__, __LINE__)
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define RAPIDOPENCL_CHECK2(X, mESSAGE)        ##NAMESPACE_NAME##::CheckError((X), (mESSAGE), __FILE__, __LINE__)
 
 #endif

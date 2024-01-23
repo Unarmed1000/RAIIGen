@@ -85,19 +85,31 @@
 #endif
 #else
 
+  // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
   #define RAPIDOPENCL_LOG(X)                               {}
+  // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
   #define RAPIDOPENCL_LOG_IF(cONDITION, X)                 {}
+  // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
   #define RAPIDOPENCL_LOG_WARNING(X)                       {}
+  // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
   #define RAPIDOPENCL_LOG_WARNING_IF(cONDITION, X)         {}
+  // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
   #define RAPIDOPENCL_LOG_ERROR(X)                         {}
+  // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
   #define RAPIDOPENCL_LOG_ERROR_IF(cONDITION, X)           {}
 
   // Log statements that are only included in debug builds.
+  // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
   #define RAPIDOPENCL_LOG_DEBUG(X)                         {}
+  // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
   #define RAPIDOPENCL_LOG_DEBUG_IF(cONDITION, X)           {}
+  // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
   #define RAPIDOPENCL_LOG_DEBUG_WARNING(X)                 {}
+  // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
   #define RAPIDOPENCL_LOG_DEBUG_WARNING_IF(cONDITION, X)   {}
+  // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
   #define RAPIDOPENCL_LOG_DEBUG_ERROR(X)                   {}
+  // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
   #define RAPIDOPENCL_LOG_DEBUG_ERROR_IF(cONDITION, X)     {}
 
 #endif
