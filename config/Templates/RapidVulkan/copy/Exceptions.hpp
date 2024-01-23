@@ -34,10 +34,24 @@ namespace RapidVulkan
     std::string m_fileName;
     int m_lineNumber;
   public:
+    explicit VulkanException(const char*const pszWhatArg)
+      : std::runtime_error(pszWhatArg)
+      , m_fileName()
+      , m_lineNumber(0)
+    {
+    }
+
     explicit VulkanException(const std::string& whatArg)
       : std::runtime_error(whatArg)
       , m_fileName()
       , m_lineNumber(0)
+    {
+    }
+
+    explicit VulkanException(const char*const pszWhatArg, const std::string& fileName, const int lineNumber)
+      : std::runtime_error(pszWhatArg)
+      , m_fileName(fileName)
+      , m_lineNumber(lineNumber)
     {
     }
 
@@ -70,8 +84,13 @@ namespace RapidVulkan
     {
     }
 
-    explicit VulkanUsageErrorException(const std::string& what_arg)
-      : std::logic_error(what_arg)
+    explicit VulkanUsageErrorException(const char*const pszWhatArg)
+      : std::logic_error(pszWhatArg)
+    {
+    }
+
+    explicit VulkanUsageErrorException(const std::string& whatArg)
+      : std::logic_error(whatArg)
     {
     }
   };
@@ -81,8 +100,20 @@ namespace RapidVulkan
   {
     VkResult m_result;
   public:
+    explicit VulkanErrorException(const char*const pszWhatArg, const VkResult result)
+      : VulkanException(ErrorFormatter::Format(pszWhatArg, result))
+      , m_result(result)
+    {
+    }
+  
     explicit VulkanErrorException(const std::string& whatArg, const VkResult result)
       : VulkanException(ErrorFormatter::Format(whatArg, result))
+      , m_result(result)
+    {
+    }
+
+    explicit VulkanErrorException(const char*const pszWhatArg, const VkResult result, const std::string& fileName, const int lineNumber)
+      : VulkanException(ErrorFormatter::Format(pszWhatArg, result, fileName, lineNumber), fileName, lineNumber)
       , m_result(result)
     {
     }
