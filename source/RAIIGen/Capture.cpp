@@ -188,9 +188,9 @@ namespace MB
         if (actualTypeCursor.kind == CXCursor_NoDeclFound)
           throw std::runtime_error("GetTypeName() failed to get type name");
         return TypeInfo(GetCursorSpelling(actualTypeCursor), type, originalType);
-        //if (log)
-        //  log->Print("WARNING: CXType_Elaborated not properly supported");
-        //return TypeInfo("**CXType_Elaborated**", type, originalType);
+        // if (log)
+        //   log->Print("WARNING: CXType_Elaborated not properly supported");
+        // return TypeInfo("**CXType_Elaborated**", type, originalType);
       }
 
       default:
@@ -301,15 +301,17 @@ namespace MB
 
 
     void HandleParamNameOverride(ParameterRecord& rParam, const std::vector<FunctionParameterNameOverride>& functionParameterNameOverrides,
-                                 const std::string& currentfunctionName, const unsigned int parameterIndex)
+                                 const std::string& currentFunctionName, const unsigned int parameterIndex)
     {
       for (auto itr = functionParameterNameOverrides.begin(); itr != functionParameterNameOverrides.end(); ++itr)
       {
-        if (itr->FunctionName == currentfunctionName && itr->ParameterIndex == parameterIndex)
+        if (itr->FunctionName == currentFunctionName && itr->ParameterIndex == parameterIndex)
         {
           if (itr->ParameterOldName != rParam.ArgumentName)
-            throw UsageErrorException(
-              std::string("The argument name '" + rParam.ArgumentName + "' does not match the expected '" + itr->ParameterOldName + "' name"));
+          {
+            throw UsageErrorException(std::string("Function " + currentFunctionName + " argument " + std::to_string(parameterIndex) + " name '" +
+                                                  rParam.ArgumentName + "' does not match the expected '" + itr->ParameterOldName + "' name"));
+          }
 
           rParam.Name = itr->ParameterNewName;
           rParam.ArgumentName = itr->ParameterNewName;
@@ -318,15 +320,17 @@ namespace MB
     }
 
     void HandleParamTypeOverride(ParameterRecord& rParam, const std::vector<FunctionParameterTypeOverride>& functionParameterTypeOverrides,
-                                 const std::string& currentfunctionName, const unsigned int parameterIndex)
+                                 const std::string& currentFunctionName, const unsigned int parameterIndex)
     {
       for (auto itr = functionParameterTypeOverrides.begin(); itr != functionParameterTypeOverrides.end(); ++itr)
       {
-        if (itr->FunctionName == currentfunctionName && itr->ParameterIndex == parameterIndex)
+        if (itr->FunctionName == currentFunctionName && itr->ParameterIndex == parameterIndex)
         {
           if (itr->ParameterOldType != rParam.Type.FullTypeString)
-            throw UsageErrorException(
-              std::string("The argument type '" + rParam.Type.FullTypeString + "' does not match the expected '" + itr->ParameterOldType + "' name"));
+          {
+            throw UsageErrorException(std::string("Function " + currentFunctionName + " the argument type '" + rParam.Type.FullTypeString +
+                                                  "' does not match the expected '" + itr->ParameterOldType + "' name"));
+          }
 
           rParam.Type.FullTypeString = itr->ParameterNewType;
         }

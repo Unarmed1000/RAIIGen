@@ -129,11 +129,13 @@ namespace MB
       FunctionParameterNameOverride("clCreateImage3D", 7, "size", "imageSlicePitch"),
       FunctionParameterNameOverride("clCreateImage3D", 8, "pVoid", "pHost"),
       // clCreateContextFromType
-      FunctionParameterNameOverride("clCreateContextFromType", 2, "pVoid(constChar*,ConstVoid*,SizeT,Void*)", "pfnNotify"),
+      //FunctionParameterNameOverride("clCreateContextFromType", 2, "pVoid(constChar*,ConstVoid*,SizeT,Void*)", "pfnNotify"),
+      FunctionParameterNameOverride("clCreateContextFromType", 2, "p**CXTypeFunctionProto**", "pfnNotify"),
       FunctionParameterNameOverride("clCreateContextFromType", 3, "pVoid", "pUserData"),
       // clCreateContext
       FunctionParameterNameOverride("clCreateContext", 1, "uint", "numDevices"),
-      FunctionParameterNameOverride("clCreateContext", 3, "pVoid(constChar*,ConstVoid*,SizeT,Void*)", "pfnNotify"),
+      FunctionParameterNameOverride("clCreateContext", 3, "p**CXTypeFunctionProto**", "pfnNotify"),
+      //FunctionParameterNameOverride("clCreateContext", 3, "pVoid(constChar*,ConstVoid*,SizeT,Void*)", "pfnNotify"),
       FunctionParameterNameOverride("clCreateContext", 4, "pVoid", "pUserData"),
 
       // clCreateKernel
@@ -327,7 +329,8 @@ namespace MB
       FunctionParameterNameOverride("clBuildProgram", 1, "uint", "numDevices"),
       FunctionParameterNameOverride("clBuildProgram", 2, "pDeviceId", "pDeviceList"),
       FunctionParameterNameOverride("clBuildProgram", 3, "pChar", "pOptions"),
-      FunctionParameterNameOverride("clBuildProgram", 4, "pVoid(clProgram,Void*)", "pfnNotify"),
+      //FunctionParameterNameOverride("clBuildProgram", 4, "pVoid(clProgram,Void*)", "pfnNotify"),
+      FunctionParameterNameOverride("clBuildProgram", 4, "p**CXTypeFunctionProto**", "pfnNotify"),
       FunctionParameterNameOverride("clBuildProgram", 5, "pVoid", "pUserData"),
 
       // clCompileProgram
@@ -337,7 +340,8 @@ namespace MB
       FunctionParameterNameOverride("clCompileProgram", 4, "uint", "numInputHeaders"),
       FunctionParameterNameOverride("clCompileProgram", 5, "pProgram", "pInputHeaders"),
       FunctionParameterNameOverride("clCompileProgram", 6, "pChar", "ppHeaderIncludeNames"),
-      FunctionParameterNameOverride("clCompileProgram", 7, "pVoid(clProgram,Void*)", "pfnNotify"),
+      //FunctionParameterNameOverride("clCompileProgram", 7, "pVoid(clProgram,Void*)", "pfnNotify"),
+      FunctionParameterNameOverride("clCompileProgram", 7, "p**CXTypeFunctionProto**", "pfnNotify"),
       FunctionParameterNameOverride("clCompileProgram", 8, "pVoid", "pUserData"),
 
       // clLinkProgram
@@ -346,7 +350,8 @@ namespace MB
       FunctionParameterNameOverride("clLinkProgram", 3, "pChar", "pOptions"),
       FunctionParameterNameOverride("clLinkProgram", 4, "uint", "numInputPrograms"),
       FunctionParameterNameOverride("clLinkProgram", 5, "pProgram", "pInputPrograms"),
-      FunctionParameterNameOverride("clLinkProgram", 6, "pVoid(clProgram,Void*)", "pfnNotify"),
+      //FunctionParameterNameOverride("clLinkProgram", 6, "pVoid(clProgram,Void*)", "pfnNotify"),
+      FunctionParameterNameOverride("clLinkProgram", 6, "p**CXTypeFunctionProto**", "pfnNotify"),
       FunctionParameterNameOverride("clLinkProgram", 7, "pVoid", "pUserData"),
       FunctionParameterNameOverride("clLinkProgram", 8, "pInt", "pErrorCode"),
 
@@ -437,12 +442,14 @@ namespace MB
       FunctionParameterNameOverride("clEnqueueSVMMigrateMem", 6, "pEvent", "pEventWaitList"),
 
       // clSetMemObjectDestructorCallback
-      FunctionParameterNameOverride("clSetMemObjectDestructorCallback", 1, "pVoid(clMem,Void*)", "pfnNotify"),
+      //FunctionParameterNameOverride("clSetMemObjectDestructorCallback", 1, "pVoid(clMem,Void*)", "pfnNotify"),
+      FunctionParameterNameOverride("clSetMemObjectDestructorCallback", 1, "p**CXTypeFunctionProto**", "pfnNotify"),
       FunctionParameterNameOverride("clSetMemObjectDestructorCallback", 2, "pVoid", "pUserData"),
 
       // clSetEventCallback
       FunctionParameterNameOverride("clSetEventCallback", 1, "int", "commandExecCallbackType"),
-      FunctionParameterNameOverride("clSetEventCallback", 2, "pVoid(clEvent,ClInt,Void*)", "pfnNotify"),
+      //FunctionParameterNameOverride("clSetEventCallback", 2, "pVoid(clEvent,ClInt,Void*)", "pfnNotify"),
+      FunctionParameterNameOverride("clSetEventCallback", 2, "p**CXTypeFunctionProto**", "pfnNotify"),
       FunctionParameterNameOverride("clSetEventCallback", 3, "pVoid", "pUserData"),
 
       // clSetUserEventStatus
