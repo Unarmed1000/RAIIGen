@@ -728,9 +728,6 @@
     <ClCompile Include="source\FslBase\Compression\ValueCompression.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\FslBase\Debug\Math\DebugContainmentType.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\FslBase\Getopt\Option.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

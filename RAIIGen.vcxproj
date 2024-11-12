@@ -232,7 +232,6 @@
     <ClCompile Include="source\fmt\posix.cc" />
     <ClCompile Include="source\FslBase\Bits\ByteArrayUtil.cpp" />
     <ClCompile Include="source\FslBase\Compression\ValueCompression.cpp" />
-    <ClCompile Include="source\FslBase\Debug\Math\DebugContainmentType.cpp" />
     <ClCompile Include="source\FslBase\Getopt\Option.cpp" />
     <ClCompile Include="source\FslBase\IO\Directory.cpp" />
     <ClCompile Include="source\FslBase\IO\File.cpp" />
