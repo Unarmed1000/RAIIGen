@@ -31,22 +31,26 @@
  *
  ****************************************************************************************************************************************************/
 
+#include <FslBase/Span/Span.hpp>
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
 #include <queue>
-#include <FslBase/Noncopyable.hpp>
 
 namespace Fsl
 {
   template <typename T>
-  class ConcurrentQueue : private Noncopyable
+  class ConcurrentQueue
   {
     std::mutex m_mutex;
     std::condition_variable m_waitForMsgCondition;
     std::queue<T> m_queue;
 
   public:
+    ConcurrentQueue(const ConcurrentQueue&) = delete;
+    ConcurrentQueue& operator=(const ConcurrentQueue&) = delete;
+    ConcurrentQueue() = default;
+
     using value_type = T;
 
     //! @brief Clear all elements from the queue
@@ -62,11 +66,23 @@ namespace Fsl
     //! @return true on success, false if unsuccessful. When false rValue will be set to T().
     bool TryDequeue(T& rValue);
 
-    bool TryDequeWait(T& rValue, const std::chrono::milliseconds& duration);
+    bool TryDequeueWait(T& rValue, const std::chrono::milliseconds& duration);
 
     //! @brief Tries to return a element from the beginning of the queue without removing it.
     //! @return true on success, false if unsuccessful. When false rValue will be set to T().
     bool TryPeek(T& rValue);
+
+    //! @brief Swap the internal queue with the supplied queue
+    //! @note Use this if you send a lot of big messages
+    void SwapQueue(std::queue<T>& rSwapQueue);
+
+    //! @brief Extract all pending messages into the supplied queue
+    //! @note  This will probably be slower than just using swap queue
+    void Extract(std::queue<T>& rDstQueue);
+
+    //! @brief Extract all pending messages that can fit into the supplied span
+    //! @return the number of entries written to the span.
+    std::size_t Extract(Span<T> dstSpan);
 
   private:
     void UnsafeWake();

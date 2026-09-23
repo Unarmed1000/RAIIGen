@@ -25,16 +25,17 @@ SOFTWARE.
 
 // The functions in this file are a port of an MIT licensed library: MonoGame - Matrix.cs.
 
-#include <FslBase/Math/Matrix.hpp>
-#include <cassert>
-#include <cmath>
 #include <FslBase/Exceptions.hpp>
+#include <FslBase/Math/Matrix.hpp>
+// #include <FslBase/Math/MatrixConverter.hpp>
 #include <FslBase/Math/MatrixFields.hpp>
 #include <FslBase/Math/Plane.hpp>
 #include <FslBase/Math/Quaternion.hpp>
 #include <FslBase/Math/Rectangle.hpp>
 #include <FslBase/Math/Vector2.hpp>
 #include <FslBase/Math/Vector4.hpp>
+#include <cassert>
+#include <cmath>
 #include "MatrixInternals.hpp"
 
 // Workaround a issue with qnx signbit
@@ -48,11 +49,11 @@ namespace Fsl
 
   Matrix Matrix::Add(const Matrix& matrix1, const Matrix& matrix2)
   {
-    return Matrix(
+    return {
       matrix1.m[_M11] + matrix2.m[_M11], matrix1.m[_M12] + matrix2.m[_M12], matrix1.m[_M13] + matrix2.m[_M13], matrix1.m[_M14] + matrix2.m[_M14],
       matrix1.m[_M21] + matrix2.m[_M21], matrix1.m[_M22] + matrix2.m[_M22], matrix1.m[_M23] + matrix2.m[_M23], matrix1.m[_M24] + matrix2.m[_M24],
       matrix1.m[_M31] + matrix2.m[_M31], matrix1.m[_M32] + matrix2.m[_M32], matrix1.m[_M33] + matrix2.m[_M33], matrix1.m[_M34] + matrix2.m[_M34],
-      matrix1.m[_M41] + matrix2.m[_M41], matrix1.m[_M42] + matrix2.m[_M42], matrix1.m[_M43] + matrix2.m[_M43], matrix1.m[_M44] + matrix2.m[_M44]);
+      matrix1.m[_M41] + matrix2.m[_M41], matrix1.m[_M42] + matrix2.m[_M42], matrix1.m[_M43] + matrix2.m[_M43], matrix1.m[_M44] + matrix2.m[_M44]};
   }
 
 
@@ -79,7 +80,7 @@ namespace Fsl
 
   Vector3 Matrix::GetBackward() const
   {
-    return Vector3(m[_M31], m[_M32], m[_M33]);
+    return {m[_M31], m[_M32], m[_M33]};
   }
 
 
@@ -93,7 +94,7 @@ namespace Fsl
 
   Vector3 Matrix::GetDown() const
   {
-    return Vector3(-m[_M21], -m[_M22], -m[_M23]);
+    return {-m[_M21], -m[_M22], -m[_M23]};
   }
 
 
@@ -107,7 +108,7 @@ namespace Fsl
 
   Vector3 Matrix::GetForward() const
   {
-    return Vector3(-m[_M31], -m[_M32], -m[_M33]);
+    return {-m[_M31], -m[_M32], -m[_M33]};
   }
 
 
@@ -121,7 +122,7 @@ namespace Fsl
 
   Vector3 Matrix::GetLeft() const
   {
-    return Vector3(-m[_M11], -m[_M12], -m[_M13]);
+    return {-m[_M11], -m[_M12], -m[_M13]};
   }
 
 
@@ -135,7 +136,7 @@ namespace Fsl
 
   Vector3 Matrix::GetRight() const
   {
-    return Vector3(m[_M11], m[_M12], m[_M13]);
+    return {m[_M11], m[_M12], m[_M13]};
   }
 
 
@@ -149,7 +150,7 @@ namespace Fsl
 
   Vector3 Matrix::GetTranslation() const
   {
-    return Vector3(m[_M41], m[_M42], m[_M43]);
+    return {m[_M41], m[_M42], m[_M43]};
   }
 
 
@@ -163,7 +164,7 @@ namespace Fsl
 
   Vector3 Matrix::GetUp() const
   {
-    return Vector3(m[_M21], m[_M22], m[_M23]);
+    return {m[_M21], m[_M22], m[_M23]};
   }
 
 
@@ -211,12 +212,10 @@ namespace Fsl
                                const Vector3* pCameraForwardVector, Matrix& rResult)
   {
     Vector3 vector;
-    Vector3 vector2;
-    Vector3 vector3;
     vector.X = objectPosition.X - cameraPosition.X;
     vector.Y = objectPosition.Y - cameraPosition.Y;
     vector.Z = objectPosition.Z - cameraPosition.Z;
-    float num = vector.LengthSquared();
+    const float num = vector.LengthSquared();
     if (num < 0.0001f)
     {
       vector = pCameraForwardVector != nullptr ? -(*pCameraForwardVector) : Vector3::Forward();
@@ -226,9 +225,9 @@ namespace Fsl
       vector = vector * (1.0f / (std::sqrt(num)));
     }
 
-    vector3 = Vector3::Cross(cameraUpVector, vector);
+    Vector3 vector3 = Vector3::Cross(cameraUpVector, vector);
     vector3.Normalize();
-    vector2 = Vector3::Cross(vector, vector3);
+    const Vector3 vector2 = Vector3::Cross(vector, vector3);
     rResult.m[_M11] = vector3.X;
     rResult.m[_M12] = vector3.Y;
     rResult.m[_M13] = vector3.Z;
@@ -612,10 +611,10 @@ namespace Fsl
     {
       throw std::invalid_argument("fieldOfView <= 0 or >= PI");
     }
-    if (aspectRatio == 0.0f)
-    {
-      throw std::invalid_argument("aspectRatio can not be zero");
-    }
+    // if (aspectRatio == 0.0f)
+    //{
+    //  throw std::invalid_argument("aspectRatio can not be zero");
+    //}
     if (nearPlaneDistance <= 0.0f)
     {
       throw std::invalid_argument("nearPlaneDistance <= 0");
@@ -940,7 +939,9 @@ namespace Fsl
 
   void Matrix::CreateWorld(const Vector3& position, const Vector3& forward, const Vector3& up, Matrix& rResult)
   {
-    Vector3 x, y, z;
+    Vector3 x;
+    Vector3 y;
+    Vector3 z;
     Vector3::Normalize(forward, z);
     Vector3::Cross(forward, up, x);
     // Ugly cast due to deprecated overloads of Cross
@@ -1151,14 +1152,14 @@ namespace Fsl
   {
     const float* pMatrix1 = value1.m;
     const float* pMatrix2 = value2.m;
-    return Matrix(pMatrix1[_M11] + ((pMatrix2[_M11] - pMatrix1[_M11]) * amount), pMatrix1[_M12] + ((pMatrix2[_M12] - pMatrix1[_M12]) * amount),
-                  pMatrix1[_M13] + ((pMatrix2[_M13] - pMatrix1[_M13]) * amount), pMatrix1[_M14] + ((pMatrix2[_M14] - pMatrix1[_M14]) * amount),
-                  pMatrix1[_M21] + ((pMatrix2[_M21] - pMatrix1[_M21]) * amount), pMatrix1[_M22] + ((pMatrix2[_M22] - pMatrix1[_M22]) * amount),
-                  pMatrix1[_M23] + ((pMatrix2[_M23] - pMatrix1[_M23]) * amount), pMatrix1[_M24] + ((pMatrix2[_M24] - pMatrix1[_M24]) * amount),
-                  pMatrix1[_M31] + ((pMatrix2[_M31] - pMatrix1[_M31]) * amount), pMatrix1[_M32] + ((pMatrix2[_M32] - pMatrix1[_M32]) * amount),
-                  pMatrix1[_M33] + ((pMatrix2[_M33] - pMatrix1[_M33]) * amount), pMatrix1[_M34] + ((pMatrix2[_M34] - pMatrix1[_M34]) * amount),
-                  pMatrix1[_M41] + ((pMatrix2[_M41] - pMatrix1[_M41]) * amount), pMatrix1[_M42] + ((pMatrix2[_M42] - pMatrix1[_M42]) * amount),
-                  pMatrix1[_M43] + ((pMatrix2[_M43] - pMatrix1[_M43]) * amount), pMatrix1[_M44] + ((pMatrix2[_M44] - pMatrix1[_M44]) * amount));
+    return {pMatrix1[_M11] + ((pMatrix2[_M11] - pMatrix1[_M11]) * amount), pMatrix1[_M12] + ((pMatrix2[_M12] - pMatrix1[_M12]) * amount),
+            pMatrix1[_M13] + ((pMatrix2[_M13] - pMatrix1[_M13]) * amount), pMatrix1[_M14] + ((pMatrix2[_M14] - pMatrix1[_M14]) * amount),
+            pMatrix1[_M21] + ((pMatrix2[_M21] - pMatrix1[_M21]) * amount), pMatrix1[_M22] + ((pMatrix2[_M22] - pMatrix1[_M22]) * amount),
+            pMatrix1[_M23] + ((pMatrix2[_M23] - pMatrix1[_M23]) * amount), pMatrix1[_M24] + ((pMatrix2[_M24] - pMatrix1[_M24]) * amount),
+            pMatrix1[_M31] + ((pMatrix2[_M31] - pMatrix1[_M31]) * amount), pMatrix1[_M32] + ((pMatrix2[_M32] - pMatrix1[_M32]) * amount),
+            pMatrix1[_M33] + ((pMatrix2[_M33] - pMatrix1[_M33]) * amount), pMatrix1[_M34] + ((pMatrix2[_M34] - pMatrix1[_M34]) * amount),
+            pMatrix1[_M41] + ((pMatrix2[_M41] - pMatrix1[_M41]) * amount), pMatrix1[_M42] + ((pMatrix2[_M42] - pMatrix1[_M42]) * amount),
+            pMatrix1[_M43] + ((pMatrix2[_M43] - pMatrix1[_M43]) * amount), pMatrix1[_M44] + ((pMatrix2[_M44] - pMatrix1[_M44]) * amount)};
   }
 
 
@@ -1230,6 +1231,13 @@ namespace Fsl
     m[_M43] = 0.0f;
     m[_M44] = 1.0f;
   }
+
+
+  //  Vector3 Matrix::ToEularAngles() const
+  //  {
+  //    const auto rotationMatrix = MatrixConverter::ToMatrix3(*this);
+  //    return rotationMatrix.ToEularAngles();
+  //  }
 
 
   void Matrix::Subtract(const Matrix& matrix1, const Matrix& matrix2, Matrix& rResult)

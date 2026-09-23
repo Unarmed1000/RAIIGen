@@ -29,16 +29,16 @@
  *
  ****************************************************************************************************************************************************/
 
-#include <FslBase/Math/Extent2D.hpp>
 #include <FslBase/Exceptions.hpp>
+#include <FslBase/Math/Extent2D.hpp>
 #include <FslBase/Math/Point2.hpp>
 #include <limits>
 
 namespace Fsl
 {
   Extent2D::Extent2D(const int32_t width, const int32_t height)
-    : Width(static_cast<element_type>(width))
-    , Height(static_cast<element_type>(height))
+    : Width(static_cast<value_type>(width))
+    , Height(static_cast<value_type>(height))
   {
     if (width < 0)
     {

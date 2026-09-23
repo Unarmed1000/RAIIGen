@@ -24,6 +24,8 @@
 
 #include <string>
 #include <FslBase/IO/Path.hpp>
+#include <FslBase/IO/PathDeque.hpp>
+#include <FslBase/IO/SearchOptions.hpp>
 
 namespace MB
 {
@@ -31,6 +33,9 @@ namespace MB
   {
   public:
     static void WriteAllTextIfChanged(const Fsl::IO::Path& fileName, const std::string& content);
+    //! @brief Append the directories found in path to rResult
+    //! @return true if the directory could be scanned, false otherwise
+    static bool TryGetDirectories(Fsl::IO::PathDeque& rResult, const Fsl::IO::Path& path, const Fsl::IO::SearchOptions searchOptions);
   };
 }
 #endif

@@ -32,16 +32,77 @@
  ****************************************************************************************************************************************************/
 
 #include <FslBase/BasicTypes.hpp>
+#include <FslBase/Exceptions.hpp>
+#include <FslBase/Time/TimeSpan.hpp>
+#include <FslBase/Transition/TransitionTimeUnit.hpp>
+#include <cassert>
+#include <limits>
 
-namespace Fsl
+namespace Fsl::TimeSpanHelper
 {
-  struct TransitionTimeSpan;
-
-  class TransitionTimeSpanHelper
+  inline constexpr TimeSpan Create(const int32_t time, TransitionTimeUnit unit)
   {
-  public:
-    static int32_t AsSecondsRoundedUp(const TransitionTimeSpan& timeSpan);
-  };
+    switch (unit)
+    {
+    case TransitionTimeUnit::Milliseconds:
+      return TimeSpan(static_cast<int64_t>(time) * TimeSpan::TicksPerMillisecond);
+    case TransitionTimeUnit::Microseconds:
+      return TimeSpan(static_cast<int64_t>(time) * TimeSpan::TicksPerMicrosecond);
+      break;
+    default:
+      throw NotSupportedException("The given time unit has not been implemented");
+    }
+  }
+
+  inline constexpr TimeSpan Create(const uint32_t time, TransitionTimeUnit unit)
+  {
+    switch (unit)
+    {
+    case TransitionTimeUnit::Milliseconds:
+      return TimeSpan(static_cast<int64_t>(time) * TimeSpan::TicksPerMillisecond);
+    case TransitionTimeUnit::Microseconds:
+      return TimeSpan(static_cast<int64_t>(time) * TimeSpan::TicksPerMicrosecond);
+    default:
+      throw NotSupportedException("The given time unit has not been implemented");
+    }
+  }
+
+  inline constexpr TimeSpan Create(const int64_t time, TransitionTimeUnit unit)
+  {
+    switch (unit)
+    {
+    case TransitionTimeUnit::Milliseconds:
+      assert(time <= (std::numeric_limits<int64_t>::max() / TimeSpan::TicksPerMillisecond));
+      return TimeSpan(time * TimeSpan::TicksPerMillisecond);
+      break;
+    case TransitionTimeUnit::Microseconds:
+      assert(time <= (std::numeric_limits<int64_t>::max() / TimeSpan::TicksPerMicrosecond));
+      return TimeSpan(time * TimeSpan::TicksPerMicrosecond);
+      break;
+    default:
+      throw NotSupportedException("The given time unit has not been implemented");
+    }
+  }
+
+  inline constexpr TimeSpan Create(const uint64_t time, TransitionTimeUnit unit)
+  {
+    switch (unit)
+    {
+    case TransitionTimeUnit::Milliseconds:
+      assert(time <= static_cast<uint64_t>(std::numeric_limits<int64_t>::max() / TimeSpan::TicksPerMillisecond));
+      return TimeSpan(UncheckedNumericCast<int64_t>(time * TimeSpan::TicksPerMillisecond));
+    case TransitionTimeUnit::Microseconds:
+      assert(time <= static_cast<uint64_t>(std::numeric_limits<int64_t>::max() / TimeSpan::TicksPerMicrosecond));
+      return TimeSpan(UncheckedNumericCast<int64_t>(time * TimeSpan::TicksPerMicrosecond));
+    default:
+      throw NotSupportedException("The given time unit has not been implemented");
+    }
+  }
+
+  inline constexpr int32_t AsSecondsRoundedUp(const TimeSpan timeSpan)
+  {
+    return static_cast<int32_t>((timeSpan.Ticks() / TimeSpan::TicksPerSecond) + ((timeSpan.Ticks() % TimeSpan::TicksPerSecond) != 0 ? 1 : 0));
+  }
 }
 
 #endif

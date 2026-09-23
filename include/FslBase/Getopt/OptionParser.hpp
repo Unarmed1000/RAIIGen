@@ -31,15 +31,21 @@
  *
  ****************************************************************************************************************************************************/
 
-#include <deque>
-#include <FslBase/Noncopyable.hpp>
 #include <FslBase/Getopt/IOptionParser.hpp>
+#include <FslBase/Span/ReadOnlySpan.hpp>
+#include <FslBase/String/StringViewLite.hpp>
+#include <deque>
 
 namespace Fsl
 {
-  class OptionParser : private Noncopyable
+  class OptionParser
   {
   public:
+    // Switched to C++11 way of doing it
+    OptionParser(const OptionParser&) = delete;
+    OptionParser& operator=(const OptionParser&) = delete;
+
+
     struct ParserRecord
     {
       IOptionParser* Parser{nullptr};
@@ -66,19 +72,34 @@ namespace Fsl
       Result Status{Result::Failed};
       uint32_t VerbosityLevel{0};
 
-      ParseResult() = default;
+      constexpr ParseResult() = default;
 
-      ParseResult(const Result result, const uint32_t verbosityLevel)
+      constexpr ParseResult(const Result result, const uint32_t verbosityLevel)
         : Status(result)
         , VerbosityLevel(verbosityLevel)
       {
       }
     };
 
-    static ParseResult Parse(int argc, char** argv, const char* const pszHelpCaption);
-    static ParseResult Parse(int argc, char** argv, IOptionParser& inputOptionParser, const char* const pszHelpCaption);
-    static ParseResult Parse(int argc, char** argv, const std::deque<IOptionParser*>& inputOptionParsers, const char* const pszHelpCaption);
-    static ParseResult Parse(int argc, char** argv, const std::deque<ParserRecord>& inputOptionParsers, const char* const pszHelpCaption);
+    //! @brief Parse command line arguments we expect the first parameter to be the filename
+    static ParseResult Parse(int argc, char** argv, StringViewLite strHelpCaption);
+    //! @brief Parse command line arguments we expect the first parameter to be the filename
+    static ParseResult Parse(int argc, char** argv, IOptionParser& inputOptionParser, StringViewLite strHelpCaption);
+    //! @brief Parse command line arguments we expect the first parameter to be the filename
+    static ParseResult Parse(int argc, char** argv, const std::deque<IOptionParser*>& inputOptionParsers, StringViewLite strHelpCaption);
+    //! @brief Parse command line arguments we expect the first parameter to be the filename
+    static ParseResult Parse(int argc, char** argv, const std::deque<ParserRecord>& inputOptionParsers, StringViewLite strHelpCaption);
+
+    //! @brief Here we expect that the args has been preprocessed a bit and the filename has been stripped so we only look at real args
+    static ParseResult Parse(const ReadOnlySpan<StringViewLite> args, StringViewLite strHelpCaption);
+    //! @brief Here we expect that the args has been preprocessed a bit and the filename has been stripped so we only look at real args
+    static ParseResult Parse(const ReadOnlySpan<StringViewLite> args, IOptionParser& inputOptionParser, StringViewLite strHelpCaption);
+    //! @brief Here we expect that the args has been preprocessed a bit and the filename has been stripped so we only look at real args
+    static ParseResult Parse(const ReadOnlySpan<StringViewLite> args, const std::deque<IOptionParser*>& inputOptionParsers,
+                             StringViewLite strHelpCaption);
+    //! @brief Here we expect that the args has been preprocessed a bit and the filename has been stripped so we only look at real args
+    static ParseResult Parse(const ReadOnlySpan<StringViewLite> args, const std::deque<ParserRecord>& inputOptionParsers,
+                             StringViewLite strHelpCaption);
   };
 }
 

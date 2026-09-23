@@ -141,9 +141,14 @@ namespace MB
       case CXType_RValueReference:
         throw std::runtime_error("GetTypeName() failed to get type name for CXType_RValueReference");
       case CXType_Record:
-        throw std::runtime_error("GetTypeName() failed to get type name for CXType_Record");
       case CXType_Enum:
-        throw std::runtime_error("GetTypeName() failed to get type name for CXType_Enum");
+      {
+        // Clang 22+ no longer wraps 'struct X' / 'enum X' in a CXType_Elaborated so resolve them the same way
+        const auto actualTypeCursor = clang_getTypeDeclaration(type);
+        if (actualTypeCursor.kind == CXCursor_NoDeclFound)
+          throw std::runtime_error("GetTypeName() failed to get type name");
+        return TypeInfo(GetCursorSpelling(actualTypeCursor), type, originalType);
+      }
       case CXType_Typedef:
       {
         // lookup the type

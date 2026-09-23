@@ -29,46 +29,25 @@
  *
  ****************************************************************************************************************************************************/
 
-#ifdef _WIN32
-#include <Windows.h>
-#elif defined(__linux__) || defined(__QNXNTO__)
-#include <ctime>
-#else
-#error Unsupported platform
-#endif
-
 #include <FslBase/System/HighResolutionTimer.hpp>
+#include "Platform/PlatformPerformanceCounter.hpp"
 
 namespace Fsl
 {
-  HighResolutionTimer::HighResolutionTimer()    // NOLINT(modernize-use-equals-default)
+  HighResolutionTimer::HighResolutionTimer()
+    : m_nativeTicksPerSecond(PlatformPerformanceCounter::GetPerformanceFrequency())
+    , m_frequency(static_cast<double>(m_nativeTicksPerSecond) / static_cast<double>(TickCount::TicksPerSecond))
   {
-#ifdef _WIN32
-    LARGE_INTEGER value;
-    QueryPerformanceFrequency(&value);
-    m_frequency = value.QuadPart / 1000000.0;
-#endif
   }
 
 
-  uint64_t HighResolutionTimer::GetTime() const
+  TickCount HighResolutionTimer::GetTimestamp() const noexcept
   {
-#ifdef _WIN32
-    {
-      LARGE_INTEGER value;
-      QueryPerformanceCounter(&value);
-      return static_cast<uint64_t>(value.QuadPart / m_frequency);
-    }
-#elif defined(__linux__) || defined(__QNXNTO__)
-    {
-      using SafeTimespec = struct timespec;
-      SafeTimespec currentTime{};
-      clock_gettime(CLOCK_MONOTONIC, &currentTime);
-      uint64_t time = currentTime.tv_sec;
-      time *= 1000000;
-      time += (currentTime.tv_nsec / 1000);
-      return time;
-    }
-#endif
+    return TickCount(static_cast<int64_t>(static_cast<double>(PlatformPerformanceCounter::GetPerformanceCounter()) / m_frequency));
+  }
+
+  uint64_t HighResolutionTimer::GetNativeTicks() const noexcept
+  {
+    return PlatformPerformanceCounter::GetPerformanceCounter();
   }
 }

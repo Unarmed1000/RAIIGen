@@ -29,105 +29,82 @@
  *
  ****************************************************************************************************************************************************/
 
+#include <FslBase/Exceptions.hpp>
 #include <FslBase/IO/Directory.hpp>
 #include <FslBase/IO/File.hpp>
-#include <FslBase/Exceptions.hpp>
 #include <FslBase/System/Platform/PlatformFileSystem.hpp>
-#include "../System/Platform/Platform.hpp"
 #include <cassert>
+#include "../System/Platform/Platform.hpp"
 
-namespace Fsl
+namespace Fsl::IO
 {
-  namespace IO
+  namespace
   {
-    namespace
+    void RecursiveCreate(const Path& path)
     {
-      void RecursiveCreate(const Path& path)
+      auto tmpPath = Path::GetDirectoryName(path);
+      if (tmpPath.GetByteSize() > 0)
       {
-        auto tmpPath = Path::GetDirectoryName(path);
-        if (tmpPath.GetByteSize() > 0)
-        {
-          RecursiveCreate(tmpPath);
-        }
-
-        if (!path.EndsWith(":"))
-        {
-          PlatformFileSystem::CreateDir(path);
-        }
-      }
-    }
-
-    void Directory::CreateDir(const Path& path)
-    {
-      if (path.EndsWith(":"))
-      {
-        throw IOException("Invalid path name");
+        RecursiveCreate(tmpPath);
       }
 
-      const auto indexOfSlash = path.IndexOf('/');
-      if (indexOfSlash >= 0 && path.IndexOf(':', indexOfSlash) > 0)
+      if (!path.EndsWith(":"))
       {
-        throw NotSupportedException("A path can only contain ':' in the drive label");
-      }
-
-      RecursiveCreate(path);
-    }
-
-
-    bool Directory::Exists(const Path& path)
-    {
-      FileAttributes attr;
-      if (!File::TryGetAttributes(path, attr))
-      {
-        return false;
-      }
-      return (attr.HasFlag(FileAttributes::Directory));
-    }
-
-
-    Path Directory::GetCurrentWorkingDirectory()
-    {
-      return Path(Platform::GetCurrentWorkingDirectory());
-    }
-
-
-    void Directory::GetFiles(PathDeque& rResult, const Path& path, const SearchOptions searchOptions)
-    {
-      return PlatformFileSystem::GetContent(rResult, path, searchOptions, FileAttributes::File);
-    }
-
-
-    bool Directory::TryGetFiles(PathDeque& rResult, const Path& path, const SearchOptions searchOptions)
-    {
-      try
-      {
-        GetFiles(rResult, path, searchOptions);
-        return true;
-      }
-      catch (const std::exception&)
-      {
-        return false;
+        PlatformFileSystem::CreateDir(path);
       }
     }
+  }
 
-    void Directory::GetDirectories(PathDeque& rResult, const Path& path, const SearchOptions searchOptions)
+  void Directory::CreateDir(const Path& path)
+  {
+    if (path.EndsWith(":"))
     {
-      return PlatformFileSystem::GetContent(rResult, path, searchOptions, FileAttributes::Directory);
+      throw IOException("Invalid path name");
     }
 
-
-    bool Directory::TryGetDirectories(PathDeque& rResult, const Path& path, const SearchOptions searchOptions)
+    const auto indexOfSlash = path.IndexOf('/');
+    if (indexOfSlash >= 0 && path.IndexOf(':', indexOfSlash) > 0)
     {
-      try
-      {
-        GetDirectories(rResult, path, searchOptions);
-        return true;
-      }
-      catch (const std::exception&)
-      {
-        return false;
-      }
+      throw NotSupportedException("A path can only contain ':' in the drive label");
     }
 
+    RecursiveCreate(path);
+  }
+
+
+  bool Directory::Exists(const Path& path)
+  {
+    FileAttributes attr;
+    if (!File::TryGetAttributes(path, attr))
+    {
+      return false;
+    }
+    return (attr.HasFlag(FileAttributes::Directory));
+  }
+
+
+  Path Directory::GetCurrentWorkingDirectory()
+  {
+    return Path(Platform::GetCurrentWorkingDirectory());
+  }
+
+
+  void Directory::GetFiles(PathDeque& rResult, const Path& path, const SearchOptions searchOptions)
+  {
+    return PlatformFileSystem::GetFiles(rResult, path, searchOptions);
+  }
+
+
+  bool Directory::TryGetFiles(PathDeque& rResult, const Path& path, const SearchOptions searchOptions)
+  {
+    try
+    {
+      GetFiles(rResult, path, searchOptions);
+      return true;
+    }
+    catch (const std::exception&)
+    {
+      return false;
+    }
   }
 }

@@ -25,8 +25,8 @@ SOFTWARE.
 
 // The functions in this file are a port of an MIT licensed library: MonoGame - BoundingBox.cs.
 
-#include <FslBase/Math/BoundingBox.hpp>
 #include <FslBase/Exceptions.hpp>
+#include <FslBase/Math/BoundingBox.hpp>
 #include <FslBase/Math/BoundingFrustum.hpp>
 #include <FslBase/Math/BoundingSphere.hpp>
 #include <FslBase/Math/MathHelper.hpp>
@@ -41,8 +41,8 @@ namespace Fsl
 {
   namespace
   {
-    const Vector3 MaxVector3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-    const Vector3 MinVector3(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
+    constexpr Vector3 MaxVector3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+    constexpr Vector3 MinVector3(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
   }
 
 
@@ -217,7 +217,7 @@ namespace Fsl
       maxVec.Y = (maxVec.Y > point.Y) ? maxVec.Y : point.Y;
       maxVec.Z = (maxVec.Z > point.Z) ? maxVec.Z : point.Z;
     }
-    return BoundingBox(minVec, maxVec);
+    return {minVec, maxVec};
   }
 
 
@@ -334,7 +334,7 @@ namespace Fsl
 
   bool BoundingBox::Intersects(const BoundingBox& box) const
   {
-    bool result;
+    bool result = false;
     Intersects(box, result);
     return result;
   }
@@ -398,7 +398,7 @@ namespace Fsl
 
     if (sphereZ < Min.Z)
     {
-      dmin += (Min.Z - sphereY) * (Min.Z - sphereZ);
+      dmin += (Min.Z - sphereZ) * (Min.Z - sphereZ);
     }
     else if (sphereZ > Max.Z)
     {

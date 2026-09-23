@@ -170,7 +170,7 @@ namespace MB
 
       if (config.VersionGuard.IsValid && version != VersionRecord())
       {
-        strVersinGuardBegin = fmt::format(END_OF_LINE + "#if {0}", config.VersionGuard.ToGuardString(version));
+        strVersinGuardBegin = fmt::format(fmt::runtime(END_OF_LINE + "#if {0}"), config.VersionGuard.ToGuardString(version));
         strVersinGuardEnd = END_OF_LINE + "#endif";
       }
 
@@ -334,7 +334,7 @@ namespace MB
             StringUtil::Replace(methodContent, "##C_TYPE_NAME##", entry.second.Name);
             StringUtil::Replace(methodContent, "##CASE_ENTRIES##", switchCaseContent);
 
-            auto dstFileName = IO::Path::Combine(dstFilePath, entry.first + ".hpp");
+            auto dstFileName = IO::Path::Combine(dstFilePath, IO::Path(entry.first + ".hpp"));
             std::string headerContent = GenerateHeaderFile(config, snippets.Header, dstRootPath, dstFileName, methodContent, entry.second.Version);
 
             IOUtil::WriteAllTextIfChanged(dstFileName, headerContent);

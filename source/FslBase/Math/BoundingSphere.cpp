@@ -25,15 +25,15 @@ SOFTWARE.
 
 // The functions in this file are a port of an MIT licensed library: MonoGame - BoundingSphere.cs.
 
-#include <FslBase/Math/BoundingSphere.hpp>
 #include <FslBase/Exceptions.hpp>
-#include <FslBase/Math/MathHelper.hpp>
 #include <FslBase/Math/BoundingBox.hpp>
 #include <FslBase/Math/BoundingFrustum.hpp>
+#include <FslBase/Math/BoundingSphere.hpp>
+#include <FslBase/Math/MathHelper.hpp>
 #include <FslBase/Math/Matrix.hpp>
 #include <FslBase/Math/MatrixFields.hpp>
-#include <FslBase/Math/Ray.hpp>
 #include <FslBase/Math/Plane.hpp>
+#include <FslBase/Math/Ray.hpp>
 #include <array>
 #include <cassert>
 #include <cmath>
@@ -299,8 +299,8 @@ namespace Fsl
       {
         const float distance = std::sqrt(sqDist);    // equal to diff.Length();
         Vector3 direction = diff / distance;
-        Vector3 G = center - radius * direction;
-        center = (G + point) / 2;
+        Vector3 g = center - radius * direction;
+        center = (g + point) / 2;
         radius = Vector3::Distance(point, center);
         sqRadius = radius * radius;
       }
@@ -336,10 +336,10 @@ namespace Fsl
     }
     // else find center of new sphere and radius
     const float leftRadius = std::max(original.Radius - distance, additional.Radius);
-    const float Rightradius = std::max(original.Radius + distance, additional.Radius);
-    ocenterToaCenter = ocenterToaCenter + (((leftRadius - Rightradius) / (2 * ocenterToaCenter.Length())) * ocenterToaCenter);    //
+    const float rightradius = std::max(original.Radius + distance, additional.Radius);
+    ocenterToaCenter = ocenterToaCenter + (((leftRadius - rightradius) / (2 * ocenterToaCenter.Length())) * ocenterToaCenter);    //
 
-    rResult = BoundingSphere(original.Center + ocenterToaCenter, (leftRadius + Rightradius) / 2.0f);
+    rResult = BoundingSphere(original.Center + ocenterToaCenter, (leftRadius + rightradius) / 2.0f);
   }
 
 

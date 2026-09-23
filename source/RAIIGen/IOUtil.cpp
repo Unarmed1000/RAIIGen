@@ -22,6 +22,8 @@
 
 #include <RAIIGen/IOUtil.hpp>
 #include <FslBase/IO/File.hpp>
+#include <filesystem>
+#include <memory>
 
 namespace MB
 {
@@ -34,5 +36,36 @@ namespace MB
     if (IO::File::TryReadAllText(currentContent, fileName) && currentContent == content)
       return;
     IO::File::WriteAllText(fileName, content);
+  }
+
+
+  bool IOUtil::TryGetDirectories(IO::PathDeque& rResult, const IO::Path& path, const IO::SearchOptions searchOptions)
+  {
+    const auto toPath = [](const std::filesystem::path& entryPath)
+    {
+      const auto str = entryPath.generic_u8string();
+      return std::make_shared<IO::Path>(std::string(str.begin(), str.end()));
+    };
+
+    const auto& utf8Path = path.ToUTF8String();
+    const std::filesystem::path srcPath(std::u8string(utf8Path.begin(), utf8Path.end()));
+    std::error_code error;
+    if (searchOptions == IO::SearchOptions::AllDirectories)
+    {
+      for (std::filesystem::recursive_directory_iterator itr(srcPath, error), end; !error && itr != end; itr.increment(error))
+      {
+        if (itr->is_directory())
+          rResult.push_back(toPath(itr->path()));
+      }
+    }
+    else
+    {
+      for (std::filesystem::directory_iterator itr(srcPath, error), end; !error && itr != end; itr.increment(error))
+      {
+        if (itr->is_directory())
+          rResult.push_back(toPath(itr->path()));
+      }
+    }
+    return !error;
   }
 }

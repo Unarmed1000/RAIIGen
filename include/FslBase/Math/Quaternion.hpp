@@ -57,7 +57,7 @@ namespace Fsl
 
     static constexpr Quaternion Identity()
     {
-      return Quaternion(0, 0, 0, 1);
+      return {0, 0, 0, 1};
     }
 
     static Quaternion Add(const Quaternion& lhs, const Quaternion& rhs);
@@ -102,19 +102,22 @@ namespace Fsl
     static Quaternion Normalize(const Quaternion& quaternion);
     static void Normalize(Quaternion& rResult, const Quaternion& quaternion);
 
+    //! Convert quaternion (x, y, z, w) to Euler angles (roll, pitch, yaw)
+    // Vector3 ToEulerAngles() const;
+
     //! @brief Tests for equality.
-    bool operator==(const Quaternion& rhs) const
+    constexpr bool operator==(const Quaternion& rhs) const
     {
       return X == rhs.X && Y == rhs.Y && Z == rhs.Z && W == rhs.W;
     }
 
     //! @brief Tests for inequality.
-    bool operator!=(const Quaternion& rhs) const
+    constexpr bool operator!=(const Quaternion& rhs) const
     {
       return X != rhs.X || Y != rhs.Y || Z != rhs.Z || W != rhs.W;
     }
 
-    Quaternion& operator+=(const Quaternion& rhs)
+    constexpr Quaternion& operator+=(const Quaternion& rhs)
     {
       X += rhs.X;
       Y += rhs.Y;
@@ -123,7 +126,7 @@ namespace Fsl
       return *this;
     }
 
-    Quaternion& operator-=(const Quaternion& rhs)
+    constexpr Quaternion& operator-=(const Quaternion& rhs)
     {
       X -= rhs.X;
       Y -= rhs.Y;
@@ -132,29 +135,28 @@ namespace Fsl
       return *this;
     }
   };
+
+  inline constexpr Quaternion operator+(const Quaternion& lhs, const Quaternion& rhs)
+  {
+    return {lhs.X + rhs.X, lhs.Y + rhs.Y, lhs.Z + rhs.Z, lhs.W + rhs.W};
+  }
+
+
+  inline constexpr Quaternion operator-(const Quaternion& lhs, const Quaternion& rhs)
+  {
+    return {lhs.X - rhs.X, lhs.Y - rhs.Y, lhs.Z - rhs.Z, lhs.W - rhs.W};
+  }
+
+
+  inline constexpr Quaternion operator*(const Quaternion lhs, const float scaleFactor)
+  {
+    return {lhs.X * scaleFactor, lhs.Y * scaleFactor, lhs.Z * scaleFactor, lhs.W * scaleFactor};
+  }
+
+
+  Quaternion operator/(const Quaternion lhs, const Quaternion& rhs);
+  Quaternion operator*(const Quaternion lhs, const Quaternion& rhs);
+
 }
-
-
-inline Fsl::Quaternion operator+(const Fsl::Quaternion& lhs, const Fsl::Quaternion& rhs)
-{
-  return Fsl::Quaternion(lhs.X + rhs.X, lhs.Y + rhs.Y, lhs.Z + rhs.Z, lhs.W + rhs.W);
-}
-
-
-inline Fsl::Quaternion operator-(const Fsl::Quaternion& lhs, const Fsl::Quaternion& rhs)
-{
-  return Fsl::Quaternion(lhs.X - rhs.X, lhs.Y - rhs.Y, lhs.Z - rhs.Z, lhs.W - rhs.W);
-}
-
-
-inline Fsl::Quaternion operator*(const Fsl::Quaternion lhs, const float scaleFactor)
-{
-  return Fsl::Quaternion(lhs.X * scaleFactor, lhs.Y * scaleFactor, lhs.Z * scaleFactor, lhs.W * scaleFactor);
-}
-
-
-Fsl::Quaternion operator/(const Fsl::Quaternion lhs, const Fsl::Quaternion& rhs);
-Fsl::Quaternion operator*(const Fsl::Quaternion lhs, const Fsl::Quaternion& rhs);
-
 
 #endif

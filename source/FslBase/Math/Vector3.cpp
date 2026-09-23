@@ -25,12 +25,11 @@ SOFTWARE.
 
 // The functions in this file are a port of an MIT licensed library: MonoGame - Vector3.cs.
 
-#include <cassert>
 #include <FslBase/Exceptions.hpp>
 #include <FslBase/Math/MathHelper.hpp>
 #include <FslBase/Math/Matrix.hpp>
-#include <FslBase/Math/Vector3.hpp>
 #include <FslBase/Math/Quaternion.hpp>
+#include <FslBase/Math/Vector3.hpp>
 #include <cassert>
 #include <cmath>
 #include <cstddef>
@@ -47,9 +46,9 @@ namespace Fsl
 
   Vector3 Vector3::Barycentric(const Vector3& value1, const Vector3& value2, const Vector3& value3, const float amount1, const float amount2)
   {
-    return Vector3(MathHelper::Barycentric(value1.X, value2.X, value3.X, amount1, amount2),
-                   MathHelper::Barycentric(value1.Y, value2.Y, value3.Y, amount1, amount2),
-                   MathHelper::Barycentric(value1.Z, value2.Z, value3.Z, amount1, amount2));
+    return {MathHelper::Barycentric(value1.X, value2.X, value3.X, amount1, amount2),
+            MathHelper::Barycentric(value1.Y, value2.Y, value3.Y, amount1, amount2),
+            MathHelper::Barycentric(value1.Z, value2.Z, value3.Z, amount1, amount2)};
   }
 
 
@@ -64,9 +63,9 @@ namespace Fsl
 
   Vector3 Vector3::CatmullRom(const Vector3& value1, const Vector3& value2, const Vector3& value3, const Vector3& value4, const float amount)
   {
-    return Vector3(MathHelper::CatmullRom(value1.X, value2.X, value3.X, value4.X, amount),
-                   MathHelper::CatmullRom(value1.Y, value2.Y, value3.Y, value4.Y, amount),
-                   MathHelper::CatmullRom(value1.Z, value2.Z, value3.Z, value4.Z, amount));
+    return {MathHelper::CatmullRom(value1.X, value2.X, value3.X, value4.X, amount),
+            MathHelper::CatmullRom(value1.Y, value2.Y, value3.Y, value4.Y, amount),
+            MathHelper::CatmullRom(value1.Z, value2.Z, value3.Z, value4.Z, amount)};
   }
 
 
@@ -81,7 +80,7 @@ namespace Fsl
 
   Vector3 Vector3::Clamp(const Vector3& value, const Vector3& min, const Vector3& max)
   {
-    return Vector3(MathHelper::Clamp(value.X, min.X, max.X), MathHelper::Clamp(value.Y, min.Y, max.Y), MathHelper::Clamp(value.Z, min.Z, max.Z));
+    return {MathHelper::Clamp(value.X, min.X, max.X), MathHelper::Clamp(value.Y, min.Y, max.Y), MathHelper::Clamp(value.Z, min.Z, max.Z)};
   }
 
 
@@ -115,9 +114,9 @@ namespace Fsl
 
   Vector3 Vector3::Hermite(const Vector3& value1, const Vector3& tangent1, const Vector3& value2, const Vector3& tangent2, const float amount)
   {
-    return Vector3(MathHelper::Hermite(value1.X, tangent1.X, value2.X, tangent2.X, amount),
-                   MathHelper::Hermite(value1.Y, tangent1.Y, value2.Y, tangent2.Y, amount),
-                   MathHelper::Hermite(value1.Z, tangent1.Z, value2.Z, tangent2.Z, amount));
+    return {MathHelper::Hermite(value1.X, tangent1.X, value2.X, tangent2.X, amount),
+            MathHelper::Hermite(value1.Y, tangent1.Y, value2.Y, tangent2.Y, amount),
+            MathHelper::Hermite(value1.Z, tangent1.Z, value2.Z, tangent2.Z, amount)};
   }
 
 
@@ -138,8 +137,7 @@ namespace Fsl
 
   Vector3 Vector3::Lerp(const Vector3& value1, const Vector3 value2, const float amount)
   {
-    return Vector3(MathHelper::Lerp(value1.X, value2.X, amount), MathHelper::Lerp(value1.Y, value2.Y, amount),
-                   MathHelper::Lerp(value1.Z, value2.Z, amount));
+    return {MathHelper::Lerp(value1.X, value2.X, amount), MathHelper::Lerp(value1.Y, value2.Y, amount), MathHelper::Lerp(value1.Z, value2.Z, amount)};
   }
 
 
@@ -152,7 +150,7 @@ namespace Fsl
 
   Vector3 Vector3::Max(const Vector3& value1, const Vector3& value2)
   {
-    return Vector3(std::max(value1.X, value2.X), std::max(value1.Y, value2.Y), std::max(value1.Z, value2.Z));
+    return {std::max(value1.X, value2.X), std::max(value1.Y, value2.Y), std::max(value1.Z, value2.Z)};
   }
 
 
@@ -164,7 +162,7 @@ namespace Fsl
 
   Vector3 Vector3::Min(const Vector3& value1, const Vector3& value2)
   {
-    return Vector3(std::min(value1.X, value2.X), std::min(value1.Y, value2.Y), std::min(value1.Z, value2.Z));
+    return {std::min(value1.X, value2.X), std::min(value1.Y, value2.Y), std::min(value1.Z, value2.Z)};
   }
 
 
@@ -220,7 +218,7 @@ namespace Fsl
     // R = I - (2 * N * ( DotProduct[ I,N] ))
     const float factor = 2.0f * ((vector.X * normal.X) + (vector.Y * normal.Y) + (vector.Z * normal.Z));
 
-    return Vector3(vector.X - (normal.X * factor), vector.Y - (normal.Y * factor), vector.Z - (normal.Z * factor));
+    return {vector.X - (normal.X * factor), vector.Y - (normal.Y * factor), vector.Z - (normal.Z * factor)};
   }
 
 
@@ -239,8 +237,8 @@ namespace Fsl
 
   Vector3 Vector3::SmoothStep(const Vector3& value1, const Vector3& value2, const float amount)
   {
-    return Vector3(MathHelper::SmoothStep(value1.X, value2.X, amount), MathHelper::SmoothStep(value1.Y, value2.Y, amount),
-                   MathHelper::SmoothStep(value1.Z, value2.Z, amount));
+    return {MathHelper::SmoothStep(value1.X, value2.X, amount), MathHelper::SmoothStep(value1.Y, value2.Y, amount),
+            MathHelper::SmoothStep(value1.Z, value2.Z, amount)};
   }
 
 

@@ -1,4 +1,4 @@
-#if defined(__linux__)
+#if defined(__linux__) || defined(FSL_PLATFORM_EMSCRIPTEN)
 /****************************************************************************************************************************************************
  * Copyright (c) 2014 Freescale Semiconductor, Inc.
  * All rights reserved.
@@ -30,22 +30,24 @@
  *
  ****************************************************************************************************************************************************/
 
-#include "Platform.hpp"
-#include <stdexcept>
-#include <ctime>
-#include <cstdlib>
+#include <fmt/format.h>
 #include <unistd.h>
+#include <array>
+#include <cstdlib>
+#include <ctime>
+#include <stdexcept>
+#include "Platform.hpp"
 
 namespace Fsl
 {
   std::string Platform::GetCurrentWorkingDirectory()
   {
-    char buffer[FILENAME_MAX];
-    if (getcwd(buffer, sizeof(buffer)) == nullptr)
+    std::array<char, FILENAME_MAX> buffer{};
+    if (getcwd(buffer.data(), buffer.size()) == nullptr)
     {
       throw std::runtime_error("Failed to retrieve the current working directory");
     }
-    return std::string(buffer);
+    return buffer.data();
   }
 
 
@@ -54,7 +56,7 @@ namespace Fsl
     char* pPath = realpath(path.c_str(), nullptr);
     if (pPath == nullptr)
     {
-      throw std::runtime_error("failed to create the full path");
+      throw std::runtime_error(fmt::format("failed to create the full path for '{}'", path));
     }
 
     try
@@ -75,13 +77,13 @@ namespace Fsl
 
   //  int64_t Platform::GetPerformanceFrequency()
   //  {
-  //#error not implemented
+  // #error not implemented
   //  }
   //
   //
   //  int64_t Platform::GetPerformanceCounter()
   //  {
-  //#error not implemented
+  // #error not implemented
   //    //struct timespec currentTime;
   //    //clock_gettime(CLOCK_MONOTONIC, &currentTime);
   //    //uint64_t time = currentTime.tv_sec;

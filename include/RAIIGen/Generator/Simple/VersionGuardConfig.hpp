@@ -48,7 +48,7 @@ namespace MB
 
     std::string ToGuardString(const VersionRecord& version) const
     {
-      return fmt::format(m_formatString, version.Major, version.Minor, version.Build);
+      return fmt::format(fmt::runtime(m_formatString), version.Major, version.Minor, version.Build);
     }
   };
 }

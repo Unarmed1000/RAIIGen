@@ -30,12 +30,11 @@
  *
  ****************************************************************************************************************************************************/
 
-#include "Platform.hpp"
-#include <stdexcept>
-#include <time.h>
 #include <stdlib.h>
-#include <iostream>
+#include <time.h>
 #include <unistd.h>
+#include <stdexcept>
+#include "Platform.hpp"
 
 namespace Fsl
 {

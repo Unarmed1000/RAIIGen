@@ -31,11 +31,10 @@
  *
  ****************************************************************************************************************************************************/
 
-#include <FslBase/Math/Vector3.hpp>
 #include <FslBase/Math/Matrix3Fields.hpp>
-#include <algorithm>
+#include <FslBase/Math/Vector3.hpp>
 #include <cstddef>
-//#include <FslBase/OptimizationFlag.hpp>
+// #include <FslBase/OptimizationFlag.hpp>
 
 namespace Fsl
 {
@@ -53,7 +52,7 @@ namespace Fsl
 
     static constexpr size_type NumElements = 3 * 3;
 
-    constexpr size_type size() const
+    constexpr size_type size() const    // NOLINT(readability-convert-member-functions-to-static,readability-identifier-naming)
     {
       return NumElements;
     }
@@ -68,7 +67,7 @@ namespace Fsl
     // const int _M31 = (3 * 2 + 0);
     // const int _M32 = (3 * 2 + 1);
     // const int _M33 = (3 * 2 + 2);
-    float m[NumElements]{};
+    float m[NumElements]{};    // NOLINT(modernize-avoid-c-arrays,readability-identifier-naming)
 
   public:
     //! @brief Creates a empty matrix (all components are set to zero)
@@ -98,11 +97,11 @@ namespace Fsl
     //! @brief Return a instance of the identity matrix
     static constexpr Matrix3 GetIdentity()
     {
-      return Matrix3(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+      return {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
     }
 
     //! @brief Fill the matrix with zero
-    void Clear()
+    constexpr void Clear()
     {
       using namespace Matrix3Fields;
       m[_M11] = 0.0f;
@@ -117,7 +116,7 @@ namespace Fsl
     }
 
     //! @brief Set the matrix to the identity matrix
-    void SetIdentity()
+    constexpr void SetIdentity()
     {
       using namespace Matrix3Fields;
       m[_M11] = 1.0f;
@@ -141,25 +140,27 @@ namespace Fsl
     static constexpr Matrix3 Transpose(const Matrix3& matrix)
     {
       using namespace Matrix3Fields;
-      return Matrix3(matrix.m[_M11], matrix.m[_M21], matrix.m[_M31], matrix.m[_M12], matrix.m[_M22], matrix.m[_M32], matrix.m[_M13], matrix.m[_M23],
-                     matrix.m[_M33]);
+      return {matrix.m[_M11], matrix.m[_M21], matrix.m[_M31], matrix.m[_M12], matrix.m[_M22],
+              matrix.m[_M32], matrix.m[_M13], matrix.m[_M23], matrix.m[_M33]};
     }
 
     static Matrix3 Invert(const Matrix3& matrix);
 
-    bool operator==(const Matrix3& rhs) const
+    constexpr bool operator==(const Matrix3& rhs) const noexcept
     {
       using namespace Matrix3Fields;
       return (m[_M11] == rhs.m[_M11] && m[_M12] == rhs.m[_M12] && m[_M13] == rhs.m[_M13] && m[_M21] == rhs.m[_M21] && m[_M22] == rhs.m[_M22] &&
               m[_M23] == rhs.m[_M23] && m[_M31] == rhs.m[_M31] && m[_M32] == rhs.m[_M32] && m[_M33] == rhs.m[_M33]);
     }
 
-    bool operator!=(const Matrix3& rhs) const
+    constexpr bool operator!=(const Matrix3& rhs) const noexcept
     {
       using namespace Matrix3Fields;
       return (m[_M11] != rhs.m[_M11] || m[_M12] != rhs.m[_M12] || m[_M13] != rhs.m[_M13] || m[_M21] != rhs.m[_M21] || m[_M22] != rhs.m[_M22] ||
               m[_M23] != rhs.m[_M23] || m[_M31] != rhs.m[_M31] || m[_M32] != rhs.m[_M32] || m[_M33] != rhs.m[_M33]);
     }
+
+    // Vector3 ToEularAngles() const;
   };
 }
 

@@ -25,12 +25,12 @@ SOFTWARE.
 
 // The functions in this file are a port of an MIT licensed library: MonoGame - Ray.cs.
 
-#include <FslBase/Math/Ray.hpp>
 #include <FslBase/Exceptions.hpp>
 #include <FslBase/Math/BoundingBox.hpp>
 #include <FslBase/Math/BoundingSphere.hpp>
 #include <FslBase/Math/MathHelper.hpp>
 #include <FslBase/Math/Plane.hpp>
+#include <FslBase/Math/Ray.hpp>
 #include <cassert>
 #include <cmath>
 #include <cstddef>
@@ -41,7 +41,7 @@ namespace Fsl
   // adapted from http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-box-intersection/
   bool Ray::Intersects(const BoundingBox& box, float& rResult) const
   {
-    const float Epsilon = 1e-6f;
+    constexpr float Epsilon = 1e-6f;
 
     bool hasMin = false;
     bool hasMax = false;
@@ -175,7 +175,7 @@ namespace Fsl
     float differenceLengthSquared = difference.LengthSquared();
     float sphereRadiusSquared = sphere.Radius * sphere.Radius;
 
-    float distanceAlongRay;
+    float distanceAlongRay = 0.0f;
 
     // If the distance between the ray start and the sphere's center is less than
     // the radius of the sphere, it means we've intersected. N.B. checking the LengthSquared is faster.

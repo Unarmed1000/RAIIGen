@@ -31,6 +31,7 @@
 #include <FslBase/IO/Path.hpp>
 #include <FslBase/IO/PathDeque.hpp>
 #include <FslBase/String/StringUtil.hpp>
+#include <RAIIGen/IOUtil.hpp>
 #include <RAIIGen/ProgramInfo.hpp>
 #include <RAIIGen/Capture.hpp>
 #include <RAIIGen/CapturedData.hpp>
@@ -91,7 +92,7 @@ namespace MB
 
       // Scan for history files
       IO::PathDeque entries;
-      if (!IO::Directory::TryGetDirectories(entries, historyPath, IO::SearchOptions::TopDirectoryOnly))
+      if (!IOUtil::TryGetDirectories(entries, historyPath, IO::SearchOptions::TopDirectoryOnly))
         return history;
 
       // For now we disable the logger during history parsing
@@ -102,7 +103,7 @@ namespace MB
       for (const auto& entry : entries)
       {
         const auto dirName = IO::Path::GetFileName(*entry);
-        if (dirName.StartsWith(apiVersion))
+        if (dirName.StartsWith(apiVersion.c_str()))
         {
           std::cout << "- '" << dirName.ToUTF8String() << "'\n";
 
@@ -312,10 +313,10 @@ namespace MB
       const auto apiVersion = VersionRecord(strApiVersion, true);
       const auto apiNameAndVersion = baseApiName + strApiVersion;
       const auto templateNameAndVersion = templateName + strApiVersion;
-      const auto apiHeaderPath = IO::Path::Combine(config.HeaderRoot, IO::Path::Combine("khronos", apiNameAndVersion));
-      const auto templatePath = IO::Path::Combine(config.TemplateRoot, templateName);
-      const auto srcFile = IO::Path::Combine(apiHeaderPath, filename);
-      const auto dstPath = IO::Path::Combine(config.OutputRoot, templateNameAndVersion);
+      const auto apiHeaderPath = IO::Path::Combine(config.HeaderRoot, IO::Path::Combine("khronos", IO::Path(apiNameAndVersion)));
+      const auto templatePath = IO::Path::Combine(config.TemplateRoot, IO::Path(templateName));
+      const auto srcFile = IO::Path::Combine(apiHeaderPath, IO::Path(filename));
+      const auto dstPath = IO::Path::Combine(config.OutputRoot, IO::Path(templateNameAndVersion));
       const auto apiHistoryPath = IO::Path::Combine(apiHeaderPath, "history");
 
       const std::vector<IO::Path> includePaths = {apiHeaderPath};
@@ -330,7 +331,7 @@ namespace MB
 
       BasicConfig basicConfig(programInfo, toolStatement, namespaceName, baseApiName, strApiVersion, apiVersion);
 
-      Run<TGenerator>(basicConfig, srcFile, filename, templatePath, apiHistoryPath, dstPath, includePaths, useAPIHistory);
+      Run<TGenerator>(basicConfig, srcFile, IO::Path(filename), templatePath, apiHistoryPath, dstPath, includePaths, useAPIHistory);
     }
 
 

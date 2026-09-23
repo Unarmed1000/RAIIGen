@@ -29,161 +29,227 @@
  *
  ****************************************************************************************************************************************************/
 
-#include <FslBase/IO/Path.hpp>
 #include <FslBase/Exceptions.hpp>
-#include "../System/Platform/Platform.hpp"
+#include <FslBase/IO/Path.hpp>
+#include <FslBase/IO/PathViewHelper.hpp>
+#include <FslBase/String/StringUtil.hpp>
 #include <algorithm>
 #include <cassert>
 #include <utility>
-//#include <locale>
+#include "../System/Platform/Platform.hpp"
+// #include <locale>
 
-namespace Fsl
+namespace Fsl::IO
 {
-  namespace IO
+  Path::Path(const char* const psz)
+    : m_content(psz)
   {
-    // move assignment operator
-    Path& Path::operator=(Path&& other) noexcept
+    m_content.Replace('\\', '/');
+  }
+
+  Path::Path(const StringViewLite str)
+    : m_content(str)
+  {
+    m_content.Replace('\\', '/');
+  }
+
+  Path::Path(const PathView str)
+    : m_content(str)
+  {
+  }
+
+  Path::Path(UTF8String str)
+    : m_content(std::move(str))
+  {
+    m_content.Replace('\\', '/');
+  }
+
+
+  Path::Path(std::string str)
+    : m_content(std::move(str))
+  {
+    m_content.Replace('\\', '/');
+  }
+
+
+  std::string Path::ToAsciiString() const
+  {
+    return m_content.ToAsciiString();
+  }
+
+
+  Path& Path::operator=(const StringViewLite str)
+  {
+    m_content = str;
+    m_content.Replace('\\', '/');
+    return *this;
+  }
+
+
+  Path& Path::operator=(const PathView str)
+  {
+    m_content = str;
+    return *this;
+  }
+
+  void Path::Append(const std::size_t count, const char ch)
+  {
+    auto finalChar = ch != '\\' ? ch : '/';
+    m_content.Append(count, finalChar);
+  }
+
+  void Path::Append(const StringViewLite str)
+  {
+    m_content.Append(str);
+    m_content.Replace('\\', '/');
+  }
+
+  void Path::Append(const PathView str)
+  {
+    m_content.Append(str);
+  }
+
+  void Path::Prepend(const std::size_t count, const char ch)
+  {
+    auto finalChar = ch != '\\' ? ch : '/';
+    m_content.Prepend(count, finalChar);
+  }
+
+  void Path::Prepend(const PathView str)
+  {
+    m_content.Prepend(str);
+  }
+
+  void Path::Prepend(const StringViewLite str)
+  {
+    m_content.Prepend(str);
+    m_content.Replace('\\', '/');
+  }
+
+
+  // Path Path::ToLowerInvariant() const
+  //{
+
+  //}
+
+
+  // Path Path::ToUpperInvariant() const
+  //{
+  //}
+
+
+  bool Path::IsPathRooted(const PathView path)
+  {
+    // A fairly simple check for rooted paths
+    return !path.empty() && (path.starts_with('/') || StringUtil::Contains(path, ':'));
+  }
+
+
+  Path Path::Combine(const PathView path1, const PathView path2)
+  {
+    if (Path::IsPathRooted(path2))
     {
-      if (this != &other)
-      {
-        m_content = std::move(other.m_content);
-      }
-      return *this;
+      return path2;
     }
 
-
-    // Transfer ownership from other to this
-    Path::Path(Path&& other) noexcept
-      : m_content(std::move(other.m_content))
+    if (path1.empty())
     {
+      return path2;
+    }
+    if (path2.empty())
+    {
+      return path1;
+    }
+    if (!path1.ends_with('/'))
+    {
+      Path newPath(path1);
+      newPath.Append(1u, '/');
+      newPath.Append(path2);
+      return newPath;
     }
 
+    return IO::Path(path1) + path2;
+  }
 
-    Path::Path(const std::string& str, const bool bUnchecked)
-      : m_content(str)
+
+  PathView Path::GetDirectoryNameView(const PathView path)
+  {
+    const int32_t index = StringUtil::LastIndexOf(path, '/');
+    if (index <= 0)
     {
+      return {};
+    }
+    return path.subpath(0, index);
+  }
+
+
+  PathView Path::GetFileNameView(const PathView path)
+  {
+    // locate the last index of '/'
+    auto index = path.rfind('/');
+    if (index == PathView::npos)
+    {
+      // not found -> so just return the path
+      return path;
+    }
+    // +1 to skip the '/'
+    ++index;
+    assert(index <= path.size());
+    return path.subpath(index, path.size() - index);
+  }
+
+
+  PathView Path::GetFileNameWithoutExtensionView(const PathView path)
+  {
+    // locate the last index of '.'
+    auto index = path.rfind('.');
+    if (index == PathView::npos)
+    {
+      return GetFileNameView(path);
     }
 
+    auto charsToSkip = (path.size() - index);
+    assert(charsToSkip <= path.size());
+    // locate the last index of '/'
+    auto indexSlash = path.rfind('/');
+    indexSlash = indexSlash != PathView::npos ? indexSlash + 1u : 0u;
+    assert(indexSlash <= path.size());
+    assert(charsToSkip <= (path.size() - indexSlash));
+    return path.subpath(indexSlash, path.size() - indexSlash - charsToSkip);
+  }
 
-    Path::Path(UTF8String str)
-      : m_content(std::move(str))
+
+  PathView Path::GetExtensionView(const PathView path)
+  {
+    // locate the last index of '.'
+    auto dotIndex = path.rfind('.');
+    if (dotIndex == PathView::npos)
     {
-      m_content.Replace('\\', '/');
+      return {};
     }
 
-
-    Path::Path(const std::string& str)
-      : m_content(str)
+    // locate the last index of '/'
+    auto indexSlash = path.rfind('/');
+    if (indexSlash != PathView::npos && dotIndex < indexSlash)
     {
-      m_content.Replace('\\', '/');
+      return {};
     }
 
-
-    Path::Path(const char* const psz)
-      : m_content(psz)
-    {
-      m_content.Replace('\\', '/');
-    }
+    assert(dotIndex <= path.size());
+    return path.subpath(dotIndex, path.size() - dotIndex);
+  }
 
 
-    Path::~Path() = default;
+  Path Path::GetFullPath(const PathView path)
+  {
+    // We get the path from a external location, so we need to convert the string to a path
+    return Path(Platform::GetFullPath(PathViewHelper::ToString(path)));
+  }
 
 
-    std::string Path::ToAsciiString() const
-    {
-      return m_content.ToAsciiString();
-    }
-
-
-    // Path Path::ToLowerInvariant() const
-    //{
-
-    //}
-
-
-    // Path Path::ToUpperInvariant() const
-    //{
-    //}
-
-
-    bool Path::IsPathRooted(const Path& path)
-    {
-      // A fairly simple check for rooted paths
-      return !path.IsEmpty() && (path.StartsWith('/') || path.Contains(':'));
-    }
-
-
-    Path Path::Combine(const Path& path1, const Path& path2)
-    {
-      if (Path::IsPathRooted(path2))
-      {
-        return path2;
-      }
-
-      if (path1.IsEmpty())
-      {
-        return path2;
-      }
-      if (path2.IsEmpty())
-      {
-        return path1;
-      }
-      if (!path1.EndsWith('/'))
-      {
-        return Path(path1.ToUTF8String() + '/' + path2.ToUTF8String(), true);
-      }
-
-
-      return Path(path1.ToUTF8String() + path2.ToUTF8String(), true);
-    }
-
-
-    Path Path::GetDirectoryName(const Path& path)
-    {
-      const int32_t index = path.m_content.LastIndexOf('/');
-      if (index <= 0)
-      {
-        return Path();
-      }
-      return Path(UTF8String(path.m_content, 0, index));
-    }
-
-
-    Path Path::GetFileName(const Path& path)
-    {
-      int32_t index = path.m_content.LastIndexOf('/');
-      if (index < 0)
-      {
-        return path;
-      }
-      // +1 to skip the '/'
-      ++index;
-      return Path(UTF8String(path.m_content, index, path.m_content.GetByteSize() - index));
-    }
-
-
-    Path Path::GetExtension(const Path& path)
-    {
-      const int32_t dotIndex = path.m_content.LastIndexOf('.');
-      if (dotIndex < 0)
-      {
-        return Path();
-      }
-
-      const int32_t index = std::max(path.m_content.LastIndexOf('/'), 0);
-      if (dotIndex < index)
-      {
-        return Path();
-      }
-
-
-      return Path(path.m_content.ToUTF8String().substr(dotIndex, path.GetByteSize() - dotIndex));
-    }
-
-
-    Path Path::GetFullPath(const Path& path)
-    {
-      return Path(Platform::GetFullPath(path.m_content.ToUTF8String()));
-    }
+  Path Path::GetFullPath(const Path& path)
+  {
+    // We get the path from a external location, so we need to convert the string to a path
+    return Path(Platform::GetFullPath(path.m_content.ToUTF8String()));
   }
 }

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,27 +19,38 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\fmt\chrono.h" />
-    <ClInclude Include="include\fmt\color.h" />
-    <ClInclude Include="include\fmt\core.h" />
-    <ClInclude Include="include\fmt\format-inl.h" />
-    <ClInclude Include="include\fmt\format.h" />
-    <ClInclude Include="include\fmt\locale.h" />
-    <ClInclude Include="include\fmt\ostream.h" />
-    <ClInclude Include="include\fmt\posix.h" />
-    <ClInclude Include="include\fmt\printf.h" />
-    <ClInclude Include="include\fmt\ranges.h" />
-    <ClInclude Include="include\fmt\time.h" />
+    <ClInclude Include="include\FslBase\Arguments\ArgumentParser.hpp" />
+    <ClInclude Include="include\FslBase\Arguments\ArgumentParserErrorStrings.hpp" />
+    <ClInclude Include="include\FslBase\Arguments\Command.hpp" />
+    <ClInclude Include="include\FslBase\Arguments\CommandType.hpp" />
+    <ClInclude Include="include\FslBase\Arguments\EncodedCommand.hpp" />
+    <ClInclude Include="include\FslBase\Arguments\EncodedCommands.hpp" />
+    <ClInclude Include="include\FslBase\Arguments\ParseErrorInfo.hpp" />
+    <ClInclude Include="include\FslBase\Arguments\ParseResult.hpp" />
     <ClInclude Include="include\FslBase\Attributes.hpp" />
     <ClInclude Include="include\FslBase\BasicTypes.hpp" />
     <ClInclude Include="include\FslBase\Bits\AlignmentUtil.hpp" />
     <ClInclude Include="include\FslBase\Bits\BitsUtil.hpp" />
     <ClInclude Include="include\FslBase\Bits\ByteArrayUtil.hpp" />
+    <ClInclude Include="include\FslBase\Bits\ByteSpanUtil_ReadBE.hpp" />
+    <ClInclude Include="include\FslBase\Bits\ByteSpanUtil_ReadLE.hpp" />
+    <ClInclude Include="include\FslBase\Bits\ByteSpanUtil_WriteBE.hpp" />
+    <ClInclude Include="include\FslBase\Bits\ByteSpanUtil_WriteLE.hpp" />
     <ClInclude Include="include\FslBase\BlobRecord.hpp" />
+    <ClInclude Include="include\FslBase\Collections\CircularFixedSizeBuffer.hpp" />
+    <ClInclude Include="include\FslBase\Collections\Concurrent\ConcurrentBasicVector.hpp" />
+    <ClInclude Include="include\FslBase\Collections\Concurrent\ConcurrentBasicVector_fwd.hpp" />
     <ClInclude Include="include\FslBase\Collections\Concurrent\ConcurrentQueue.hpp" />
     <ClInclude Include="include\FslBase\Collections\Concurrent\ConcurrentQueue_fwd.hpp" />
+    <ClInclude Include="include\FslBase\Collections\HandleVector.hpp" />
+    <ClInclude Include="include\FslBase\Collections\HandleVectorConfig.hpp" />
+    <ClInclude Include="include\FslBase\Collections\TightHostedVector.hpp" />
+    <ClInclude Include="include\FslBase\Collections\VersionedHandleVector.hpp" />
+    <ClInclude Include="include\FslBase\Collections\VersionedHandleVectorConfig.hpp" />
     <ClInclude Include="include\FslBase\Compression\ValueCompression.hpp" />
+    <ClInclude Include="include\FslBase\Compression\ValueCompression_Span.hpp" />
     <ClInclude Include="include\FslBase\Debug\Math\DebugContainmentType.hpp" />
+    <ClInclude Include="include\FslBase\Debug\Transition\DebugTransitionType.hpp" />
     <ClInclude Include="include\FslBase\ExceptionMessageFormatFunction.hpp" />
     <ClInclude Include="include\FslBase\ExceptionMessageFormatter.hpp" />
     <ClInclude Include="include\FslBase\Exceptions.hpp" />
@@ -51,19 +62,95 @@
     <ClInclude Include="include\FslBase\Getopt\OptionParser.hpp" />
     <ClInclude Include="include\FslBase\Getopt\OptionParseResult.hpp" />
     <ClInclude Include="include\FslBase\Getopt\OptionType.hpp" />
+    <ClInclude Include="include\FslBase\Getopt\Util\OptionArg.hpp" />
+    <ClInclude Include="include\FslBase\Getopt\Util\OptionArgUtil.hpp" />
     <ClInclude Include="include\FslBase\IO\Directory.hpp" />
     <ClInclude Include="include\FslBase\IO\File.hpp" />
     <ClInclude Include="include\FslBase\IO\FileAttributes.hpp" />
     <ClInclude Include="include\FslBase\IO\Path.hpp" />
     <ClInclude Include="include\FslBase\IO\PathDeque.hpp" />
+    <ClInclude Include="include\FslBase\IO\PathView.hpp" />
+    <ClInclude Include="include\FslBase\IO\PathViewHelper.hpp" />
     <ClInclude Include="include\FslBase\IO\PathWatcher.hpp" />
+    <ClInclude Include="include\FslBase\IO\ScopedStreamState.hpp" />
     <ClInclude Include="include\FslBase\IO\SearchOptions.hpp" />
     <ClInclude Include="include\FslBase\ITag.hpp" />
-    <ClInclude Include="include\FslBase\Log\BasicLog.hpp" />
-    <ClInclude Include="include\FslBase\Log\BasicLogger.hpp" />
+    <ClInclude Include="include\FslBase\Iterator\PointerConstIterator.hpp" />
+    <ClInclude Include="include\FslBase\Iterator\PointerIterator.hpp" />
+    <ClInclude Include="include\FslBase\Log\Common\FmtVersionInfo.hpp" />
+    <ClInclude Include="include\FslBase\Log\Common\FmtVersionInfo2.hpp" />
+    <ClInclude Include="include\FslBase\Log\Common\LogVersionInfo.hpp" />
+    <ClInclude Include="include\FslBase\Log\Common\LogVersionInfo2.hpp" />
+    <ClInclude Include="include\FslBase\Log\IO\FmtPath.hpp" />
+    <ClInclude Include="include\FslBase\Log\IO\FmtPathView.hpp" />
     <ClInclude Include="include\FslBase\Log\IO\LogPath.hpp" />
-    <ClInclude Include="include\FslBase\Log\Log.hpp" />
-    <ClInclude Include="include\FslBase\Log\Logger.hpp" />
+    <ClInclude Include="include\FslBase\Log\IO\LogPathView.hpp" />
+    <ClInclude Include="include\FslBase\Log\Log3Core.hpp" />
+    <ClInclude Include="include\FslBase\Log\Log3Fmt.hpp" />
+    <ClInclude Include="include\FslBase\Log\Logger0.hpp" />
+    <ClInclude Include="include\FslBase\Log\Logger1.hpp" />
+    <ClInclude Include="include\FslBase\Log\LogLocation.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\FmtDpExtent2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\FmtDpPoint2.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\FmtDpPoint2F.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\FmtDpPoint2U.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\FmtDpSize1D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\FmtDpSize1DF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\FmtDpSize2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\FmtDpSize2DF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\FmtDpThickness.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\FmtDpThicknessF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\FmtDpThicknessU.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\FmtDpValue.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\FmtDpValueF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\FmtDpValueU.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\LogDpExtent2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\LogDpPoint2.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\LogDpPoint2F.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\LogDpPoint2U.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\LogDpSize1D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\LogDpSize1DF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\LogDpSize2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\LogDpSize2DF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\LogDpThickness.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\LogDpThicknessF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\LogDpThicknessU.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\LogDpValue.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\LogDpValueF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Dp\LogDpValueU.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtBasicWindowMetrics.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtBoundingBox.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtBoundingFrustum.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtBoundingSphere.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtBoxF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtContainmentType.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtExtent2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtExtent3D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtMatrix.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtMatrix3.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtMatrix3Std140.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtMinMax.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtNineSlice.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtOffset2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtOffset3D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtPlane.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtPoint2.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtPoint2U.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtQuaternion.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtRay.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtRect.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtRectangle.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtRectangle2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtRectangle3D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtRectangleU.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtSpanRange.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtThickness.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtThicknessF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtThicknessU.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtVector2.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtVector3.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtVector4.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\FmtViewport.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogBoundingBox.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogBoundingFrustum.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogBoundingSphere.hpp" />
@@ -73,46 +160,188 @@
     <ClInclude Include="include\FslBase\Log\Math\LogExtent3D.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogMatrix.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogMatrix3.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\LogMatrix3Std140.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\LogMinMax.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogNineSlice.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogOffset2D.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogOffset3D.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogPlane.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogPoint2.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\LogPoint2U.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogQuaternion.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogRay.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogRect.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogRectangle.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogRectangle2D.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogRectangle3D.hpp" />
-    <ClInclude Include="include\FslBase\Log\Math\LogSpan.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\LogRectangleU.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\LogSpanRange.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogThickness.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogThicknessF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\LogThicknessU.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogVector2.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogVector3.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogVector4.hpp" />
     <ClInclude Include="include\FslBase\Log\Math\LogViewport.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxAreaRectangleF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxClipRectangle.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxExtent2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxExtent3D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxPoint2.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxPoint2U.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxRectangle.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxRectangle2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxRectangleU16.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxRectangleU32.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxSize1D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxSize1DF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxSize2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxSize2DF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxThickness.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxThicknessF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxThicknessU.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxThicknessU16.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxTrimmedImage.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxTrimmedNineSlice.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxUIRectangle2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxValue.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxValueF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxValueU.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxValueU16.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxVector2.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\FmtPxViewport.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxAreaRectangleF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxClipRectangle.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxExtent2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxExtent3D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxPoint2.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxPoint2U.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxRectangle.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxRectangle2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxRectangleU16.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxRectangleU32.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxSize1D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxSize1DF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxSize2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxSize2DF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxThickness.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxThicknessF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxThicknessU.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxThicknessU16.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxTrimmedImage.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxTrimmedNineSlice.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxUIRectangle2D.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxValue.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxValueF.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxValueU.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxValueU16.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxVector2.hpp" />
+    <ClInclude Include="include\FslBase\Log\Math\Pixel\LogPxViewport.hpp" />
+    <ClInclude Include="include\FslBase\Log\String\FmtCStringPointer.hpp" />
+    <ClInclude Include="include\FslBase\Log\String\FmtCStringView.hpp" />
+    <ClInclude Include="include\FslBase\Log\String\FmtStringViewLite.hpp" />
+    <ClInclude Include="include\FslBase\Log\String\FmtUTF8String.hpp" />
+    <ClInclude Include="include\FslBase\Log\String\LogCStringPointer.hpp" />
+    <ClInclude Include="include\FslBase\Log\String\LogCStringView.hpp" />
+    <ClInclude Include="include\FslBase\Log\String\LogStringViewLite.hpp" />
     <ClInclude Include="include\FslBase\Log\String\LogUTF8String.hpp" />
+    <ClInclude Include="include\FslBase\Log\Time\FmtMillisecondTickCount32.hpp" />
+    <ClInclude Include="include\FslBase\Log\Time\FmtTickCount.hpp" />
+    <ClInclude Include="include\FslBase\Log\Time\FmtTimeSpan.hpp" />
+    <ClInclude Include="include\FslBase\Log\Time\LogMillisecondTickCount32.hpp" />
+    <ClInclude Include="include\FslBase\Log\Time\LogTickCount.hpp" />
+    <ClInclude Include="include\FslBase\Log\Time\LogTimeSpan.hpp" />
+    <ClInclude Include="include\FslBase\Log\Transition\FmtTransitionType.hpp" />
+    <ClInclude Include="include\FslBase\Log\Transition\LogTransitionType.hpp" />
+    <ClInclude Include="include\FslBase\Math\BasicWindowMetrics.hpp" />
     <ClInclude Include="include\FslBase\Math\BoundingBox.hpp" />
     <ClInclude Include="include\FslBase\Math\BoundingFrustum.hpp" />
     <ClInclude Include="include\FslBase\Math\BoundingSphere.hpp" />
     <ClInclude Include="include\FslBase\Math\BoxF.hpp" />
+    <ClInclude Include="include\FslBase\Math\ConstrainedValue.hpp" />
     <ClInclude Include="include\FslBase\Math\ContainmentType.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpExtent2D.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpPoint2.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpPoint2F.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpPoint2U.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpSize1D.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpSize1DF.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpSize2D.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpSize2DF.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpThickness.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpThicknessF.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpThicknessU.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpValue.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpValue_literal.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpValueF.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\DpValueU.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\EqualHelper_DpPoint2F.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\EqualHelper_DpPointF.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\EqualHelper_DpSize1DF.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\EqualHelper_DpValueF.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\TypeConverter.hpp" />
+    <ClInclude Include="include\FslBase\Math\Dp\TypeConverter_Math.hpp" />
     <ClInclude Include="include\FslBase\Math\EqualHelper.hpp" />
+    <ClInclude Include="include\FslBase\Math\EqualHelper_Rect.hpp" />
+    <ClInclude Include="include\FslBase\Math\EqualHelper_Vector2.hpp" />
+    <ClInclude Include="include\FslBase\Math\EqualHelper_Vector3.hpp" />
+    <ClInclude Include="include\FslBase\Math\EqualHelper_Vector4.hpp" />
     <ClInclude Include="include\FslBase\Math\Extent2D.hpp" />
     <ClInclude Include="include\FslBase\Math\Extent3D.hpp" />
     <ClInclude Include="include\FslBase\Math\MathHelper.hpp" />
+    <ClInclude Include="include\FslBase\Math\MathHelper_Bilinear.hpp" />
+    <ClInclude Include="include\FslBase\Math\MathHelper_CalcOptimalSize.hpp" />
+    <ClInclude Include="include\FslBase\Math\MathHelper_Clamp.hpp" />
+    <ClInclude Include="include\FslBase\Math\MathHelper_FastRound.hpp" />
+    <ClInclude Include="include\FslBase\Math\MathHelper_MinMax.hpp" />
     <ClInclude Include="include\FslBase\Math\Matrix.hpp" />
     <ClInclude Include="include\FslBase\Math\Matrix3.hpp" />
     <ClInclude Include="include\FslBase\Math\Matrix3Fields.hpp" />
+    <ClInclude Include="include\FslBase\Math\Matrix3Std140.hpp" />
+    <ClInclude Include="include\FslBase\Math\Matrix3Std140Fields.hpp" />
     <ClInclude Include="include\FslBase\Math\MatrixConverter.hpp" />
     <ClInclude Include="include\FslBase\Math\MatrixFields.hpp" />
+    <ClInclude Include="include\FslBase\Math\MinMax.hpp" />
     <ClInclude Include="include\FslBase\Math\NineSlice.hpp" />
     <ClInclude Include="include\FslBase\Math\Offset2D.hpp" />
     <ClInclude Include="include\FslBase\Math\Offset3D.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\EqualHelper_PxSize1DF.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\EqualHelper_PxSize2DF.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\EqualHelper_PxVector2.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxAreaRectangleF.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxClipRectangle.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxExtent2D.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxExtent3D.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxPoint2.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxPoint2U.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxRectangle.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxRectangle2D.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxRectangleU16.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxRectangleU32.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxSize1D.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxSize1DF.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxSize2D.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxSize2DF.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxThickness.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxThicknessF.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxThicknessU.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxThicknessU16.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxTrimmedImage.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxTrimmedNineSlice.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxUIRectangle2D.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxValue.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxValueF.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxValueU.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxValueU16.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxVector2.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\PxViewport.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\TypeConverter.hpp" />
+    <ClInclude Include="include\FslBase\Math\Pixel\TypeConverter_Math.hpp" />
     <ClInclude Include="include\FslBase\Math\Plane.hpp" />
     <ClInclude Include="include\FslBase\Math\PlaneHelper.hpp" />
     <ClInclude Include="include\FslBase\Math\PlaneIntersectionType.hpp" />
     <ClInclude Include="include\FslBase\Math\Point2.hpp" />
+    <ClInclude Include="include\FslBase\Math\Point2U.hpp" />
     <ClInclude Include="include\FslBase\Math\Quaternion.hpp" />
     <ClInclude Include="include\FslBase\Math\Ray.hpp" />
     <ClInclude Include="include\FslBase\Math\Rect.hpp" />
@@ -120,43 +349,114 @@
     <ClInclude Include="include\FslBase\Math\Rectangle2D.hpp" />
     <ClInclude Include="include\FslBase\Math\Rectangle3D.hpp" />
     <ClInclude Include="include\FslBase\Math\RectangleSizeRestrictionFlag.hpp" />
-    <ClInclude Include="include\FslBase\Math\Span.hpp" />
+    <ClInclude Include="include\FslBase\Math\RectangleU.hpp" />
+    <ClInclude Include="include\FslBase\Math\SpanRange.hpp" />
+    <ClInclude Include="include\FslBase\Math\SpanRangeUtil.hpp" />
     <ClInclude Include="include\FslBase\Math\Thickness.hpp" />
     <ClInclude Include="include\FslBase\Math\ThicknessF.hpp" />
+    <ClInclude Include="include\FslBase\Math\ThicknessU.hpp" />
+    <ClInclude Include="include\FslBase\Math\TypeConverter.hpp" />
+    <ClInclude Include="include\FslBase\Math\TypeConverter_Double.hpp" />
+    <ClInclude Include="include\FslBase\Math\TypeConverter_Float.hpp" />
     <ClInclude Include="include\FslBase\Math\Vector2.hpp" />
     <ClInclude Include="include\FslBase\Math\Vector3.hpp" />
     <ClInclude Include="include\FslBase\Math\Vector4.hpp" />
     <ClInclude Include="include\FslBase\Math\VectorHelper.hpp" />
     <ClInclude Include="include\FslBase\Math\Viewport.hpp" />
+    <ClInclude Include="include\FslBase\Math\ViewportUtil.hpp" />
     <ClInclude Include="include\FslBase\Noncopyable.hpp" />
+    <ClInclude Include="include\FslBase\NumericCast.hpp" />
     <ClInclude Include="include\FslBase\OptimizationFlag.hpp" />
+    <ClInclude Include="include\FslBase\Placement\Controlled.hpp" />
+    <ClInclude Include="include\FslBase\Span\RawSpan.hpp" />
+    <ClInclude Include="include\FslBase\Span\ReadOnlyFlexSpan.hpp" />
+    <ClInclude Include="include\FslBase\Span\ReadOnlyFlexSpanUtil.hpp" />
+    <ClInclude Include="include\FslBase\Span\ReadOnlyFlexSpanUtil_Array.hpp" />
+    <ClInclude Include="include\FslBase\Span\ReadOnlyFlexSpanUtil_Vector.hpp" />
+    <ClInclude Include="include\FslBase\Span\ReadOnlySpan.hpp" />
+    <ClInclude Include="include\FslBase\Span\ReadOnlySpanUtil_Deque.hpp" />
+    <ClInclude Include="include\FslBase\Span\ReadOnlyTypedFlexSpan.hpp" />
+    <ClInclude Include="include\FslBase\Span\Span.hpp" />
+    <ClInclude Include="include\FslBase\Span\SpanUtil.hpp" />
+    <ClInclude Include="include\FslBase\Span\SpanUtil_Array.hpp" />
+    <ClInclude Include="include\FslBase\Span\SpanUtil_Create.hpp" />
+    <ClInclude Include="include\FslBase\Span\SpanUtil_CreateStd.hpp" />
+    <ClInclude Include="include\FslBase\Span\SpanUtil_ValueCompare.hpp" />
+    <ClInclude Include="include\FslBase\Span\SpanUtil_Vector.hpp" />
+    <ClInclude Include="include\FslBase\Span\TypedFlexSpan.hpp" />
+    <ClInclude Include="include\FslBase\Span\TypedFlexSpanUtil.hpp" />
+    <ClInclude Include="include\FslBase\String\CStringPointer.hpp" />
+    <ClInclude Include="include\FslBase\String\CStringUtil.hpp" />
+    <ClInclude Include="include\FslBase\String\CStringUtil_Length.hpp" />
+    <ClInclude Include="include\FslBase\String\CStringUtil_NotNullPtr.hpp" />
+    <ClInclude Include="include\FslBase\String\CStringView.hpp" />
+    <ClInclude Include="include\FslBase\String\CStringViewUtil.hpp" />
     <ClInclude Include="include\FslBase\String\StringCompat.hpp" />
+    <ClInclude Include="include\FslBase\String\StringDateUtil.hpp" />
     <ClInclude Include="include\FslBase\String\StringParseArrayResult.hpp" />
     <ClInclude Include="include\FslBase\String\StringParseUtil.hpp" />
+    <ClInclude Include="include\FslBase\String\StringToValue.hpp" />
     <ClInclude Include="include\FslBase\String\StringUtil.hpp" />
+    <ClInclude Include="include\FslBase\String\StringViewLite.hpp" />
+    <ClInclude Include="include\FslBase\String\StringViewLiteArrayUtil.hpp" />
+    <ClInclude Include="include\FslBase\String\StringViewLiteUtil.hpp" />
+    <ClInclude Include="include\FslBase\String\StringViewUtil.hpp" />
     <ClInclude Include="include\FslBase\String\ToString.hpp" />
+    <ClInclude Include="include\FslBase\String\ToVector.hpp" />
     <ClInclude Include="include\FslBase\String\UTF8String.hpp" />
+    <ClInclude Include="include\FslBase\System\BasicPerformanceCapture.hpp" />
     <ClInclude Include="include\FslBase\System\HighResolutionTimer.hpp" />
+    <ClInclude Include="include\FslBase\System\HighResolutionTimerUtil.hpp" />
     <ClInclude Include="include\FslBase\System\IThreadContext.hpp" />
+    <ClInclude Include="include\FslBase\System\PerformanceCounter.hpp" />
     <ClInclude Include="include\FslBase\System\Platform\All\ScopedSystemMemoryAccessDummy.hpp" />
     <ClInclude Include="include\FslBase\System\Platform\Linux\ScopedSystemMemoryAccessLinux.hpp" />
     <ClInclude Include="include\FslBase\System\Platform\PlatformFileSystem.hpp" />
+    <ClInclude Include="include\FslBase\System\Platform\PlatformPathTransform.hpp" />
     <ClInclude Include="include\FslBase\System\Platform\PlatformThread.hpp" />
     <ClInclude Include="include\FslBase\System\Platform\PlatformWin32.hpp" />
     <ClInclude Include="include\FslBase\System\Platform\QNX\ScopedSystemMemoryAccessQNX.hpp" />
     <ClInclude Include="include\FslBase\System\Platform\ScopedSystemMemoryAccess.hpp" />
     <ClInclude Include="include\FslBase\System\Platform\SystemMemoryAccess.hpp" />
     <ClInclude Include="include\FslBase\System\Threading\Thread.hpp" />
-    <ClInclude Include="include\FslBase\Transition\TransitionCache.hpp" />
-    <ClInclude Include="include\FslBase\Transition\TransitionConfig.hpp" />
+    <ClInclude Include="include\FslBase\Time\MillisecondTickCount32.hpp" />
+    <ClInclude Include="include\FslBase\Time\TickCount.hpp" />
+    <ClInclude Include="include\FslBase\Time\TimeSpan.hpp" />
+    <ClInclude Include="include\FslBase\Time\TimeSpanUtil.hpp" />
+    <ClInclude Include="include\FslBase\Transition\EasingFunction.hpp" />
+    <ClInclude Include="include\FslBase\Transition\EasingFunctionUtil.hpp" />
+    <ClInclude Include="include\FslBase\Transition\TransitionDpPoint2F.hpp" />
+    <ClInclude Include="include\FslBase\Transition\TransitionPxRectangle.hpp" />
+    <ClInclude Include="include\FslBase\Transition\TransitionPxVector2.hpp" />
     <ClInclude Include="include\FslBase\Transition\TransitionState.hpp" />
-    <ClInclude Include="include\FslBase\Transition\TransitionTimeSpan.hpp" />
     <ClInclude Include="include\FslBase\Transition\TransitionTimeSpanHelper.hpp" />
     <ClInclude Include="include\FslBase\Transition\TransitionTimeUnit.hpp" />
     <ClInclude Include="include\FslBase\Transition\TransitionType.hpp" />
     <ClInclude Include="include\FslBase\Transition\TransitionValue.hpp" />
     <ClInclude Include="include\FslBase\Transition\TransitionVector2.hpp" />
+    <ClInclude Include="include\FslBase\TypeAlignmentUtil.hpp" />
+    <ClInclude Include="include\FslBase\TypeConverter.hpp" />
+    <ClInclude Include="include\FslBase\UncheckedNumericCast.hpp" />
     <ClInclude Include="include\FslBase\VersionInfo.hpp" />
+    <ClInclude Include="include\FslBase\VersionInfo2.hpp" />
+    <ClInclude Include="source\FslBase\Getopt\OptionRecord.hpp" />
+    <ClInclude Include="source\FslBase\Math\MatrixInternals.hpp" />
+    <ClInclude Include="source\FslBase\System\Platform\Platform.hpp" />
+    <ClInclude Include="source\FslBase\System\Platform\PlatformPerformanceCounter.hpp" />
+    <ClInclude Include="include\fmt\args.h" />
+    <ClInclude Include="include\fmt\base.h" />
+    <ClInclude Include="include\fmt\chrono.h" />
+    <ClInclude Include="include\fmt\color.h" />
+    <ClInclude Include="include\fmt\compile.h" />
+    <ClInclude Include="include\fmt\core.h" />
+    <ClInclude Include="include\fmt\format-inl.h" />
+    <ClInclude Include="include\fmt\format.h" />
+    <ClInclude Include="include\fmt\os.h" />
+    <ClInclude Include="include\fmt\ostream.h" />
+    <ClInclude Include="include\fmt\printf.h" />
+    <ClInclude Include="include\fmt\ranges.h" />
+    <ClInclude Include="include\fmt\std.h" />
+    <ClInclude Include="include\fmt\xchar.h" />
     <ClInclude Include="include\RAIIGen\Capture.hpp" />
     <ClInclude Include="include\RAIIGen\CaptureConfig.hpp" />
     <ClInclude Include="include\RAIIGen\CapturedData.hpp" />
@@ -221,51 +521,63 @@
     <ClInclude Include="include\RAIIGen\StructRecord.hpp" />
     <ClInclude Include="include\RAIIGen\TypeRecord.hpp" />
     <ClInclude Include="include\RAIIGen\VersionRecord.hpp" />
-    <ClInclude Include="source\FslBase\Getopt\OptionRecord.hpp" />
-    <ClInclude Include="source\FslBase\Math\Matrix3Fields.hpp" />
-    <ClInclude Include="source\FslBase\Math\MatrixFields.hpp" />
-    <ClInclude Include="source\FslBase\Math\MatrixInternals.hpp" />
-    <ClInclude Include="source\FslBase\System\Platform\Platform.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\fmt\format.cc" />
-    <ClCompile Include="source\fmt\posix.cc" />
+    <ClCompile Include="source\FslBase\Arguments\ArgumentParser.cpp" />
+    <ClCompile Include="source\FslBase\Arguments\ArgumentParserErrorStrings.cpp" />
+    <ClCompile Include="source\FslBase\Arguments\Command.cpp" />
     <ClCompile Include="source\FslBase\Bits\ByteArrayUtil.cpp" />
     <ClCompile Include="source\FslBase\Compression\ValueCompression.cpp" />
+    <ClCompile Include="source\FslBase\Debug\Math\DebugContainmentType.cpp" />
+    <ClCompile Include="source\FslBase\Debug\Transition\DebugTransitionType.cpp" />
     <ClCompile Include="source\FslBase\Getopt\Option.cpp" />
+    <ClCompile Include="source\FslBase\Getopt\OptionParser.cpp" />
     <ClCompile Include="source\FslBase\IO\Directory.cpp" />
     <ClCompile Include="source\FslBase\IO\File.cpp" />
     <ClCompile Include="source\FslBase\IO\Path.cpp" />
     <ClCompile Include="source\FslBase\IO\PathWatcher.cpp" />
-    <ClCompile Include="source\FslBase\Log\BasicLogger.cpp" />
+    <ClCompile Include="source\FslBase\Log\Log3Fmt.cpp" />
+    <ClCompile Include="source\FslBase\Log\Logger0.cpp" />
+    <ClCompile Include="source\FslBase\Log\Logger1.cpp" />
+    <ClCompile Include="source\FslBase\Math\BasicWindowMetrics.cpp" />
     <ClCompile Include="source\FslBase\Math\BoundingBox.cpp" />
     <ClCompile Include="source\FslBase\Math\BoundingFrustum.cpp" />
     <ClCompile Include="source\FslBase\Math\BoundingSphere.cpp" />
+    <ClCompile Include="source\FslBase\Math\Dp\DpPoint2.cpp" />
+    <ClCompile Include="source\FslBase\Math\Dp\DpPoint2F.cpp" />
     <ClCompile Include="source\FslBase\Math\Extent2D.cpp" />
     <ClCompile Include="source\FslBase\Math\Extent3D.cpp" />
-    <ClCompile Include="source\FslBase\Math\MathHelper.cpp" />
+    <ClCompile Include="source\FslBase\Math\MathHelper_CalcOptimalSize.cpp" />
     <ClCompile Include="source\FslBase\Math\Matrix.cpp" />
     <ClCompile Include="source\FslBase\Math\Matrix3.cpp" />
+    <ClCompile Include="source\FslBase\Math\Matrix3Std140.cpp" />
     <ClCompile Include="source\FslBase\Math\NineSlice.cpp" />
     <ClCompile Include="source\FslBase\Math\Plane.cpp" />
     <ClCompile Include="source\FslBase\Math\PlaneHelper.cpp" />
     <ClCompile Include="source\FslBase\Math\Quaternion.cpp" />
     <ClCompile Include="source\FslBase\Math\Ray.cpp" />
     <ClCompile Include="source\FslBase\Math\Rect.cpp" />
-    <ClCompile Include="source\FslBase\Math\Rectangle.cpp" />
     <ClCompile Include="source\FslBase\Math\Rectangle2D.cpp" />
     <ClCompile Include="source\FslBase\Math\Rectangle3D.cpp" />
+    <ClCompile Include="source\FslBase\Math\RectangleU.cpp" />
     <ClCompile Include="source\FslBase\Math\Vector2.cpp" />
     <ClCompile Include="source\FslBase\Math\Vector3.cpp" />
     <ClCompile Include="source\FslBase\Math\Vector4.cpp" />
     <ClCompile Include="source\FslBase\Math\Viewport.cpp" />
+    <ClCompile Include="source\FslBase\Math\ViewportUtil.cpp" />
+    <ClCompile Include="source\FslBase\String\StringDateUtil.cpp" />
     <ClCompile Include="source\FslBase\String\StringParseUtil.cpp" />
+    <ClCompile Include="source\FslBase\String\StringToValue.cpp" />
     <ClCompile Include="source\FslBase\String\StringUtil.cpp" />
     <ClCompile Include="source\FslBase\String\UTF8String.cpp" />
     <ClCompile Include="source\FslBase\System\HighResolutionTimer.cpp" />
+    <ClCompile Include="source\FslBase\System\HighResolutionTimerUtil.cpp" />
+    <ClCompile Include="source\FslBase\System\PerformanceCounter.cpp" />
     <ClCompile Include="source\FslBase\System\Platform\All\ScopedSystemMemoryAccessDummy.cpp" />
+    <ClCompile Include="source\FslBase\System\Platform\CPP11\PlatformThreadCPP11.cpp" />
     <ClCompile Include="source\FslBase\System\Platform\Linux\PlatformFileSystemLinux.cpp" />
     <ClCompile Include="source\FslBase\System\Platform\Linux\ScopedSystemMemoryAccessLinux.cpp" />
+    <ClCompile Include="source\FslBase\System\Platform\NotSupported\PlatformThreadNotSupported.cpp" />
     <ClCompile Include="source\FslBase\System\Platform\PlatformLinux.cpp" />
     <ClCompile Include="source\FslBase\System\Platform\PlatformQNX.cpp" />
     <ClCompile Include="source\FslBase\System\Platform\PlatformWin32.cpp" />
@@ -274,13 +586,15 @@
     <ClCompile Include="source\FslBase\System\Platform\QNX\ScopedSystemMemoryAccessQNX.cpp" />
     <ClCompile Include="source\FslBase\System\Platform\SystemMemoryAccess.cpp" />
     <ClCompile Include="source\FslBase\System\Platform\Win32\PlatformFileSystemWin32.cpp" />
-    <ClCompile Include="source\FslBase\System\Platform\Win32\PlatformThreadWin32.cpp" />
     <ClCompile Include="source\FslBase\System\Threading\Thread.cpp" />
-    <ClCompile Include="source\FslBase\Transition\TransitionCache.cpp" />
-    <ClCompile Include="source\FslBase\Transition\TransitionTimeSpan.cpp" />
-    <ClCompile Include="source\FslBase\Transition\TransitionTimeSpanHelper.cpp" />
+    <ClCompile Include="source\FslBase\Transition\EasingFunctionUtil.cpp" />
+    <ClCompile Include="source\FslBase\Transition\TransitionDpPoint2F.cpp" />
+    <ClCompile Include="source\FslBase\Transition\TransitionPxRectangle.cpp" />
+    <ClCompile Include="source\FslBase\Transition\TransitionPxVector2.cpp" />
     <ClCompile Include="source\FslBase\Transition\TransitionValue.cpp" />
     <ClCompile Include="source\FslBase\Transition\TransitionVector2.cpp" />
+    <ClCompile Include="source\fmt\format.cc" />
+    <ClCompile Include="source\fmt\os.cc" />
     <ClCompile Include="source\RAIIGen\Capture.cpp" />
     <ClCompile Include="source\RAIIGen\CaseUtil.cpp" />
     <ClCompile Include="source\RAIIGen\ClangInfoDump.cpp" />
@@ -299,6 +613,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A1DC7135-1F57-4F95-A030-A9EE643BA78C}</ProjectGuid>
+    <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>RAIIGen</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
@@ -307,26 +622,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -365,6 +680,8 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>c:\Program Files\LLVM\include\</AdditionalIncludeDirectories>
@@ -381,6 +698,8 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;UNICODE;VC_EXTRALEAN;WIN32_LEAN_AND_MEAN;FSL_PLATFORM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>c:\Program Files\LLVM\include\;$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -398,6 +717,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
@@ -415,6 +736,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>

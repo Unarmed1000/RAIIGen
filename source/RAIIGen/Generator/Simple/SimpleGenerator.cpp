@@ -1050,7 +1050,7 @@ namespace MB
       const auto version = fullAnalysis.Pair.Create.Version;
       if (config.VersionGuard.IsValid && version != VersionRecord())
       {
-        std::string strVersinGuardBegin = fmt::format("#if {0}" + END_OF_LINE, config.VersionGuard.ToGuardString(version));
+        std::string strVersinGuardBegin = fmt::format(fmt::runtime("#if {0}" + END_OF_LINE), config.VersionGuard.ToGuardString(version));
         std::string strVersinGuardEnd = END_OF_LINE + "#endif";
         content = strVersinGuardBegin + content + strVersinGuardEnd;
       }
@@ -1477,7 +1477,7 @@ namespace MB
       std::string strVersinGuardEnd;
       if (config.VersionGuard.IsValid && version != VersionRecord())
       {
-        strVersinGuardBegin = fmt::format(END_OF_LINE + "#if {0}", config.VersionGuard.ToGuardString(version));
+        strVersinGuardBegin = fmt::format(fmt::runtime(END_OF_LINE + "#if {0}"), config.VersionGuard.ToGuardString(version));
         strVersinGuardEnd = END_OF_LINE + "#endif";
       }
       StringUtil::Replace(content, "##VERSION_GUARD_BEGIN##", strVersinGuardBegin);
@@ -1489,7 +1489,7 @@ namespace MB
 
     AddtionalContentMap LoadAdditional(const IO::Path& templateRoot, const std::string& dirName)
     {
-      const auto pathDir = IO::Path::Combine(templateRoot, dirName);
+      const auto pathDir = IO::Path::Combine(templateRoot, IO::Path(dirName));
       if (!IO::Directory::Exists(pathDir))
         return AddtionalContentMap();
 
@@ -1643,7 +1643,7 @@ namespace MB
       if (overrideValue.size() <= 0)
         return defaultValue;
 
-      const auto fullPath = IO::Path::Combine(snippetRoot, overrideValue);
+      const auto fullPath = IO::Path::Combine(snippetRoot, IO::Path(overrideValue));
       return IO::File::ReadAllText(fullPath);
     }
 
@@ -1731,7 +1731,7 @@ namespace MB
       assert(static_cast<std::size_t>(itr->TemplateType) < headerTemplates.size());
       const auto activeHeaderTemplate = headerTemplates[static_cast<std::size_t>(itr->TemplateType)];
       {
-        auto fileName = IO::Path::Combine(dstPath, itr->Result.ClassName + ".hpp");
+        auto fileName = IO::Path::Combine(dstPath, IO::Path(itr->Result.ClassName + ".hpp"));
 
         const auto additionalContent = GetAdditionalContent(additionalFileContent, fileName);
         auto headerContent = GenerateContent(config, *itr, activeHeaderTemplate, &classSnippets.HeaderSnippetMemberVariable,
@@ -1742,7 +1742,7 @@ namespace MB
       const auto activeSourceTemplate = sourceTemplates[static_cast<std::size_t>(itr->TemplateType)];
       if (activeSourceTemplate.size() > 0)
       {
-        auto fileName = IO::Path::Combine(dstPath, itr->Result.ClassName + ".cpp");
+        auto fileName = IO::Path::Combine(dstPath, IO::Path(itr->Result.ClassName + ".cpp"));
         const auto additionalContent = GetAdditionalContent(additionalFileContent, fileName);
         auto sourceContent = GenerateContent(config, *itr, activeSourceTemplate, nullptr, nullptr, classSnippets, additionalContent);
         IOUtil::WriteAllTextIfChanged(fileName, sourceContent);
@@ -1772,8 +1772,8 @@ namespace MB
           StringUtil::Replace(content, "##NAMESPACE_NAME!##", CaseUtil::UpperCase(config.NamespaceName));
           StringUtil::Replace(content, "##AG_TOOL_STATEMENT##", config.ToolStatement);
 
-          auto relativeName = (*itr)->ToUTF8String().erase(0, copyRoot.GetByteSize() + 1);
-          auto dstDirectory = IO::Path::Combine(dstPath, IO::Path::GetDirectoryName(relativeName));
+          auto relativeName = std::string((*itr)->ToUTF8String()).erase(0, copyRoot.GetByteSize() + 1);
+          auto dstDirectory = IO::Path::Combine(dstPath, IO::Path::GetDirectoryName(IO::Path(relativeName)));
           auto dstFileName = IO::Path::Combine(dstDirectory, IO::Path::GetFileName(**itr));
           IO::Directory::CreateDir(dstDirectory);
           IOUtil::WriteAllTextIfChanged(dstFileName, content);

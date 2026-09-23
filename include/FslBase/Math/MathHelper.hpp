@@ -27,10 +27,10 @@ SOFTWARE.
 
 // Some of the functions in this file are a port of an MIT licensed library: MonoGame - MathHelper.cs.
 
+#include <FslBase/BasicTypes.hpp>
+#include <FslBase/Math/MathHelper_Clamp.hpp>
 #include <algorithm>
 #include <cmath>
-#include <FslBase/Math/Point2.hpp>
-#include <FslBase/Math/RectangleSizeRestrictionFlag.hpp>
 
 namespace Fsl
 {
@@ -38,8 +38,10 @@ namespace Fsl
   {
     constexpr float PI = 3.1415926535897932384626433832795028841971693f;
     //! PI / 180.0f
+    // NOLINTNEXTLINE(readability-identifier-naming)
     constexpr float TO_RADS = 0.017453292519943295769236907684886f;
     //! 1.0f / (PI / 180.0f)
+    // NOLINTNEXTLINE(readability-identifier-naming)
     constexpr float TO_DEGREES = 57.295779513082320876798154814105f;
 
     //! @brief Represents the log base ten of e(0.4342945).
@@ -90,22 +92,15 @@ namespace Fsl
     //! @param value4 The fourth position in the interpolation.
     //! @param amount Weighting factor.
     //! @return A position that is the result of the Catmull-Rom interpolation.
-    inline float CatmullRom(const float value1, const float value2, const float value3, const float value4, const float amount)
+    inline float CatmullRom(const double value1, const double value2, const double value3, const double value4, const double amount)
     {
       // Using formula from http://www.mvps.org/directx/articles/catmull/
       // Internally using doubles not to lose precision
-      const double amountSquared = static_cast<double>(amount) * amount;
+      const double amountSquared = amount * amount;
       const double amountCubed = amountSquared * amount;
       return static_cast<float>(0.5 *
                                 (2.0 * value2 + (value3 - value1) * amount + (2.0 * value1 - 5.0 * value2 + 4.0 * value3 - value4) * amountSquared +
                                  (3.0 * value2 - value1 - 3.0 * value3 + value4) * amountCubed));
-    }
-
-
-    //! @brief Restricts a value to be within a specified range.
-    inline float Clamp(const float value, const float min, const float max)
-    {
-      return std::min(std::max(value, min), max);
     }
 
 
@@ -134,11 +129,15 @@ namespace Fsl
     {
       // All transformed to double not to lose precision
       // Otherwise, for high numbers of param:amount the result is NaN instead of Infinity
-      const double v1 = value1, v2 = value2, t1 = tangent1, t2 = tangent2, s = amount;
+      const double v1 = value1;
+      const double v2 = value2;
+      const double t1 = tangent1;
+      const double t2 = tangent2;
+      const double s = amount;
       const double sCubed = s * s * s;
       const double sSquared = s * s;
 
-      double result;
+      double result = 0.0;
       if (amount == 0.0f)
       {
         result = value1;
@@ -154,13 +153,20 @@ namespace Fsl
       return static_cast<float>(result);
     }
 
+    //! @brief Determines if value is powered by two.
+    //! @param value A value.
+    //! @return true if value is powered by two; otherwise false.
+    constexpr inline bool IsPowerOfTwo(const int32_t value)
+    {
+      return (value > 0) && ((value & (value - 1)) == 0);
+    }
 
     //! @brief Determines if value is powered by two.
     //! @param value A value.
     //! @return true if value is powered by two; otherwise false.
-    constexpr inline static bool IsPowerOfTwo(const int value)
+    constexpr inline bool IsPowerOfTwo(const uint32_t value)
     {
-      return (value > 0) && ((value & (value - 1)) == 0);
+      return (value > 0u) && ((value & (value - 1)) == 0);
     }
 
 
@@ -242,19 +248,38 @@ namespace Fsl
 
     //! @brief Find the nearest power of two value that is greater or equal the input value (>=)
     //! @param value must be >= 0;
-    int ToPowerOfTwo(const int value);
+    int32_t ToPowerOfTwo(const int32_t value);
+
+    //! @brief Find the nearest power of two value that is greater or equal the input value (>=)
+    //! @param value must be >= 0;
+    constexpr inline uint32_t ToPowerOfTwo(const uint32_t value)
+    {
+      if (value > 0u)
+      {
+        uint32_t tmpValue = value - 1u;
+        tmpValue |= (tmpValue >> 1u);
+        tmpValue |= (tmpValue >> 2u);
+        tmpValue |= (tmpValue >> 4u);
+        tmpValue |= (tmpValue >> 8u);
+        tmpValue |= (tmpValue >> 16u);
+        ++tmpValue;    // Val is now the next highest power of 2.
+        return tmpValue;
+      }
+      return 1u;
+    }
+
+    //! @brief Ensure the value is wrapped to fit between min and max.
+    //! @param value the value to wrap
+    //! @param min = min value (included)
+    //! @param max = max value (excluded)
+    //! @return The value that fits between min and max.
+    float Wrap(const float value, const float min, const float max);
 
 
     //! @brief Reduces a given angle to a value between PI and -PI.
     //! @param angle The angle to reduce, in radians.
     //! @return The new angle, in radians.
     float WrapAngle(const float angle);
-
-
-    //! @brief Find the optimal rectangle size for packing a given amount of uniform sized units under the supplied constraints
-    //! @param unitSize the size of the unit (x > 0 && y > 0)
-    //! @param unitCount the total number of units > 0
-    Point2 CalcOptimalSize(const Point2& unitSize, const int32_t unitCount, const RectangleSizeRestrictionFlag::Enum restrictionFlags);
   };
 }
 
