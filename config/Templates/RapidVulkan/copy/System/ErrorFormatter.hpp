@@ -47,9 +47,9 @@ namespace RapidVulkan
       RAPIDVULKAN_PARAM_NOT_USED(fileName);
       RAPIDVULKAN_PARAM_NOT_USED(lineNumber);
       return message;
-    }      
+    }
 
-    #endif
+#endif
   }
 }
 

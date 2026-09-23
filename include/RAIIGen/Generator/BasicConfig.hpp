@@ -37,6 +37,8 @@ namespace MB
     std::string APIVersion;
 	// The header file version this is based upon
     VersionRecord CurrentAPIVersion;
+    // The C++ standard the generated code targets
+    std::string CppStandard{"C++11"};
 
     BasicConfig()
       : Program()
@@ -44,13 +46,14 @@ namespace MB
     }
 
     BasicConfig(const ProgramInfo& programInfo, const std::string& toolStatement, const std::string& namespaceName, const std::string& apiName,
-                const std::string& apiVersion, const VersionRecord& currentAPIVersion)
+                const std::string& apiVersion, const VersionRecord& currentAPIVersion, const std::string& cppStandard = "C++11")
       : Program(programInfo)
       , ToolStatement(toolStatement)
       , NamespaceName(namespaceName)
       , APIName(apiName)
       , APIVersion(apiVersion)
       , CurrentAPIVersion(currentAPIVersion)
+      , CppStandard(cppStandard)
     {
     }
   };

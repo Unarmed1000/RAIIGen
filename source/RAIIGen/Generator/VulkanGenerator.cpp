@@ -200,6 +200,14 @@ namespace MB
       {"VkOpticalFlowSessionNV", DEFAULT_VALUE},
       {"VkVideoSessionKHR", DEFAULT_VALUE},
       {"VkVideoSessionParametersKHR", DEFAULT_VALUE},
+      {"VkIndirectCommandsLayoutEXT", DEFAULT_VALUE},
+      {"VkIndirectExecutionSetEXT", DEFAULT_VALUE},
+      {"VkTensorARM", DEFAULT_VALUE},
+      {"VkTensorViewARM", DEFAULT_VALUE},
+      {"VkDataGraphPipelineSessionARM", DEFAULT_VALUE},
+      {"VkExternalComputeQueueNV", DEFAULT_VALUE},
+      {"VkShaderInstrumentationARM", DEFAULT_VALUE},
+      {"VkGpaSessionAMD", DEFAULT_VALUE},
     };
 
     // Technically it would be better to do a real aliasing resolve, but its more complex to implement for now (but it is the real solution)

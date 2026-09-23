@@ -29,13 +29,15 @@
 #include <RapidVulkan/System/Macro.hpp>
 #include <vulkan/vulkan.h>
 #include <cassert>
+#include <utility>
 
 namespace RapidVulkan
 {
   //! This object is movable so it can be thought of as behaving in the same was as a unique_ptr and is compatible with std containers
   class ##CLASS_NAME##
   {##CLASS_ADDITIONAL_MEMBER_VARIABLES##
-    ##RESOURCE_TYPE## ##RESOURCE_MEMBER_NAME##;
+    ##RESOURCE_TYPE## ##RESOURCE_MEMBER_NAME##{##DEFAULT_VALUE##};
+
   public:
     ##CLASS_NAME##(const ##CLASS_NAME##&) = delete;
     ##CLASS_NAME##& operator=(const ##CLASS_NAME##&) = delete;
@@ -51,24 +53,19 @@ namespace RapidVulkan
           Reset();
         }
 
-        // Claim ownership here##MOVE_ASSIGNMENT_CLAIM_MEMBERS##
-
-        // Remove the data from other##MOVE_ASSIGNMENT_INVALIDATE_MEMBERS##
+        // Claim ownership here and leave other in its default state##MOVE_ASSIGNMENT_CLAIM_MEMBERS####MOVE_ASSIGNMENT_INVALIDATE_MEMBERS##
       }
       return *this;
     }
 
     //! @brief Move constructor
-    //! Transfer ownership from other to this
+    //! Transfer ownership from other to this and leave other in its default state
     ##CLASS_NAME##(##CLASS_NAME##&& other) noexcept##MOVE_CONSTRUCTOR_MEMBER_INITIALIZATION##
-    {
-      // Remove the data from other##MOVE_CONSTRUCTOR_INVALIDATE_MEMBERS##
+    {##MOVE_CONSTRUCTOR_INVALIDATE_MEMBERS##
     }
 
     //! @brief Create a 'invalid' instance (use Reset to populate it)
-    ##CLASS_NAME##()##DEFAULT_CONSTRUCTOR_MEMBER_INITIALIZATION##
-    {
-    }
+    ##CLASS_NAME##() = default;
 
     //! @brief Assume control of the ##CLASS_NAME## (this object becomes responsible for releasing it)
     explicit ##CLASS_NAME##(##MEMBER_PARAMETERS##)
@@ -85,7 +82,7 @@ namespace RapidVulkan
     }
 
     //! @brief returns the managed handle and releases the ownership.
-    RAPIDVULKAN_FUNC_WARN_UNUSED_RESULT ##RESOURCE_TYPE## Release()
+    [[nodiscard]] ##RESOURCE_TYPE## Release() noexcept
     {
       const auto resource = ##RESOURCE_MEMBER_NAME##;##RESET_INVALIDATE_MEMBERS##
       return resource;
@@ -106,6 +103,8 @@ namespace RapidVulkan
     //! @brief Destroys any owned resources and assume control of the ##CLASS_NAME## (this object becomes responsible for releasing it)
     void Reset(##MEMBER_PARAMETERS##)
     {
+      // The claim mode only exists to select this overload
+      RAPIDVULKAN_PARAM_NOT_USED(claimMode);
       if (IsValid())
       {
         Reset();
@@ -117,19 +116,19 @@ namespace RapidVulkan
 ##CLASS_EXTRA_RESET_METHODS_HEADER####CLASS_ADDITIONAL_GET_MEMBER_VARIABLE_METHODS##
 
     //! @brief Get the associated resource handle
-    ##RESOURCE_TYPE## Get() const
+    [[nodiscard]] ##RESOURCE_TYPE## Get() const noexcept
     {
       return ##RESOURCE_MEMBER_NAME##;
     }
 
     //! @brief Get a pointer to the associated resource handle
-    const ##RESOURCE_TYPE##* GetPointer() const
+    [[nodiscard]] const ##RESOURCE_TYPE##* GetPointer() const noexcept
     {
       return &##RESOURCE_MEMBER_NAME##;
     }
 
     //! @brief Check if this object contains a valid resource
-    inline bool IsValid() const
+    [[nodiscard]] bool IsValid() const noexcept
     {
       return ##RESOURCE_MEMBER_NAME## != ##DEFAULT_VALUE##;
     }##ADDITIONAL_METHODS_HEADER##

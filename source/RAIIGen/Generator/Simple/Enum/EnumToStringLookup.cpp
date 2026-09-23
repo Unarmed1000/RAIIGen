@@ -106,23 +106,33 @@ namespace MB
       }
       else
       {
+        // The entries share the same value and are sorted newest version first. Each version group becomes one '#if/#elif' branch
+        // with a single case label, as multiple case labels with the same value is a compile error.
         content.clear();
+        const auto addCase = [&content, &snippet, &snippetReturn](const std::string& name)
+        {
+          std::string entryContent = snippet + END_OF_LINE + snippetReturn;
+          StringUtil::Replace(entryContent, "##ENUM_MEMBER_NAME##", name);
+          content += entryContent + END_OF_LINE;
+        };
+
         auto lastVersion = VersionRecord();
         std::string lastName;
         uint32_t countIf = 0;
-        bool addReturn = false;
-        bool addEndIf = false;
-        for (auto entry : rDuplicationInfo.MemberRecord)
+        bool hasPendingCase = false;
+        for (const auto& entry : rDuplicationInfo.MemberRecord)
         {
+          if (hasPendingCase && lastVersion == entry.Version)
+          {
+            // An alias introduced in the same version, so only the first (canonical) name is used
+            continue;
+          }
+          if (hasPendingCase)
+          {
+            addCase(lastName);
+          }
           if (lastVersion != entry.Version)
           {
-            if (addReturn)
-            {
-              std::string entryContent = snippetReturn;
-              StringUtil::Replace(entryContent, "##ENUM_MEMBER_NAME##", lastName);
-              content += entryContent + END_OF_LINE;
-              addReturn = false;
-            }
             if (countIf > 0)
             {
               content += fmt::format("#elif {0}{1}", versionGuard.ToGuardString(entry.Version), END_OF_LINE);
@@ -132,28 +142,18 @@ namespace MB
               content += fmt::format("#if {0}{1}", versionGuard.ToGuardString(entry.Version), END_OF_LINE);
             }
             lastVersion = entry.Version;
-            addEndIf = true;
             ++countIf;
           }
-          // There are duplicated entries
-          std::string entryContent(snippet);    // +END_OF_LINE + snippetReturn;
-          StringUtil::Replace(entryContent, "##ENUM_MEMBER_NAME##", entry.Name);
-          addReturn = true;
           lastName = entry.Name;
-
-          content += entryContent + END_OF_LINE;
+          hasPendingCase = true;
         }
-        if (addReturn)
+        if (hasPendingCase)
         {
-          std::string entryContent = snippetReturn;
-          StringUtil::Replace(entryContent, "##ENUM_MEMBER_NAME##", lastName);
-          content += entryContent + END_OF_LINE;
-          addReturn = false;
+          addCase(lastName);
         }
-        if (addEndIf)
+        if (countIf > 0)
         {
           content += "#endif" + END_OF_LINE;
-          addEndIf = false;
         }
       }
       rDuplicationInfo.Generated = true;
@@ -215,7 +215,8 @@ namespace MB
       {
         if (rEntries.second.MemberRecord.size() > 1)
         {
-          std::sort(rEntries.second.MemberRecord.begin(), rEntries.second.MemberRecord.end(),
+          // Stable so entries from the same version keep their declaration order (canonical name before its aliases)
+          std::stable_sort(rEntries.second.MemberRecord.begin(), rEntries.second.MemberRecord.end(),
                     [](const EnumMemberRecord& lhs, const EnumMemberRecord& rhs) -> bool { return lhs.Version > rhs.Version; });
         }
       }

@@ -104,11 +104,24 @@ namespace MB
       throw NotSupportedException("the struct did not start with the expected Vk");
 
     auto flagName = structName.substr(2);
+
+    // Vulkan separates a trailing version number from a lower case word ('VkRenderPassCreateInfo2' -> 'VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO_2')
+    std::size_t trailingDigitsIndex = flagName.size();
+    while (trailingDigitsIndex > 0 && flagName[trailingDigitsIndex - 1] >= '0' && flagName[trailingDigitsIndex - 1] <= '9')
+      --trailingDigitsIndex;
+    const bool separateTrailingDigits = trailingDigitsIndex > 0 && trailingDigitsIndex < flagName.size() &&
+                                        flagName[trailingDigitsIndex - 1] >= 'a' && flagName[trailingDigitsIndex - 1] <= 'z';
+
     std::vector<char> dst(flagName.size() * 2);
     std::size_t dstIndex = 0;
     bool previousCharWasUpper = true;
     for (std::size_t i = 0; i < flagName.size(); ++i, ++dstIndex)
     {
+      if (separateTrailingDigits && i == trailingDigitsIndex)
+      {
+        dst[dstIndex] = '_';
+        ++dstIndex;
+      }
       if (flagName[i] >= 'A' && flagName[i] <= 'Z')
       {
         if (!previousCharWasUpper)

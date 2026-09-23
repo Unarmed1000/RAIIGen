@@ -38,6 +38,7 @@ namespace RapidVulkan
   class ##CLASS_NAME##
   {##CLASS_ADDITIONAL_MEMBER_VARIABLES##
     std::vector<##RESOURCE_TYPE##> ##RESOURCE_MEMBER_NAME##;
+
   public:
     ##CLASS_NAME##(const ##CLASS_NAME##&) = delete;
     ##CLASS_NAME##& operator=(const ##CLASS_NAME##&) = delete;
@@ -53,24 +54,19 @@ namespace RapidVulkan
           Reset();
         }
 
-        // Claim ownership here##MOVE_ASSIGNMENT_CLAIM_MEMBERS##
-
-        // Remove the data from other##MOVE_ASSIGNMENT_INVALIDATE_MEMBERS##
+        // Claim ownership here and leave other in its default state##MOVE_ASSIGNMENT_CLAIM_MEMBERS####MOVE_ASSIGNMENT_INVALIDATE_MEMBERS##
       }
       return *this;
     }
 
     //! @brief Move constructor
-    //! Transfer ownership from other to this
+    //! Transfer ownership from other to this and leave other in its default state
     ##CLASS_NAME##(##CLASS_NAME##&& other) noexcept##MOVE_CONSTRUCTOR_MEMBER_INITIALIZATION##
-    {
-      // Remove the data from other##MOVE_CONSTRUCTOR_INVALIDATE_MEMBERS##
+    {##MOVE_CONSTRUCTOR_INVALIDATE_MEMBERS##
     }
 
     //! @brief Create a 'invalid' instance (use Reset to populate it)
-    ##CLASS_NAME##()##DEFAULT_CONSTRUCTOR_MEMBER_INITIALIZATION##
-    {
-    }
+    ##CLASS_NAME##() = default;
 
     //! @brief Assume control of the ##CLASS_NAME## (this object becomes responsible for releasing it)
     //explicit ##CLASS_NAME##(##MEMBER_PARAMETERS##)
@@ -87,9 +83,9 @@ namespace RapidVulkan
     }
 
     //! @brief returns the managed handle and releases the ownership.
-    RAPIDVULKAN_FUNC_WARN_UNUSED_RESULT std::vector<##RESOURCE_TYPE##> Release()
+    [[nodiscard]] std::vector<##RESOURCE_TYPE##> Release() noexcept
     {
-      auto resource = std::move(##RESOURCE_MEMBER_NAME##); ##RESET_INVALIDATE_MEMBERS##
+      auto resource = std::move(##RESOURCE_MEMBER_NAME##);##RESET_INVALIDATE_MEMBERS##
       return resource;
     }
 
@@ -108,7 +104,7 @@ namespace RapidVulkan
       }##RESET_INVALIDATE_MEMBERS##
     }
 
-/*    
+/*
     //! @brief Destroys any owned resources and assume control of the ##CLASS_NAME## (this object becomes responsible for releasing it)
     void Reset(##MEMBER_PARAMETERS##)
     {
@@ -118,31 +114,31 @@ namespace RapidVulkan
 ##RESET_SET_MEMBERS_NORMAL##
     }
 */
-    
+
 ##CLASS_EXTRA_RESET_METHODS_HEADER####CLASS_ADDITIONAL_GET_MEMBER_VARIABLE_METHODS##
 
     //! @brief Get size of the vector
-    std::size_t Size() const
+    [[nodiscard]] std::size_t Size() const noexcept
     {
       return ##RESOURCE_MEMBER_NAME##.size();
     }
 
 
     //! @brief Get direct access to the vector content
-    const ##RESOURCE_TYPE##* Data() const
+    [[nodiscard]] const ##RESOURCE_TYPE##* Data() const noexcept
     {
       return ##RESOURCE_MEMBER_NAME##.data();
     }
 
 
     //! @brief Get the associated resource handles
-    const std::vector<##RESOURCE_TYPE##>& Get() const
+    [[nodiscard]] const std::vector<##RESOURCE_TYPE##>& Get() const noexcept
     {
       return ##RESOURCE_MEMBER_NAME##;
     }
 
 
-    ##RESOURCE_TYPE## Get(const std::size_t arrayIndex) const
+    [[nodiscard]] ##RESOURCE_TYPE## Get(const std::size_t arrayIndex) const noexcept
     {
       assert(arrayIndex < ##RESOURCE_MEMBER_NAME##.size());
       return ##RESOURCE_MEMBER_NAME##[arrayIndex];
@@ -150,21 +146,21 @@ namespace RapidVulkan
 
 
     //! @brief Access the resource at a given index
-    ##RESOURCE_TYPE## operator[] (const std::size_t arrayIndex) const
+    [[nodiscard]] ##RESOURCE_TYPE## operator[](const std::size_t arrayIndex) const noexcept
     {
       assert(arrayIndex < ##RESOURCE_MEMBER_NAME##.size());
       return ##RESOURCE_MEMBER_NAME##[arrayIndex];
     }
 
     //! @brief get a pointer to the resource at the given index
-    const ##RESOURCE_TYPE##* GetPointer(const std::size_t arrayIndex) const
+    [[nodiscard]] const ##RESOURCE_TYPE##* GetPointer(const std::size_t arrayIndex) const noexcept
     {
       assert(arrayIndex < ##RESOURCE_MEMBER_NAME##.size());
       return &##RESOURCE_MEMBER_NAME##[arrayIndex];
     }
 
     //! @brief Check if this object contains a valid resource
-    inline bool IsValid() const
+    [[nodiscard]] bool IsValid() const noexcept
     {
       return ! ##RESOURCE_MEMBER_NAME##.empty();
     }##ADDITIONAL_METHODS_HEADER##

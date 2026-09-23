@@ -29,13 +29,46 @@ namespace MB
 {
   using namespace Fsl;
 
+  namespace
+  {
+    //! Remove any spaces or tabs at the end of each line (keeps the existing line endings)
+    std::string StripTrailingWhitespace(const std::string& content)
+    {
+      std::string result;
+      result.reserve(content.size());
+      std::size_t pendingStart = 0;
+      std::size_t pendingCount = 0;
+      for (const char ch : content)
+      {
+        if (ch == ' ' || ch == '\t')
+        {
+          if (pendingCount == 0)
+            pendingStart = result.size();
+          ++pendingCount;
+          result.push_back(ch);
+        }
+        else
+        {
+          if (pendingCount > 0 && (ch == '\r' || ch == '\n'))
+            result.resize(pendingStart);
+          pendingCount = 0;
+          result.push_back(ch);
+        }
+      }
+      if (pendingCount > 0)
+        result.resize(pendingStart);
+      return result;
+    }
+  }
+
   void IOUtil::WriteAllTextIfChanged(const IO::Path& fileName, const std::string& content)
   {
+    const std::string finalContent = StripTrailingWhitespace(content);
     std::string currentContent;
     // Skip the write if the file already exist and if it contains the exact same content.
-    if (IO::File::TryReadAllText(currentContent, fileName) && currentContent == content)
+    if (IO::File::TryReadAllText(currentContent, fileName) && currentContent == finalContent)
       return;
-    IO::File::WriteAllText(fileName, content);
+    IO::File::WriteAllText(fileName, finalContent);
   }
 
 

@@ -1014,6 +1014,13 @@ namespace MB
     }
 
 
+    //! Only single argument constructors are marked explicit to prevent implicit conversions
+    const char* GetExplicitKeyword(const std::size_t argumentCount)
+    {
+      return argumentCount == 1 ? "explicit " : "";
+    }
+
+
     std::string GenerateExtraCreate(const SimpleGeneratorConfig& config, const Snippets& snippets, const std::string& snippetFunction,
                                     const std::string& snippetVoidFunction, const FullAnalysis& fullAnalysis, const bool allowAbsorb)
     {
@@ -1038,6 +1045,7 @@ namespace MB
       }
 
       std::string content(activeSnippet);
+      StringUtil::Replace(content, "##EXPLICIT##", GetExplicitKeyword(fullAnalysis.Result.MethodArguments.size()));
       StringUtil::Replace(content, "##CLASS_NAME##", fullAnalysis.Result.ClassName);
       StringUtil::Replace(content, "##CREATE_METHOD_PARAMETERS##", createMethodParameters);
       StringUtil::Replace(content, "##CREATE_METHOD_PARAMETER_NAMES##", createMethodParameterNames);
@@ -1146,6 +1154,7 @@ namespace MB
       const std::string createFunctionArguments = GenerateExpandedParameterNameList(fullAnalysis.Result.CreateArguments);
 
       std::string content(snippetFunction);
+      StringUtil::Replace(content, "##EXPLICIT##", GetExplicitKeyword(fullAnalysis.Result.UnrolledCreateMethod.MethodArguments.size()));
       StringUtil::Replace(content, "##LOCAL_VARIABLES##", localVariables);
       StringUtil::Replace(content, "##CLASS_NAME##", fullAnalysis.Result.ClassName);
       StringUtil::Replace(content, "##CREATE_METHOD_PARAMETERS##", createMethodParameters);
@@ -1333,6 +1342,14 @@ namespace MB
             std::string memberVariable = *pSnippetMemberVariable;
             StringUtil::Replace(memberVariable, "##MEMBER_TYPE##", itr->Type);
             StringUtil::Replace(memberVariable, "##MEMBER_NAME##", itr->Name);
+            // Resolve the default value here as the content wide replacement below uses the resource type's default value
+            if (ContainsDefaultValue(memberVariable))
+            {
+              if (itr->IsPOD)
+                ReplaceDefaultValue(memberVariable, itr->Type, config.TypeDefaultValues, snippets);
+              else
+                StringUtil::Replace(memberVariable, "##DEFAULT_VALUE##", "");
+            }
             classAdditionalMemberVariables += END_OF_LINE + memberVariable;
           }
 
@@ -1800,12 +1817,13 @@ namespace MB
     // Write 'Readme.txt'
     {
       std::string content(
-        "Auto-generated ##API_NAME## ##API_VERSION## C++11 RAII classes by ##PROGRAM_NAME## ##PROGRAM_VERSION## "
+        "Auto-generated ##API_NAME## ##API_VERSION## ##CPP_STANDARD## RAII classes by ##PROGRAM_NAME## ##PROGRAM_VERSION## "
         "(https://github.com/Unarmed1000/RAIIGen)" +
         END_OF_LINE);
 
       StringUtil::Replace(content, "##API_NAME##", config.APIName);
       StringUtil::Replace(content, "##API_VERSION##", config.APIVersion);
+      StringUtil::Replace(content, "##CPP_STANDARD##", config.CppStandard);
       StringUtil::Replace(content, "##PROGRAM_NAME##", config.Program.Name);
       StringUtil::Replace(content, "##PROGRAM_VERSION##", config.Program.Version);
       StringUtil::Replace(content, "##NAMESPACE_NAME##", config.NamespaceName);

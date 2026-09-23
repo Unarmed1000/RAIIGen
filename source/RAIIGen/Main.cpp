@@ -308,7 +308,8 @@ namespace MB
 
     template <typename TGenerator>
     void RunGenerator(const ProgramInfo& programInfo, const Config& config, const std::string& filename, const std::string& templateName,
-                      const std::string& baseApiName, const std::string& strApiVersion, const bool useAPIHistory = false)
+                      const std::string& baseApiName, const std::string& strApiVersion, const bool useAPIHistory = false,
+                      const char* const cppStandard = "C++11")
     {
       const auto apiVersion = VersionRecord(strApiVersion, true);
       const auto apiNameAndVersion = baseApiName + strApiVersion;
@@ -323,13 +324,13 @@ namespace MB
       std::cout << "*** Running " << apiNameAndVersion << " generator ***\n";
 
 
-      const auto toolStatement = std::string("Auto-generated ") + baseApiName + " " + strApiVersion + " C++11 RAII classes by " + programInfo.Name +
+      const auto toolStatement = std::string("Auto-generated ") + baseApiName + " " + strApiVersion + " " + cppStandard + " RAII classes by " + programInfo.Name +
                                  " (https://github.com/Unarmed1000/RAIIGen)";
 
       auto namespaceName = templateName + strApiVersion;
       StringUtil::Replace(namespaceName, ".", "_");
 
-      BasicConfig basicConfig(programInfo, toolStatement, namespaceName, baseApiName, strApiVersion, apiVersion);
+      BasicConfig basicConfig(programInfo, toolStatement, namespaceName, baseApiName, strApiVersion, apiVersion, cppStandard);
 
       Run<TGenerator>(basicConfig, srcFile, IO::Path(filename), templatePath, apiHistoryPath, dstPath, includePaths, useAPIHistory);
     }
@@ -370,7 +371,7 @@ namespace MB
       // RunGenerator<MB::OpenVXGenerator>(programInfo, config, "VX/vx.h", "RapidOpenVX", "OpenVX", "1.1", true);
 
       // RapidVulkan
-      RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.0", true);
+      RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.0", true, "C++17");
       // RunGenerator<MB::VulkanGenerator>(programInfo, config, "vulkan/vulkan.h", "RapidVulkan", "Vulkan", "1.1", true);
 
       // RunGenerator<MB::OpenCLGenerator>(programInfo, config, "CL/cl.h", "FslUtilOpenCL", "OpenCL", "1.1");

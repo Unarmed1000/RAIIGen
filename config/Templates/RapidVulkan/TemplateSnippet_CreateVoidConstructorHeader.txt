@@ -1,6 +1,6 @@
     //! @brief Create the requested resource
     //! @note  Function: ##SOURCE_FUNCTION_NAME##
-    ##CLASS_NAME##(const ResetMode resetMode)
+    explicit ##CLASS_NAME##(const ResetMode resetMode)
       : ##CLASS_NAME##()
     {
       Reset(resetMode);

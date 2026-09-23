@@ -25,6 +25,7 @@
 #include <RapidVulkan/System/ErrorFormatter.hpp>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vulkan/vulkan.h>
 
 namespace RapidVulkan
@@ -32,44 +33,41 @@ namespace RapidVulkan
   class VulkanException : public std::runtime_error
   {
     std::string m_fileName;
-    int m_lineNumber;
+    int m_lineNumber{0};
+
   public:
     explicit VulkanException(const char*const pszWhatArg)
       : std::runtime_error(pszWhatArg)
-      , m_fileName()
-      , m_lineNumber(0)
     {
     }
 
     explicit VulkanException(const std::string& whatArg)
       : std::runtime_error(whatArg)
-      , m_fileName()
-      , m_lineNumber(0)
     {
     }
 
-    explicit VulkanException(const char*const pszWhatArg, const std::string& fileName, const int lineNumber)
+    explicit VulkanException(const char*const pszWhatArg, std::string fileName, const int lineNumber)
       : std::runtime_error(pszWhatArg)
-      , m_fileName(fileName)
+      , m_fileName(std::move(fileName))
       , m_lineNumber(lineNumber)
     {
     }
 
-    explicit VulkanException(const std::string& whatArg, const std::string& fileName, const int lineNumber)
+    explicit VulkanException(const std::string& whatArg, std::string fileName, const int lineNumber)
       : std::runtime_error(whatArg)
-      , m_fileName(fileName)
+      , m_fileName(std::move(fileName))
       , m_lineNumber(lineNumber)
     {
     }
 
 
-    std::string GetFileName() const
+    [[nodiscard]] std::string GetFileName() const
     {
       return m_fileName;
     }
 
 
-    int GetLineNumber() const
+    [[nodiscard]] int GetLineNumber() const noexcept
     {
       return m_lineNumber;
     }
@@ -99,13 +97,14 @@ namespace RapidVulkan
   class VulkanErrorException : public VulkanException
   {
     VkResult m_result;
+
   public:
     explicit VulkanErrorException(const char*const pszWhatArg, const VkResult result)
       : VulkanException(ErrorFormatter::Format(pszWhatArg, result))
       , m_result(result)
     {
     }
-  
+
     explicit VulkanErrorException(const std::string& whatArg, const VkResult result)
       : VulkanException(ErrorFormatter::Format(whatArg, result))
       , m_result(result)
@@ -124,7 +123,7 @@ namespace RapidVulkan
     {
     }
 
-    VkResult GetResult() const
+    [[nodiscard]] VkResult GetResult() const noexcept
     {
       return m_result;
     }

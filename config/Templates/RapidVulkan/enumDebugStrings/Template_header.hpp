@@ -28,11 +28,8 @@
 
 #include <vulkan/vulkan.h>
 
-namespace RapidVulkan
-{
-  namespace Debug
-  {##METHODS##
-  }
+namespace RapidVulkan::Debug
+{##METHODS##
 }
 ##VERSION_GUARD_END##
 #endif
