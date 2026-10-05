@@ -690,6 +690,7 @@ namespace MB
         std::string snippet = !itr->IsMoveable ? snippetTemplate : snippetMoveTemplate;
         if (snippet.size() > 0)
         {
+          StringUtil::Replace(snippet, "##MEMBER_TYPE##", itr->Type);
           StringUtil::Replace(snippet, "##MEMBER_NAME##", itr->Name);
           StringUtil::Replace(snippet, "##MEMBER_ARGUMENT_NAME##", useSourceArgument ? itr->SourceArgumentName : itr->ArgumentName);
           if (scriptUsesDefaultValue)
@@ -769,6 +770,7 @@ namespace MB
       for (auto itr = allMemberVariables.begin(); itr != allMemberVariables.end(); ++itr)
       {
         std::string snippet = !itr->IsMoveable ? snippetTemplate : snippetTemplateMove;
+        StringUtil::Replace(snippet, "##MEMBER_TYPE##", itr->Type);
         StringUtil::Replace(snippet, "##MEMBER_NAME##", itr->Name);
         StringUtil::Replace(snippet, "##MEMBER_SEPERATOR##", seperator);
         if (ContainsDefaultValue(snippet))
